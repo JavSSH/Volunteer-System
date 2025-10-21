@@ -19,6 +19,13 @@
           <li><a href="{{url_for('login')}}">Login</a></li>
         </ul>
       </nav>
+      {% if session.user %}
+      <nav>
+        <ul>
+          <li><a href="{{url_for('logout')}}">Logout</a></li>
+        </ul>
+      </nav>
+      {% endif %}
     </header>
     <main class="container">
       {% block content %}

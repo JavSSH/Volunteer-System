@@ -19,13 +19,14 @@ def login():
     if request.method == 'POST':
         email = request.form.get('email')
         password = request.form.get('password')
-        user_login = UserLoginController(email, password)
-        login_validation = user_login.login(email, password)
-        if login_validation == True:
-            session['user'] = email 
+        current_user = UserLoginController.login(email, password)
+        print("This is the debug ouput:", current_user)
+        if current_user != None:
+            session['user'] = current_user.email
+            session['role_id'] = current_user.role_id
             return redirect(url_for('home'))
         else:
-            flash(login_validation)
+            flash("Incorrect email or password!")
             return redirect(url_for('login'))
     resp = make_response(render_template('login.html'))
     resp.headers['Cache-Control'] = 'no-store, no-cache, must-revalidate, post-check=0, pre-check=0, max-age=0'

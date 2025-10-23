@@ -8,7 +8,18 @@
 </head>
 
 <body>
-    <h1 style="color: red;">This is the main page...</h1>
+  {% if session.role_id == 1 %}
+    <h1 style="color: red;">This is the main page for UserAdmin</h1>
+  {% endif %}
+  {% if session.role_id == 2 %}
+    <h1 style="color: blue;">This is the main page for PlatformManager</h1>
+  {% endif %}
+  {% if session.role_id == 3 %}
+    <h1 style="color: green;">This is the main page for PersonInNeed (PIN)</h1>
+  {% endif %}
+  {% if session.role_id == 4 %}
+    <h1 style="color: yellow;">This is the main page for CSR Rep</h1>
+  {% endif %}
   <!-- <script src="js/scripts.js"></script> -->
 </body>
 </html>

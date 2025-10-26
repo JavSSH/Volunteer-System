@@ -23,7 +23,7 @@ def login():
         print("This is the debug ouput:", current_user)
         if current_user != None:
             session['user'] = current_user.email
-            session['role_id'] = current_user.role_id
+            session['user_id'] = current_user.user_id
             return redirect(url_for('home'))
         else:
             flash("Incorrect email or password!")

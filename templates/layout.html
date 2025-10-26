@@ -14,12 +14,13 @@
           <li><a href="{{url_for('home')}}">Home</a></li>
         </ul>
       </nav>
+      {% if not session.user %}
       <nav>
         <ul>
           <li><a href="{{url_for('login')}}">Login</a></li>
         </ul>
       </nav>
-      {% if session.user %}
+      {% else %}
       <nav>
         <ul>
           <li><a href="{{url_for('logout')}}">Logout</a></li>

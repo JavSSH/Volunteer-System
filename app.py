@@ -13,17 +13,18 @@ def index():
 @app.route("/login", methods=['GET', 'POST'], strict_slashes=False)
 def login():
     # Check is user is logged in
-    if 'user' in session:
+    if 'email' in session:
         return redirect(url_for('home'))
     # Check if user credentials are valid
     if request.method == 'POST':
         email = request.form.get('email')
         password = request.form.get('password')
         current_user = UserLoginController.login(email, password)
-        print("This is the debug ouput:", current_user)
         if current_user != None:
-            session['user'] = current_user.email
+            session['email'] = current_user.email
             session['user_id'] = current_user.user_id
+            session['role_id'] = current_user.role_id
+            print(current_user.role_id)
             return redirect(url_for('home'))
         else:
             flash("Incorrect email or password!")
@@ -41,7 +42,7 @@ def logout():
 
 @app.route("/home")
 def home():
-    if 'user' not in session:
+    if 'email' not in session:
         return redirect(url_for('login'))
     return render_template("index.html")
 

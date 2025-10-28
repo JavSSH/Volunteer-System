@@ -1,4 +1,6 @@
 from database import database_management
+import sqlite3
+import datetime
 
 class UserAccount:
     def __init__(self, user_id, role_id, email, password, first_name, last_name, 
@@ -43,4 +45,13 @@ class UserAccount:
         self.last_name - last_name
         self.address = address
         self.phone_no = phone
+        created_at = datetime.datetime.now()
+
+        conn = database_management.dbConnection()
+        conn.row_factory = sqlite3.Row
+        cursor = conn.cursor()
+        cursor.execute("INSERT INTO user (role_id, email, password, first_name, last_name, address, phone, is_active, created_at) VALUES (?, ?, ?, ?, ?, ?, ?, ?, datetime('now'))",role_id,email,password,first_name,last_name,address,phone,True,created_at )
+        rows = cursor.commit()
+        conn.close()
+        return [dict(row) for row in rows] if rows else []
         

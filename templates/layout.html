@@ -7,28 +7,30 @@
     <link rel="stylesheet" href="{{ url_for('static', filename='css/styles.css') }}">
     <title>{% block title %}{% endblock %}</title>
   </head>
+
   <body>
+    {% if session.email %}
     <header>
       <nav>
         <ul>
-          <li><a href="{{url_for('home')}}">Home</a></li>
+          <li>      
+            {% if session.role_id == 1 %}
+            <a href="{{url_for('admin_dashboard')}}">Home</a>
+            {% else %}
+            <a href="{{url_for('other_dashboard')}}">Home</a>
+          </li>
         </ul>
       </nav>
-      {% if not session.email %}
-      <nav>
-        <ul>
-          <li><a href="{{url_for('login')}}">Login</a></li>
-        </ul>
-      </nav>
-      {% else %}
+      {% endif %}
       <nav>
         <ul>
           <li><a href="{{url_for('logout')}}">Logout</a></li>
         </ul>
       </nav>
-      {% endif %}
+    {% endif %}
     </header>
     <main class="container">
+     
       {% block content %}
       {% endblock %}
     </main>

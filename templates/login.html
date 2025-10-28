@@ -11,6 +11,7 @@
   <div>
     <label for="password">Password:</label>
     <input type="password" id="password" name="password" required>
+    <input type="checkbox" onclick="myFunction()" style="margin-top: 2%;"> Show Password
   </div>
   {% with messages = get_flashed_messages() %}
     {% if messages %}
@@ -26,6 +27,16 @@
     <input type="submit" value="Login">
   </div>
 </form>
+<script>
+  function myFunction() {
+  var x = document.getElementById("password");
+  if (x.type === "password") {
+    x.type = "text";
+  } else {
+    x.type = "password";
+  }
+}
+</script>
 
 
 {% endblock %}

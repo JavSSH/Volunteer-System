@@ -1,0 +1,60 @@
+{% extends "layout.html" %}
+{% block title %}User Dashboard{% endblock %}
+{% block content %}
+
+<div class="dashboard-wrapper">
+    <div class="dashboard-container">
+        <h1>User Management Dashboard</h1>
+        
+        <!-- Users table -->
+        <div class="card">
+            <div class="card-header">
+                <h5>All Users ({{ users|length }})</h5>
+            </div>
+            <div class="card-body">
+                <table class="table table-striped table-hover">
+                    <thead>
+                        <tr>
+                            <th>ID</th>
+                            <th>Name</th>
+                            <th>Email</th>
+                            <th>Role</th>
+                            <th>Status</th>
+                            <th>Created</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for user in users %}
+                        <tr>
+                            <td>{{ user.user_id }}</td>
+                            <td>{{ user.first_name }} {{ user.last_name }}</td>
+                            <td>{{ user.email }}</td>
+                            <td>
+                                {% if user.role_id == 1 %}
+                                    <span class="badge bg-user-admin">User Admin</span>
+                                {% elif user.role_id == 2 %}
+                                    <span class="badge bg-platform-manager">Platform Manager</span>
+                                {% elif user.role_id == 3 %}
+                                    <span class="badge bg-pin">Person In Need</span>
+                                {% elif user.role_id == 4 %}
+                                    <span class="badge bg-csr-rep">CSR Rep</span>
+                                {% endif %}
+                            </td>
+                            <td>
+                                {% if user.is_active == "1" %}
+                                    <span class="badge bg-active">Active</span>
+                                {% else %}
+                                    <span class="badge bg-suspended">Suspended</span>
+                                {% endif %}
+                            </td>
+                            <td>{{ user.created_at }}</td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+
+{% endblock %}

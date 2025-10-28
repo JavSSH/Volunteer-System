@@ -1,5 +1,6 @@
 from flask import Flask, render_template, request, redirect, url_for, flash, session, make_response
 from controllers.UserLoginController import UserLoginController
+from controllers.ViewUserAccController import ViewUserAccController
 import sqlite3
 
 app = Flask(__name__)
@@ -13,8 +14,8 @@ def index():
 @app.route("/login", methods=['GET', 'POST'], strict_slashes=False)
 def login():
     # Check is user is logged in
-    if 'email' in session:
-        return redirect(url_for('home'))
+    if 'email' in session and session['role_id'] == 1:
+        return redirect(url_for('admin_dashboard'))
     # Check if user credentials are valid
     if request.method == 'POST':
         email = request.form.get('email')
@@ -24,8 +25,9 @@ def login():
             session['email'] = current_user.email
             session['user_id'] = current_user.user_id
             session['role_id'] = current_user.role_id
-            print(current_user.role_id)
-            return redirect(url_for('home'))
+            if current_user.role_id == 1:
+                return redirect(url_for('admin_dashboard'))
+            return redirect(url_for('other_dashboard'))
         else:
             flash("Incorrect email or password!")
             return redirect(url_for('login'))
@@ -40,8 +42,16 @@ def logout():
     session.clear()
     return redirect(url_for('login'))
 
-@app.route("/home")
-def home():
+@app.route("/admin_dashboard")
+def admin_dashboard():
+    if 'email' not in session:
+        return redirect(url_for('login'))
+    controller = ViewUserAccController()
+    users = controller.viewUser()
+    return render_template("admin_dashboard.html", users=users)
+
+@app.route("/other_dashboard")
+def other_dashboard():
     if 'email' not in session:
         return redirect(url_for('login'))
     return render_template("index.html")

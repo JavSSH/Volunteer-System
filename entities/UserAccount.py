@@ -55,3 +55,59 @@ class UserAccount:
         conn.close()
         return [dict(row) for row in rows] if rows else []
         
+
+    def viewUser(self):
+        conn = database_management.dbConnection()
+        conn.row_factory = sqlite3.Row
+        cursor = conn.cursor()
+        cursor.execute("SELECT * FROM user")
+        rows = cursor.fetchall()
+        conn.close()
+        return [dict(row) for row in rows] if rows else []
+    
+
+    def updateUser(self, user_id, email, password, role_id, first_name, last_name, address, phone, is_active):
+        conn = database_management.dbConnection()
+        conn.row_factory = sqlite3.Row
+        cursor = conn.cursor()
+        cursor.execute("UPDATE user SET email = ?, password = ?, role_id = ?, first_name = ?, last_name = ?, address = ?, phone = ?, is_active = ? WHERE user_id = ?", (email, password, role_id, first_name, last_name, address, phone, is_active, user_id))
+        conn.commit()
+        conn.close()
+        return True   
+
+    def suspendUser(self, user_id):
+        conn = database_management.dbConnection()
+        conn.row_factory = sqlite3.Row
+        cursor = conn.cursor()
+        cursor.execute("UPDATE user SET is_active = 0 WHERE user_id = ?", (user_id,))
+        conn.commit()
+        conn.close()
+        return True
+
+    def searchUser(self, search_term):
+        conn = database_management.dbConnection()
+        conn.row_factory = sqlite3.Row
+        cursor = conn.cursor()
+        cursor.execute("SELECT * FROM user WHERE first_name LIKE ? OR last_name LIKE ? OR email LIKE ?", 
+                       ('%' + search_term + '%', '%' + search_term + '%', '%' + search_term + '%'))
+        rows = cursor.fetchall()
+        conn.close()
+        return [dict(row) for row in rows] if rows else []
+
+    def suspendProfile(self, profile_id):
+        conn = database_management.dbConnection()
+        conn.row_factory = sqlite3.Row
+        cursor = conn.cursor()
+        cursor.execute("UPDATE user SET is_active = 'false' WHERE profile_id = ?", (profile_id,))
+        conn.commit()
+        conn.close()
+        return True
+    
+    def reactivateProfile(self, profile_id):
+        conn = database_management.dbConnection()
+        conn.row_factory = sqlite3.Row
+        cursor = conn.cursor()
+        cursor.execute("UPDATE user SET is_active = 'true' WHERE profile_id = ?", (profile_id,))
+        conn.commit()
+        conn.close()
+        return True

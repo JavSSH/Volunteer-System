@@ -207,7 +207,7 @@ input[type="submit"]:hover {
 
 .table-hover tbody tr:hover {
   background-color: rgba(37, 117, 252, 0.1);
-  cursor: pointer;
+  cursor: text;
 }
 
 /* Column sizing */

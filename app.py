@@ -48,11 +48,12 @@ def admin_dashboard():
         return redirect(url_for('login'))
     
 
-    q = (request.args.get('q') or "").strip()   # ← read the search text
+    user_keyword = (request.args.get('user_keyword') or "").strip()   # ← read the search text
 
     controller = ViewUserAccController()
-    users = controller.viewUser(q=q)
-    return render_template("admin_dashboard.html", users=users, q=q)
+    users = controller.viewUser()
+    search_result = controller.searchUser(user_keyword)
+    return render_template("admin_dashboard.html", users=search_result, user_keyword=search_result)
 
 @app.route("/other_dashboard")
 def other_dashboard():

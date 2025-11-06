@@ -3,8 +3,8 @@ import sqlite3
 import datetime
 
 class UserAccount:
-    def __init__(self, user_id, role_id, email, password, first_name, last_name, 
-                 address, phone_no, is_active, created_at):
+    def __init__(self, user_id=None, role_id=None, email=None, password=None, first_name=None, last_name=None, 
+                 address=None, phone_no=None, is_active=None, created_at=None):
         self.user_id = user_id
         self.role_id = role_id 
         self.email = email
@@ -88,8 +88,8 @@ class UserAccount:
         conn = database_management.dbConnection()
         conn.row_factory = sqlite3.Row
         cursor = conn.cursor()
-        cursor.execute("SELECT * FROM user WHERE first_name LIKE ? OR last_name LIKE ? OR email LIKE ?", 
-                       ('%' + search_term + '%', '%' + search_term + '%', '%' + search_term + '%'))
+        cursor.execute("SELECT * FROM user WHERE first_name LIKE ? OR last_name LIKE ? OR email LIKE ? OR CAST(user_id AS TEXT) LIKE ?", 
+               ('%' + search_term + '%', '%' + search_term + '%', '%' + search_term + '%', '%' + search_term + '%'))
         rows = cursor.fetchall()
         conn.close()
         return [dict(row) for row in rows] if rows else []

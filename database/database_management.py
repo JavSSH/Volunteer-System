@@ -1,10 +1,5 @@
 import sqlite3
 
-# import database_management as db
-
-# connection1 = db.dbConnection()
-# connection1.row_factory = sqlite3.Row
-# cursor = connection1.cursor()
 
 def dbConnection():
     return sqlite3.connect("database/volunteer_system.db")
@@ -13,7 +8,7 @@ def userProfileTableSetup():
     conn = dbConnection()
     conn.row_factory = sqlite3.Row
     cursor = conn.cursor()
-    cursor.execute("drop table if exists userprofile")
+    cursor.execute("DROP TABLE IF EXISTS userprofile")
     user_data = open("database/mock-data/userprofile.sql", "r")
     user_sql = user_data.read()
     user_data.close()
@@ -29,7 +24,7 @@ def userTableSetup():
     conn = dbConnection()
     conn.row_factory = sqlite3.Row
     cursor = conn.cursor()
-    cursor.execute("drop table if exists user")
+    cursor.execute("DROP TABLE IF EXISTS user")
     user_data = open("database/mock-data/user.sql", "r")
     user_sql = user_data.read()
     user_data.close()

@@ -42,13 +42,17 @@ def logout():
     session.clear()
     return redirect(url_for('login'))
 
-@app.route("/admin_dashboard")
+@app.route("/admin_dashboard", methods=["GET"])
 def admin_dashboard():
     if 'email' not in session:
         return redirect(url_for('login'))
+    
+
+    q = (request.args.get('q') or "").strip()   # ← read the search text
+
     controller = ViewUserAccController()
-    users = controller.viewUser()
-    return render_template("admin_dashboard.html", users=users)
+    users = controller.viewUser(q=q)
+    return render_template("admin_dashboard.html", users=users, q=q)
 
 @app.route("/other_dashboard")
 def other_dashboard():

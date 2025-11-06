@@ -6,9 +6,3 @@ class ViewUserAccController:
 
     def viewUser(self):
         return self.user_admin.viewUser()
-    
-# class ViewUserAccController:
-#     @staticmethod
-#     def viewUser():
-#         user_admin = UserAdmin()
-#         return user_admin.viewUser()

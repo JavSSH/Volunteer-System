@@ -4,5 +4,5 @@ class ViewUserAccController:
     def __init__(self):
         self.user_admin = UserAdmin()
 
-    def viewUser(self):
-        return self.user_admin.viewUser()
+    def viewUser(self, q=None):
+        return self.user_admin.viewUser(q=q)

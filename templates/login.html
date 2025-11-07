@@ -11,7 +11,10 @@
   <div>
     <label for="password">Password:</label>
     <input type="password" id="password" name="password" required>
-    <input type="checkbox" onclick="myFunction()" style="margin-top: 2%;"> Show Password
+    <label style="display: flex; align-items: center; gap: 0.5em; margin-top: 4%;">
+      <input type="checkbox" onclick="myFunction()" style="width: 1.2em; height: 1.2em">
+      Show Password
+    </label>
   </div>
   {% with messages = get_flashed_messages() %}
     {% if messages %}

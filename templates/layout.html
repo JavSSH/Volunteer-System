@@ -6,10 +6,13 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="stylesheet" href="{{ url_for('static', filename='css/styles.css') }}">
     <link rel="icon" href="{{ url_for('static', filename='website_icon.ico') }}" type="image/x-icon">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Stack+Sans+Headline:wght@200..700&display=swap" rel="stylesheet">
     <title>{% block title %}{% endblock %}</title>
   </head>
 
-  <body>
+  <body {% if request.endpoint == 'login' %}class="login-page"{% endif %}>
     {% if session.email %}
     <header>
       <nav>
@@ -17,19 +20,26 @@
           <li>      
             {% if session.role_id == 1 %}
             <a href="{{url_for('viewUserAccountPage')}}">Home</a>
+            {% elif session.role_id == 2 %}
+            <a href="{{url_for('viewVolunteerCategoryPage')}}">Home</a>
             {% else %}
             <a href="{{url_for('other_dashboard')}}">Home</a>
+            {% endif %}
           </li>
         </ul>
       </nav>
-      {% endif %}
       <nav>
         <ul>
           <li><a href="{{url_for('logout')}}">Logout</a></li>
         </ul>
       </nav>
-    {% endif %}
+      <nav>
+        <ul>
+          <li><a href="#" style="pointer-events: none; color: #fcac25;">Logged in as: {{ session.email}}</a></li>
+        </ul>
+      </nav>
     </header>
+    {% endif %}
     <main class="container">
      
       {% block content %}

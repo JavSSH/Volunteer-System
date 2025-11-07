@@ -2,6 +2,7 @@ from database import database_management
 import sqlite3
 
 class UserProfile:
+    
     def createProfile(self, role_id, role_name, description, status):
         conn = database_management.dbConnection()
         conn.row_factory = sqlite3.Row
@@ -20,11 +21,11 @@ class UserProfile:
         conn.close()
         return [dict(row) for row in rows] if rows else []
     
-    def updateProfile(self, user_id, role_id, description, status):
+    def updateProfile(self, role_id, role_name, description, status):
         conn = database_management.dbConnection()
         conn.row_factory = sqlite3.Row
         cursor = conn.cursor()
-        cursor.execute("UPDATE userprofile SET user_id = ?, role_id = ?, description = ?, status = ? WHERE profile_id = ?", (user_id, role_id, description, status,))
+        cursor.execute("UPDATE userprofile SET role_id = ?, role_name = ?, description = ?, status = ? WHERE role_id = ?", (role_id, role_name, description, status,))
         conn.commit()
         conn.close()
         return True

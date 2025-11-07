@@ -16,7 +16,7 @@
         <ul>
           <li>      
             {% if session.role_id == 1 %}
-            <a href="{{url_for('admin_dashboard')}}">Home</a>
+            <a href="{{url_for('viewUserAccountPage')}}">Home</a>
             {% else %}
             <a href="{{url_for('other_dashboard')}}">Home</a>
           </li>

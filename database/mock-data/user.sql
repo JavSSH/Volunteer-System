@@ -1,5 +1,7 @@
+PRAGMA foreign_keys = ON;
+
 create table user (
-	user_id INT,
+	user_id INTEGER PRIMARY KEY AUTOINCREMENT,
 	role_id INT,
 	first_name VARCHAR(50),
 	last_name VARCHAR(50),
@@ -7,8 +9,9 @@ create table user (
 	password TEXT,
 	address VARCHAR(50),
 	phone INT,
-	is_active VARCHAR(50),
-	created_at DATE
+	is_active boolean,
+	created_at DATE,
+	FOREIGN KEY (role_id) REFERENCES userprofile(role_id)
 );
 insert into user (user_id, role_id, first_name, last_name, email, password, address, phone, is_active, created_at) values (1, 4, 'Latisha', 'Brandle', 'latisha.brandle@volunteer.com', 'password123', '831 Oak Valley Point', 91176571, true, '01/12/2024');
 insert into user (user_id, role_id, first_name, last_name, email, password, address, phone, is_active, created_at) values (2, 2, 'Pennie', 'Burree', 'pennie.burree@volunteer.com', 'password123', '035 Gulseth Plaza', 87402034, false, '05/03/2025');

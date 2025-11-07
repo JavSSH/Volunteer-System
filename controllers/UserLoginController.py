@@ -1,6 +1,6 @@
 from entities.UserAccount import UserAccount
 
 class UserLoginController:
-    @staticmethod
     def login(email, password):
-        return UserAccount.login(email, password)
+        user_account = UserAccount()
+        return user_account.login(email, password)

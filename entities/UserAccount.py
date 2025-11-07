@@ -16,11 +16,17 @@ class UserAccount:
         self.is_active = is_active
         self.created_at = created_at
 
-    @staticmethod
-    def login(email, password):
-    # Check if user account exists, hardcoded for testing purposes
-    # Role ID for UserAdmin (1), PM (2), PIN (3), CSR Rep (4)
-        accounts_db = database_management.getUser(email, password)
+    def login(self, email, password):
+        conn = database_management.dbConnection()
+        conn.row_factory = sqlite3.Row
+        cursor = conn.cursor()
+        cursor.execute("SELECT * FROM user WHERE email = ? AND password = ?", (email, password))
+        query_result = cursor.fetchone()
+        conn.close()
+        if query_result != None:
+            accounts_db = dict(query_result)
+        # Check if user account exists, hardcoded for testing purposes
+        # Role ID for UserAdmin (1), PM (2), PIN (3), CSR Rep (4)
         if accounts_db and int(accounts_db["is_active"]) != 0:
             if accounts_db["email"] == email and accounts_db["password"] == password:
                 return UserAccount (

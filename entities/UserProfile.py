@@ -11,7 +11,7 @@ class UserProfile:
         conn.close()
         return True 
     
-    def viewProfile(self, user_id):
+    def getProfile(self, user_id):
         conn = database_management.dbConnection()
         conn.row_factory = sqlite3.Row
         cursor = conn.cursor()
@@ -33,7 +33,7 @@ class UserProfile:
         conn = database_management.dbConnection()
         conn.row_factory = sqlite3.Row
         cursor = conn.cursor()
-        cursor.execute("SELECT * FROM userprofile WHERE description LIKE ?", ('%' + keyword + '%',))
+        cursor.execute("SELECT * FROM userprofile WHERE role_name LIKE ? OR description LIKE ?", ('%' + keyword + '%','%' + keyword + '%'))
         rows = cursor.fetchall()
         conn.close()
         return [dict(row) for row in rows] if rows else []

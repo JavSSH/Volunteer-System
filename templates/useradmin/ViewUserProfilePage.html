@@ -1,0 +1,95 @@
+{% extends "layout.html" %}
+{% block title %}View User Profile{% endblock %}
+{% block content %}
+
+<div class="dashboard-wrapper">
+  <div class="dashboard-container">
+
+    <!-- Header -->
+    <div class="d-flex justify-content-between align-items-center mb-4">
+      <h1 class="m-0">View User Profile</h1>
+      <a href="{{ url_for('viewUserAccountPage') }}" class="plain-btn">Back to Dashboard</a>
+    </div>
+
+    {% if profiles %}
+      {% for profile in profiles %}
+      <div class="card mb-4">
+        <div class="card-header">
+          <h5 class="m-0">Profile ID: {{ profile.profile_id }}</h5>
+        </div>
+
+        <div class="card-body">
+          <div class="row">
+
+            <!-- Left column -->
+            <div class="col-md-4 text-center">
+              <img src="{{ url_for('static', filename='images/default-avatar.png') }}"
+                   alt="Profile Picture"
+                   class="rounded-circle mb-3"
+                   width="140" height="140" style="object-fit: cover;">
+              {% if profile.status == "Active" %}
+                <span class="badge bg-active">Active</span>
+              {% else %}
+                <span class="badge bg-suspended">Suspended</span>
+              {% endif %}
+            </div>
+
+            <!-- Right column -->
+            <div class="col-md-8">
+              <table class="table table-borderless">
+                <tbody>
+                  <tr>
+                    <th scope="row" style="width: 200px;">User ID:</th>
+                    <td>{{ profile.user_id }}</td>
+                  </tr>
+                  <tr>
+                    <th scope="row">Role ID:</th>
+                    <td>{{ profile.role_id }}</td>
+                  </tr>
+                  <tr>
+                    <th scope="row">Role Name:</th>
+                    <td>{{ profile.role_name }}</td>
+                  </tr>
+                  <tr>
+                    <th scope="row">Description:</th>
+                    <td>{{ profile.description or "—" }}</td>
+                  </tr>
+                  <tr>
+                    <th scope="row">Status:</th>
+                    <td>{{ profile.status }}</td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+
+          </div>
+        </div>
+
+        <!-- Action buttons -->
+        <div class="card-footer d-flex justify-content-end gap-2">
+          <a href="{{ url_for('other_dashboard', user_id=profile.user_id) }}" class="plain-btn">
+            Update Profile
+          </a>
+          {% if profile.status == "Active" %}
+            <form method="post" action="{{ url_for('other_dashboard', user_id=profile.user_id) }}">
+              <button type="submit" class="plain-btn">Suspend</button>
+            </form>
+          {% else %}
+            <form method="post" action="{{ url_for('other_dashboard', user_id=profile.user_id) }}">
+              <button type="submit" class="plain-btn">Reactivate</button>
+            </form>
+          {% endif %}
+        </div>
+
+      </div>
+      {% endfor %}
+    {% else %}
+      <div class="alert alert-warning text-center mt-5">
+        No profile found for this user.
+      </div>
+    {% endif %}
+
+  </div>
+</div>
+
+{% endblock %}

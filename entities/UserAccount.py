@@ -1,6 +1,7 @@
 from database import database_management
 import sqlite3
 import datetime
+import re
 
 class UserAccount:
     def __init__(self, user_id=None, role_id=None, email=None, password=None, first_name=None, last_name=None, 
@@ -94,8 +95,27 @@ class UserAccount:
         conn = database_management.dbConnection()
         conn.row_factory = sqlite3.Row
         cursor = conn.cursor()
-        cursor.execute("SELECT * FROM user WHERE first_name LIKE ? OR last_name LIKE ? OR email LIKE ? OR CAST(user_id AS TEXT) LIKE ?", 
-               ('%' + search_term + '%', '%' + search_term + '%', '%' + search_term + '%', '%' + search_term + '%'))
+        # cursor.execute("SELECT * FROM user WHERE first_name LIKE ? OR last_name LIKE ? OR email LIKE ? OR CAST(user_id AS TEXT) LIKE ?", 
+        #        ('%' + search_term + '%', '%' + search_term + '%', '%' + search_term + '%', '%' + search_term + '%'))
+        clean_term = re.sub(r'[^a-zA-Z0-9 ]', '', search_term).strip().lower()
+        cursor.execute("""
+            SELECT *,
+                LOWER(REPLACE(REPLACE(email, '.', ''), '@', '')) AS email_clean
+            FROM user
+            WHERE LOWER(first_name) LIKE ?
+               OR LOWER(last_name) LIKE ?
+               OR LOWER(email) LIKE ?
+               OR LOWER(phone) LIKE ?
+               OR LOWER(first_name || ' ' || last_name) LIKE ?
+               OR email_clean LIKE ?
+        """, (
+            f"%{clean_term}%",
+            f"%{clean_term}%",
+            f"%{clean_term}%",
+            f"%{clean_term}%",
+            f"%{clean_term}%",
+            f"%{clean_term}%"
+        ))
         rows = cursor.fetchall()
         conn.close()
         return [dict(row) for row in rows] if rows else []

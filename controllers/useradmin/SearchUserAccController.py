@@ -1,7 +1,8 @@
 from entities.UserAccount import UserAccount
 
 class SearchUserAccController:
-    @staticmethod
-    def searchUser(search_term):
-        user_account = UserAccount()
-        return user_account.searchUser(search_term)
+    def __init__(self):
+        self.user_account = UserAccount()
+    
+    def searchUser(self, keyword):
+        return self.user_account.searchUser(keyword)

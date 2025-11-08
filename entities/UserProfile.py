@@ -32,6 +32,24 @@ class UserProfile:
         conn.close()
         return True
     
+    def suspendProfile(self, role_id):
+        conn = database_management.dbConnection()
+        conn.row_factory = sqlite3.Row
+        cursor = conn.cursor()
+        cursor.execute("UPDATE userprofile SET status = 'false' WHERE role_id = ?", (role_id,))
+        conn.commit()
+        conn.close()
+        return True
+    
+    def reactivateProfile(self, role_id):
+        conn = database_management.dbConnection()
+        conn.row_factory = sqlite3.Row
+        cursor = conn.cursor()
+        cursor.execute("UPDATE user SET status = 'true' WHERE role_id = ?", (role_id,))
+        conn.commit()
+        conn.close()
+        return True
+    
     def searchProfile(self, keyword):
         conn = database_management.dbConnection()
         conn.row_factory = sqlite3.Row
@@ -40,4 +58,3 @@ class UserProfile:
         rows = cursor.fetchall()
         conn.close()
         return [dict(row) for row in rows] if rows else []
-    

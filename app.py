@@ -1,8 +1,21 @@
+# Main Import Statements
 from flask import Flask, render_template, request, redirect, url_for, flash, session, make_response
+
+# User Admin Import Statements
 from controllers.useradmin.UserLoginController import UserLoginController
 from controllers.useradmin.ViewUserAccController import ViewUserAccController
+from controllers.useradmin.SearchUserAccController import SearchUserAccController
 from controllers.useradmin.ViewProfileController import ViewProfileController
+
+# Platform Manager Import Statements
 from controllers.pm.ViewVolunteerCategoryController import ViewVolunteerCategoryController
+from controllers.pm.SearchVolunteerCategoryController import SearchVolunteerCategoryController
+
+# PIN Import Statements
+# from controllers.pin.XXXXX import XXXXXController
+
+# CSR Rep Import Statements
+# from controllers.csrrep.XXXXX import XXXXController
 
 
 
@@ -56,32 +69,42 @@ def logout():
 def viewUserAccountPage():
     if 'email' not in session:
         return redirect(url_for('login'))
+    if session['role_id'] != 1 and 'email' in session:
+        return redirect(url_for('login'))
 
     user_keyword = (request.args.get('user_keyword') or "").strip()   # ← read the search text
-    controller = ViewUserAccController()
+    view_controller = ViewUserAccController()
+    search_controller = SearchUserAccController()
     if not user_keyword:
-        all_users = controller.viewUser()
+        all_users = view_controller.viewUser()
     else:
-        all_users = controller.searchUser(user_keyword)
+        all_users = search_controller.searchUser(user_keyword)
     return render_template("useradmin/ViewUserAccountPage.html", users=all_users, user_keyword=user_keyword)
 
-@app.route('/viewUserProfilePage/<int:user_id>')
-def viewUserProfilePage(user_id):
-    profiles = ViewProfileController.viewProfile(user_id)
+@app.route('/viewUserProfilePage')
+def viewUserProfilePage():
+    if 'email' not in session:
+        return redirect(url_for('login'))
+    if session['role_id'] != 1 and 'email' in session:
+        return redirect(url_for('login'))
+    view_controller = ViewProfileController()
+    profiles = view_controller.viewProfile()
     return render_template('useradmin/viewUserProfilePage.html', profiles=profiles)
 
 @app.route("/ViewVolunteerCategoryPage", methods=["GET"])
 def viewVolunteerCategoryPage():
     if 'email' not in session:
         return redirect(url_for('login'))
+    if session['role_id'] != 2 and 'email' in session:
+        return redirect(url_for('login'))
 
     category_keyword = (request.args.get('category_keyword') or "").strip()   # ← read the search text
-    controller = ViewVolunteerCategoryController()
+    view_controller = ViewVolunteerCategoryController()
+    search_controller = SearchVolunteerCategoryController()
     if not category_keyword:
-        all_categories = controller.viewVolunteerCategory()
+        all_categories = view_controller.viewVolunteerCategory()
     else:
-        all_categories = controller.viewVolunteerCategory()
-        # all_users = controller.searchVolunteerCategory(user_keyword)
+        all_categories = search_controller.searchVolunteerCategory(category_keyword)
     return render_template("pm/ViewVolunteerCategoryPage.html", categories=all_categories, category_keyword=category_keyword)
 
 @app.route("/other_dashboard")

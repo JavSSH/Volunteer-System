@@ -6,6 +6,3 @@ class ViewUserAccController:
 
     def viewUser(self):
         return self.user_account.viewUser()
-
-    def searchUser(self, keyword):
-        return self.user_account.searchUser(keyword)

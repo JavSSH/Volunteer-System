@@ -28,7 +28,8 @@ class Category:
         conn = database_management.dbConnection()
         conn.row_factory = sqlite3.Row
         cursor = conn.cursor()
-        cursor.execute("UPDATE category SET category_name = ?, category_desc = ?, category_status = ? WHERE category_id = ?", (category_name, category_desc, category_status, category_id,))
+        cursor.execute("UPDATE category SET category_name = ?, category_desc = ?, category_status = ? WHERE category_id = ?", 
+                       (category_name, category_desc, category_status, category_id,))
         conn.commit()
         conn.close()
         return True
@@ -46,7 +47,8 @@ class Category:
         conn = database_management.dbConnection()
         conn.row_factory = sqlite3.Row
         cursor = conn.cursor()
-        cursor.execute("SELECT * FROM category WHERE category_name LIKE ? OR category_desc LIKE ?", ('%' + keyword + '%','%' + keyword + '%'))
+        cursor.execute("SELECT * FROM category WHERE category_name LIKE ? OR category_desc LIKE ?", 
+                       ('%' + keyword + '%','%' + keyword + '%'))
         rows = cursor.fetchall()
         conn.close()
         return [dict(row) for row in rows] if rows else []

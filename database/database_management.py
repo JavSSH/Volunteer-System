@@ -18,7 +18,7 @@ def userProfileTableSetup():
             cursor.execute(sql)
         except Exception as err:
             print("Skipped: ", err)
-    print("User Profile table created successfully!")
+    print("User profile table has been created successfully!")
     conn.commit()
 
 def userTableSetup():
@@ -35,7 +35,7 @@ def userTableSetup():
             cursor.execute(sql)
         except Exception as err:
             print("Skipped: ", err)
-    print("User table created successfully!")
+    print("User table has been created successfully!")
     conn.commit()
 
 def categoryTableSetup():
@@ -43,7 +43,7 @@ def categoryTableSetup():
     conn.row_factory = sqlite3.Row
     cursor = conn.cursor()
     cursor.execute("DROP TABLE IF EXISTS category")
-    user_data = open("database/mock-data/category_new.sql", "r")
+    user_data = open("database/mock-data/category.sql", "r")
     user_sql = user_data.read()
     user_data.close()
     user_sql_cmds = user_sql.split(";")
@@ -52,7 +52,7 @@ def categoryTableSetup():
             cursor.execute(sql)
         except Exception as err:
             print("Skipped: ", err)
-    print("Category table created successfully!")
+    print("Category table has been created successfully!")
     conn.commit()
     
 def getUser(email, password):
@@ -69,9 +69,12 @@ def getUser(email, password):
 
 # Testing Purposes
 if __name__ == "__main__":
+    print("\n")
     userProfileTableSetup()
     userTableSetup()
     categoryTableSetup()
+    print("\n\nAll tables have been created successfully!")
+    print("\n")
     # print(getUser("latisha.brandle@volunteer.com", "password123")) # CSR Rep
     # print(getUser("rhonda.bonnet@volunteer.com", "password123")) # PM
     # print(getUser("kirsteni.demcik@volunteer.com", "password123")) # PIN

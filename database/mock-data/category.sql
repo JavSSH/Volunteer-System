@@ -74,8 +74,8 @@ insert into category (category_id, category_name, category_desc, category_status
 insert into category (category_id, category_name, category_desc, category_status) values (66, 'Community Photography Club', 'tristique est et tempus magna ac consequat metus sapien ut nunc', true);
 insert into category (category_id, category_name, category_desc, category_status) values (67, 'Community Film Club', 'porta volutpat quam pede lobortis ligula pede libero quis orci nullam molestie nibh in', false);
 insert into category (category_id, category_name, category_desc, category_status) values (68, 'Community Book Club', 'bibendum imperdiet nullam orci pede venenatis non sodales sed tincidunt eu felis', false);
-insert into category (category_id, category_name, category_desc, category_status) values (69, 'Community Theater Group', 'quam consectetuer eget rutrum at lorem integer tincidunt ante vel ipsum', true);
-insert into category (category_id, category_name, category_desc, category_status) values (70, 'Community Choir', 'tellus nisi eu orci mauris lacinia sapien quis libero nullam sit amet turpis elementum', false);
+insert into category (category_id, category_name, category_desc, category_status) values (69, 'Community Drama Club', 'quam consectetuer eget rutrum at lorem integer tincidunt ante vel ipsum', true);
+insert into category (category_id, category_name, category_desc, category_status) values (70, 'Community Vocal Ensemble', 'tellus nisi eu orci mauris lacinia sapien quis libero nullam sit amet turpis elementum', false);
 insert into category (category_id, category_name, category_desc, category_status) values (71, 'Community Band', 'accumsan tortor quis turpis sed ante vivamus tortor duis mattis egestas metus', false);
 insert into category (category_id, category_name, category_desc, category_status) values (72, 'Community Dance Troupe', 'molestie hendrerit at vulputate eget nunc donec quis orci egetn', false);
 insert into category (category_id, category_name, category_desc, category_status) values (73, 'Community Art Gallery', 'sit amet justo morb mi pede malesuada in imperdiet et commodo vulputate', false);
@@ -100,9 +100,9 @@ insert into category (category_id, category_name, category_desc, category_status
 insert into category (category_id, category_name, category_desc, category_status) values (92, 'Community Calligraphy Club', 'at nulla suspendisse potenti cras in purus eu magna vulputate', false);
 insert into category (category_id, category_name, category_desc, category_status) values (93, 'Community Painting Club', 'elit ac nulla sed vel enim sit amet nunc viverra dapibus nulla', false);
 insert into category (category_id, category_name, category_desc, category_status) values (94, 'Community Drawing Club', 'massa volutpat convallis morbi odio odio elementum eu interdum eu tincidunt in leo', false);
-insert into category (category_id, category_name, category_desc, category_status) values (95, 'Youth Programs', 'adipiscing elit proin risus praesent quam sapien varius ut blandit non', true);
-insert into category (category_id, category_name, category_desc, category_status) values (96, 'Elderly Care', 'consequat dui nec nisi volutpat eleifend donec ut dolor morbi', true);
-insert into category (category_id, category_name, category_desc, category_status) values (97, 'Animal Shelter', 'sapien in sapien iaculis congue vivamus metus arcu molestie hendrerit at vulputate', false);
-insert into category (category_id, category_name, category_desc, category_status) values (98, 'Environmental Conservation', 'etiam vel augue vestibulum aenean auctor gravida sem praesent', false);
-insert into category (category_id, category_name, category_desc, category_status) values (99, 'Homeless Outreach', 'tempus vivamus in felis eu sapien cursus vestibulum proin eu mi nulla ac enim', true);
-insert into category (category_id, category_name, category_desc, category_status) values (100, 'Disaster Relief', 'quisque porta volutpat erat quisque erat eros viverra eget congue eget', false);
+insert into category (category_id, category_name, category_desc, category_status) values (95, 'Youth Development Programs', 'adipiscing elit proin risus praesent quam sapien varius ut blandit non', true);
+insert into category (category_id, category_name, category_desc, category_status) values (96, 'Senior Care Services', 'consequat dui nec nisi volutpat eleifend donec ut dolor morbi', true);
+insert into category (category_id, category_name, category_desc, category_status) values (97, 'Animal Rescue Services', 'sapien in sapien iaculis congue vivamus metus arcu molestie hendrerit at vulputate', false);
+insert into category (category_id, category_name, category_desc, category_status) values (98, 'Environmental Protection', 'etiam vel augue vestibulum aenean auctor gravida sem praesent', false);
+insert into category (category_id, category_name, category_desc, category_status) values (99, 'Homeless Support Services', 'tempus vivamus in felis eu sapien cursus vestibulum proin eu mi nulla ac enim', true);
+insert into category (category_id, category_name, category_desc, category_status) values (100, 'Emergency Disaster Response', 'quisque porta volutpat erat quisque erat eros viverra eget congue eget', false);

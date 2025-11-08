@@ -92,6 +92,15 @@ class UserAccount:
         conn.commit()
         conn.close()
         return True
+    
+    def updateUser(self, user_id):
+        conn = database_management.dbConnection()
+        conn.row_factory = sqlite3.Row
+        cursor = conn.cursor()
+        cursor.execute("UPDATE user SET is_active = 1 WHERE user_id = ?", (user_id,))
+        conn.commit()
+        conn.close()
+        return True
 
     def searchUser(self, search_term):
         conn = database_management.dbConnection()
@@ -121,21 +130,3 @@ class UserAccount:
         rows = cursor.fetchall()
         conn.close()
         return [dict(row) for row in rows] if rows else []
-
-    def suspendProfile(self, profile_id):
-        conn = database_management.dbConnection()
-        conn.row_factory = sqlite3.Row
-        cursor = conn.cursor()
-        cursor.execute("UPDATE user SET is_active = 'false' WHERE profile_id = ?", (profile_id,))
-        conn.commit()
-        conn.close()
-        return True
-    
-    def reactivateProfile(self, profile_id):
-        conn = database_management.dbConnection()
-        conn.row_factory = sqlite3.Row
-        cursor = conn.cursor()
-        cursor.execute("UPDATE user SET is_active = 'true' WHERE profile_id = ?", (profile_id,))
-        conn.commit()
-        conn.close()
-        return True

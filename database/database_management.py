@@ -43,7 +43,7 @@ def categoryTableSetup():
     conn.row_factory = sqlite3.Row
     cursor = conn.cursor()
     cursor.execute("DROP TABLE IF EXISTS category")
-    user_data = open("database/mock-data/category.sql", "r")
+    user_data = open("database/mock-data/category_new.sql", "r")
     user_sql = user_data.read()
     user_data.close()
     user_sql_cmds = user_sql.split(";")
@@ -72,9 +72,9 @@ if __name__ == "__main__":
     userProfileTableSetup()
     userTableSetup()
     categoryTableSetup()
-    print(getUser("latisha.brandle@volunteer.com", "password123")) # CSR Rep
-    print(getUser("rhonda.bonnet@volunteer.com", "password123")) # PM
-    print(getUser("kirsteni.demcik@volunteer.com", "password123")) # PIN
-    print(getUser("lawton.korfmann@volunteer.com", "password123")) # UserAdmin
+    # print(getUser("latisha.brandle@volunteer.com", "password123")) # CSR Rep
+    # print(getUser("rhonda.bonnet@volunteer.com", "password123")) # PM
+    # print(getUser("kirsteni.demcik@volunteer.com", "password123")) # PIN
+    # print(getUser("lawton.korfmann@volunteer.com", "password123")) # UserAdmin
 
 

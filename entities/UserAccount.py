@@ -23,8 +23,10 @@ class UserAccount:
         cursor.execute("SELECT * FROM user WHERE email = ? AND password = ?", (email, password))
         query_result = cursor.fetchone()
         conn.close()
-        if query_result != None:
-            accounts_db = dict(query_result)
+        if query_result is None:
+            return None
+        
+        accounts_db = dict(query_result)
         # Check if user account exists, hardcoded for testing purposes
         # Role ID for UserAdmin (1), PM (2), PIN (3), CSR Rep (4)
         if accounts_db and int(accounts_db["is_active"]) != 0:

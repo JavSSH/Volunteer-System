@@ -1,33 +1,33 @@
 {% extends "layout.html" %}
-{% block title %}User Management Dashboard{% endblock %}
+{% block title %}Volunteer Category Management Dashboard{% endblock %}
 {% block content %}
 
 <div class="dashboard-wrapper">
   <div class="dashboard-container">
     <div class="d-flex justify-content-between align-items-center mb-3">
-      <h1 class="m-0">User Management</h1>
+      <h1 class="m-0">Volunteer Category Management</h1>
       <div class="d-flex gap-2 align-items-center mb-3">
         <!-- Create Entities -->
         <div class="d-flex align-items-center gap-3" style="margin-bottom: 25px;">
-          <a href="{{ url_for('other_dashboard') }}" class="plain-btn">Create New User</a>
-          <a href="{{ url_for('other_dashboard') }}" class="plain-btn">Create Profile</a>
+          <a href="{{ url_for('other_dashboard') }}" class="plain-btn">Create New Category</a>
+          <!-- <a href="{{ url_for('other_dashboard') }}" class="plain-btn">Create Profile</a>
           <a href="{{ url_for('viewUserProfilePage', user_id=session.get('user_id')) }}" class="plain-btn">
             View User Profile
-          </a>
+          </a> -->
         </div>
       </div>
     </div>
     </div>
 
     <!-- Search & Filters -->
-  <form class="card mb-4" method="get" action="{{ url_for('viewUserAccountPage') }}">
+  <form class="card mb-4" method="get" action="{{ url_for('viewVolunteerCategoryPage') }}">
   <div class="card-header">
     <h5 class="m-0">Search</h5>
   </div>
   <div class="card-body row g-3">
     <div class="col-md-10">
-      <label class="form-label">Search users</label>
-      <input id="userKeywordInput" name="user_keyword" value="{{ request.args.get('user_keyword','') }}" type="text" class="form-control" placeholder="Enter a name, email, or ID">
+      <label class="form-label">Search categories</label>
+      <input id="categoryKeywordInput" name="category_keyword" value="{{ request.args.get('category_keyword','') }}" type="text" class="form-control" placeholder="Enter a name, email, or ID">
     </div>
     <div class="col-md-2 d-flex align-items-end">
       <button class="plain-btn" type="submit"><i class="bi bi-search"></i>Search</button>
@@ -35,13 +35,13 @@
   </div>
 </form>
 
-    <!-- Users table -->
-    {% if not users %}
-    <h2 style="text-align: center;">No such user found!</h3>
+    <!-- Categoroes table -->
+    {% if not categories %}
+    <h2 style="text-align: center;">No such category found!</h3>
     {% else %}
     <div class="card">
       <div class="card-header d-flex justify-content-between align-items-center">
-        <h5 class="m-0">All Users ({{ users|length }})</h5>
+        <h5 class="m-0">All Categories ({{ categories|length }})</h5>
       </div>
       <div class="card-body p-0">
         <div class="table-responsive">
@@ -50,56 +50,42 @@
               <tr>
                 <th style="width: 80px;">ID</th>
                 <th>Name</th>
-                <th>Email</th>
-                <th style="width: 160px;">Role</th>
+                <th>Description</th>
                 <th style="width: 120px;">Status</th>
-                <th style="width: 160px;">Created</th>
                 <th style="width: 420px;">Actions</th>
               </tr>
             </thead>
             <tbody>
-              {% for user in users %}
+              {% for category in categories %}
               <tr>
-                <td class="text-monospace">{{ user.user_id }}</td>
-                <td>{{ user.first_name }} {{ user.last_name }}</td>
-                <td><a href="mailto:{{ user.email }}">{{ user.email }}</a></td>
+                <td class="text-monospace">{{ category.category_id }}</td>
+                <td>{{ category.category_name }}</td>
+                <td>{{ category.category_desc }}</a></td>
                 <td>
-                  {% if user.role_id == 1 %}
-                    <span class="badge bg-user-admin">User Admin</span>
-                  {% elif user.role_id == 2 %}
-                    <span class="badge bg-platform-manager">Platform Manager</span>
-                  {% elif user.role_id == 3 %}
-                    <span class="badge bg-pin">Person In Need</span>
-                  {% elif user.role_id == 4 %}
-                    <span class="badge bg-csr-rep">CSR Rep</span>
-                  {% endif %}
-                </td>
-                <td>
-                  {% if user.is_active == 1 %}
+                  {% if category.category_status == 1 %}
                     <span class="badge bg-active">Active</span>
                   {% else %}
                     <span class="badge bg-suspended">Suspended</span>
                   {% endif %}
                 </td>
-                <td>{{ user.created_at }}</td>
                 <td>
                   <div class="btn-toolbar" role="toolbar">
                     <div class="btn-group me-2">
                       <!-- Update account -->
-                      <a class="btn btn-primary btn-sm" href="{{ url_for('other_dashboard', user_id=user.user_id) }}">
+                      <a class="btn btn-primary btn-sm" href="{{ url_for('other_dashboard', category_id=category.category_id) }}">
                         <i class="bi bi-pencil"></i> Update
                       </a>
                     </div>
                     <div class="btn-group me-2">
                       <!-- Suspend or Reactivate -->
-                      {% if user.is_active == "1" %}
-                        <form method="post" action="{{ url_for('other_dashboard', user_id=user.user_id) }}">
+                      {% if category.category_status == 1 %}
+                        <form method="post" action="{{ url_for('other_dashboard', category_id=category.category_id) }}">
                           <button class="btn btn-warning btn-sm" type="submit">
                             <i class="bi bi-pause-circle"></i> Suspend
                           </button>
                         </form>
                       {% else %}
-                        <form method="post" action="{{ url_for('other_dashboard', user_id=user.user_id) }}">
+                        <form method="post" action="{{ url_for('other_dashboard', category_id=category.category_id) }}">
                           <button class="btn btn-success btn-sm" type="submit">
                             <i class="bi bi-play-circle"></i> Reactivate
                           </button>
@@ -122,10 +108,10 @@
         <nav>
           <ul class="pagination m-0">
             <li class="page-item {{ 'disabled' if not pagination.prev_num }}">
-              <a class="page-link" href="{{ url_for('viewUserAccountPage', page=pagination.prev_num, user_keyword=request.args.get('user_keyword')) }}">Prev</a>
+              <a class="page-link" href="{{ url_for('viewUserAccountPage', page=pagination.prev_num, category_keyword=request.args.get('category_keyword')) }}">Prev</a>
             </li>
             <li class="page-item {{ 'disabled' if not pagination.next_num }}">
-              <a class="page-link" href="{{ url_for('viewUserAccountPage', page=pagination.next_num, user_keyword=request.args.get('user_keyword')) }}">Next</a>
+              <a class="page-link" href="{{ url_for('viewUserAccountPage', page=pagination.next_num, category_keyword=request.args.get('category_keyword')) }}">Next</a>
             </li>
           </ul>
         </nav>
@@ -149,7 +135,7 @@
 
 <script>
   // Show all results when search field is empty
-  document.getElementById('userKeywordInput').addEventListener('input', function(e) {
+  document.getElementById('categoryKeywordInput').addEventListener('input', function(e) {
     const keyword = this.value.trim().toLowerCase();
     
     // Auto-submit the form when field is completely empty
@@ -160,7 +146,7 @@
       }, 200);
     }
   });
-  // Client-side quick search filter for specific users
+  // Client-side quick search filter for specific categories
   (function(){
     const input = document.getElementById('quickSearch');
     if(!input) return;
@@ -168,10 +154,10 @@
     if(!table) return;
     const rows = table.querySelectorAll('tbody tr');
     input.addEventListener('input', function(){
-      const user_keyword = this.value.trim().toLowerCase();
+      const category_keyword = this.value.trim().toLowerCase();
       rows.forEach(row => {
         const text = row.innerText.toLowerCase();
-        row.style.display = text.includes(user_keyword) ? '' : 'none';
+        row.style.display = text.includes(category_keyword) ? '' : 'none';
       });
     });
   })();

@@ -2,6 +2,8 @@ from database import database_management
 import sqlite3
 
 class UserProfile:
+    def __init__(self):
+        pass
     
     def createProfile(self, role_id, role_name, description, status):
         conn = database_management.dbConnection()

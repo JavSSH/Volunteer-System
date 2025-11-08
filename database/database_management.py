@@ -73,7 +73,7 @@ if __name__ == "__main__":
     userTableSetup()
     categoryTableSetup()
     print(getUser("latisha.brandle@volunteer.com", "password123")) # CSR Rep
-    print(getUser("pennie.burree@volunteer.com", "password123")) # PM
+    print(getUser("rhonda.bonnet@volunteer.com", "password123")) # PM
     print(getUser("kirsteni.demcik@volunteer.com", "password123")) # PIN
     print(getUser("lawton.korfmann@volunteer.com", "password123")) # UserAdmin
 

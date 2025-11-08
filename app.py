@@ -1,6 +1,8 @@
 from flask import Flask, render_template, request, redirect, url_for, flash, session, make_response
 from controllers.UserLoginController import UserLoginController
 from controllers.ViewUserAccController import ViewUserAccController
+from controllers.ViewProfileController import ViewProfileController
+from flask import render_template
 import sqlite3
 
 app = Flask(__name__)
@@ -15,7 +17,7 @@ def index():
 def login():
     # Check is user is logged in
     if 'email' in session and session['role_id'] == 1:
-        return redirect(url_for('admin_dashboard'))
+        return redirect(url_for('viewUserAccountPage'))
     # Check if user credentials are valid
     if request.method == 'POST':
         email = request.form.get('email')
@@ -26,7 +28,7 @@ def login():
             session['user_id'] = current_user.user_id
             session['role_id'] = current_user.role_id
             if current_user.role_id == 1:
-                return redirect(url_for('admin_dashboard'))
+                return redirect(url_for('viewUserAccountPage'))
             return redirect(url_for('other_dashboard'))
         else:
             flash("Incorrect email or password!")
@@ -42,8 +44,8 @@ def logout():
     session.clear()
     return redirect(url_for('login'))
 
-@app.route("/admin_dashboard", methods=["GET"])
-def admin_dashboard():
+@app.route("/viewUserAccountPage", methods=["GET"])
+def viewUserAccountPage():
     if 'email' not in session:
         return redirect(url_for('login'))
     
@@ -53,7 +55,12 @@ def admin_dashboard():
     controller = ViewUserAccController()
     users = controller.viewUser()
     search_result = controller.searchUser(user_keyword)
-    return render_template("admin_dashboard.html", users=search_result, user_keyword=search_result)
+    return render_template("useradmin/viewUserAccountPage.html", users=search_result, user_keyword=search_result)
+
+@app.route('/viewUserProfilePage/<int:user_id>')
+def viewUserProfilePage(user_id):
+    profiles = ViewProfileController.viewProfile(user_id)
+    return render_template('useradmin/viewUserProfilePage.html', profiles=profiles)
 
 @app.route("/other_dashboard")
 def other_dashboard():

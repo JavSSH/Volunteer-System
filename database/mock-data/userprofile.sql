@@ -1,8 +1,10 @@
+PRAGMA foreign_keys = ON;
+
 create table userprofile (
-	role_id INT,
+	role_id INTEGER PRIMARY KEY AUTOINCREMENT,
 	role_name VARCHAR(50),
 	description TEXT,
-	status VARCHAR(50)
+	status boolean
 );
 insert into userprofile (role_id, role_name, description, status) values (1, 'UserAdmin', 'A UserAdmin manages all the user accounts', true);
 insert into userprofile (role_id, role_name, description, status) values (2, 'PlatformManager', 'A PlatformManager manages all the volunteer categories', true);

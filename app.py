@@ -1,9 +1,9 @@
 from flask import Flask, render_template, request, redirect, url_for, flash, session, make_response
-from controllers.UserLoginController import UserLoginController
-from controllers.ViewUserAccController import ViewUserAccController
-from controllers.ViewProfileController import ViewProfileController
+from controllers.useradmin.UserLoginController import UserLoginController
+from controllers.useradmin.ViewUserAccController import ViewUserAccController
+from controllers.useradmin.ViewProfileController import ViewProfileController
 from controllers.pm.ViewVolunteerCategoryController import ViewVolunteerCategoryController
-from flask import render_template
+
 
 
 app = Flask(__name__)
@@ -17,8 +17,13 @@ def index():
 @app.route("/login", methods=['GET', 'POST'], strict_slashes=False)
 def login():
     # Check is user is logged in
-    if 'email' in session and session['role_id'] == 1:
-        return redirect(url_for('viewUserAccountPage'))
+    if 'email' in session:
+        if session['role_id'] == 1:
+            return redirect(url_for('viewUserAccountPage'))
+        if session['role_id'] == 2:
+            return redirect(url_for('viewVolunteerCategoryPage'))
+        else:
+            return redirect(url_for('other_dashboard'))
     # Check if user credentials are valid
     if request.method == 'POST':
         email = request.form.get('email')
@@ -88,6 +93,7 @@ def other_dashboard():
 
 if __name__ == '__main__':
     app.run(debug=True)
+
 
 ''' 
 Example Login Credentials

@@ -124,5 +124,6 @@ Example Login Credentials
 latisha.brandle@volunteer.com  password123)) # CSR Rep
 rhonda.bonnet@volunteer.com    password123)) # PM
 kirsteni.demcik@volunteer.com  password123)) # PIN
+bambi.berkely@volunteer.com  password123)) # PIN (active)
 lawton.korfmann@volunteer.com  password123)) # UserAdmin
 '''

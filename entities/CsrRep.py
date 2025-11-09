@@ -11,21 +11,16 @@ class CsrRep:
         # cursor.execute("SELECT * FROM user WHERE first_name LIKE ? OR last_name LIKE ? OR email LIKE ? OR phone LIKE ?", ('%' + keyword + '%', '%' + keyword + '%', '%' + keyword + '%', '%' + keyword + '%'))
         cursor.execute("""
             SELECT *,
-                LOWER(REPLACE(REPLACE(email, '.', ''), '@', '')) AS email_clean
             FROM category
-            WHERE LOWER(first_name) LIKE ?
-               OR LOWER(last_name) LIKE ?
-               OR LOWER(email) LIKE ?
-               OR LOWER(phone) LIKE ?
-               OR LOWER(first_name || ' ' || last_name) LIKE ?
-               OR email_clean LIKE ?
+            WHERE LOWER(category_name) LIKE ?
+               OR LOWER(category_desc) LIKE ?
+               OR LOWER(category_status) LIKE ?
+               OR LOWER(category_name|| ' ' || category_status) LIKE ?
         """, (
             f"%{clean_keyword}%",
             f"%{clean_keyword}%",
             f"%{clean_keyword}%",
             f"%{clean_keyword}%",
-            f"%{clean_keyword}%",
-            f"%{clean_keyword}%"
         ))
         rows = cursor.fetchall()
         conn.close()

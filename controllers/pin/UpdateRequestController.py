@@ -1,6 +1,6 @@
 from entities.Request import Request
 
 class UpdateRequestController:
-    def updateRequest(self, request_id, request_detail):
+    def updateRequest(self, category_id, request_id):
         request = Request()
-        return request.updateRequest(request_id, request_detail)
+        return request.updateRequest(category_id, request_id)

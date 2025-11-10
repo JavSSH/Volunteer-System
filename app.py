@@ -6,7 +6,7 @@ from controllers.useradmin.UserLoginController import UserLoginController
 from controllers.useradmin.ViewUserAccController import ViewUserAccController
 from controllers.useradmin.SearchUserAccController import SearchUserAccController
 from controllers.useradmin.ViewProfileController import ViewProfileController
-
+from controllers.useradmin.CreateUserAccController import CreateUserAccController
 # Platform Manager Import Statements
 from controllers.pm.ViewVolunteerCategoryController import ViewVolunteerCategoryController
 from controllers.pm.SearchVolunteerCategoryController import SearchVolunteerCategoryController
@@ -80,8 +80,8 @@ def viewUserAccountPage():
     else:
         all_users = search_controller.searchUser(user_keyword)
     return render_template("useradmin/ViewUserAccountPage.html", users=all_users, user_keyword=user_keyword)
-
-@app.route('/viewUserProfilePage')
+    
+@app.route('/ViewUserProfilePage')
 def viewUserProfilePage():
     if 'email' not in session:
         return redirect(url_for('login'))
@@ -89,8 +89,54 @@ def viewUserProfilePage():
         return redirect(url_for('login'))
     view_controller = ViewProfileController()
     profiles = view_controller.viewProfile()
-    return render_template('useradmin/viewUserProfilePage.html', profiles=profiles)
+    return render_template('useradmin/ViewUserProfilePage.html', profiles=profiles)
 
+@app.route("/CreateUserAccountPage", methods=["GET", "POST"])
+def createUserAccountPage():
+    if 'email' not in session:
+        return redirect(url_for('login'))
+    if session['role_id'] != 1 and 'email' in session:
+        return redirect(url_for('login'))
+    if request.method == "GET":
+        # Render the create dashboard page
+        return render_template("useradmin/CreateUserAccountPage.html")
+    # --- Handle form submission (POST request) ---
+    email = request.form.get("email", "").strip()
+    password = request.form.get("password", "").strip()
+    role_id = request.form.get("role_id", type=int)
+    first_name = request.form.get("first_name", "").strip()
+    last_name = request.form.get("last_name", "").strip()
+    address = request.form.get("address", "").strip()
+    phone = request.form.get("phone", "").strip()
+
+    # --- Basic Validation ---
+    if not (email and password and role_id and first_name and last_name):
+        flash("Please fill in all required fields.")
+        return redirect(url_for("createUserAccountPage"))
+
+    try:
+        # ✅ Use your controller
+        result = CreateUserAccController.createUser(
+            email=email,
+            password=password,
+            role_id=role_id,
+            first_name=first_name,
+            last_name=last_name,
+            address=address,
+            phone=phone
+        )
+
+        if result:
+            flash("User account created successfully.")
+            return redirect(url_for("viewUserAccountPage"))
+        else:
+            flash("Failed to create user account.")
+            return redirect(url_for("createUserAccountPage"))
+
+    except Exception as e:
+        flash(f"An error occurred: {str(e)}")
+        return redirect(url_for("createUserAccountPage"))
+       
 @app.route("/ViewVolunteerCategoryPage", methods=["GET"])
 def viewVolunteerCategoryPage():
     if 'email' not in session:

@@ -1,7 +1,6 @@
 from entities.UserAccount import UserAccount
 
 class CreateUserAccController:
-    @staticmethod
     def createUser(email, password, role_id, first_name, last_name, address, phone):
         user_account = UserAccount(
             user_id=None,
@@ -15,4 +14,5 @@ class CreateUserAccController:
             is_active=1,
             created_at=None
         )
+        print("controllererror")
         return user_account.createUser(email, password, role_id, first_name, last_name, address, phone)

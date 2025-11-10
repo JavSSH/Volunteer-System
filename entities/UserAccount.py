@@ -51,17 +51,21 @@ class UserAccount:
         self.password = password
         self.role_id = role_id
         self.first_name = first_name
-        self.last_name - last_name
+        self.last_name = last_name
         self.address = address
         self.phone_no = phone
         created_at = datetime.datetime.now()
-
+        print("58")
         conn = database_management.dbConnection()
+        print("db")
         conn.row_factory = sqlite3.Row
         cursor = conn.cursor()
-        cursor.execute("INSERT INTO user (role_id, email, password, first_name, last_name, address, phone, is_active, created_at) VALUES (?, ?, ?, ?, ?, ?, ?, ?, datetime('now'))",(role_id,email,password,first_name,last_name,address,phone,True,created_at))
+        print("bf")
+        cursor.execute("INSERT INTO user (role_id, email, password, first_name, last_name, address, phone, is_active, created_at) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)",(role_id,email,password,first_name,last_name,address,phone,True,created_at ))
+        print("af")
         conn.commit()
         conn.close()
+        print("userAccountentityerror")
         return True
         
 
@@ -93,7 +97,7 @@ class UserAccount:
         conn.close()
         return True
     
-    def updateUser(self, user_id):
+    def reactivateUser(self, user_id):
         conn = database_management.dbConnection()
         conn.row_factory = sqlite3.Row
         cursor = conn.cursor()

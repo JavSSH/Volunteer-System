@@ -9,8 +9,7 @@
       <div class="d-flex gap-2 align-items-center mb-3">
         <!-- Create Entities -->
         <div class="d-flex align-items-center gap-3" style="margin-bottom: 25px;">
-          <a href="{{ url_for('other_dashboard') }}" class="plain-btn">Create New User</a>
-          <a href="{{ url_for('other_dashboard') }}" class="plain-btn">Create Profile</a>
+          <a href="{{ url_for('createUserAccountPage') }}" class="plain-btn">Create New Account</a>
           <a href="{{ url_for('viewUserProfilePage', user_id=session.get('user_id')) }}" class="plain-btn">
             View User Profiles
           </a>

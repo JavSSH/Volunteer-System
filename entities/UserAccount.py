@@ -55,17 +55,12 @@ class UserAccount:
         self.address = address
         self.phone_no = phone
         created_at = datetime.datetime.now()
-        print("58")
         conn = database_management.dbConnection()
-        print("db")
         conn.row_factory = sqlite3.Row
         cursor = conn.cursor()
-        print("bf")
         cursor.execute("INSERT INTO user (role_id, email, password, first_name, last_name, address, phone, is_active, created_at) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)",(role_id,email,password,first_name,last_name,address,phone,True,created_at ))
-        print("af")
         conn.commit()
         conn.close()
-        print("userAccountentityerror")
         return True
         
 

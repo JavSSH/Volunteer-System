@@ -115,7 +115,6 @@ def createUserAccountPage():
         return redirect(url_for("createUserAccountPage"))
 
     try:
-        # ✅ Use your controller
         result = CreateUserAccController.createUser(
             email=email,
             password=password,

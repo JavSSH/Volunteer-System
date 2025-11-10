@@ -6,8 +6,9 @@
   <div class="dashboard-container">
 
     <!-- Header -->
-    <div class="d-flex justify-content-between align-items-center mb-4">
+    <div class="d-flex justify-content-between align-items-center mb-4" style="margin-bottom: 25px;">
       <h1 class="m-0">View User Profile</h1>
+      <a href="{{ url_for('other_dashboard') }}" class="plain-btn">Create Profile</a>
       <a href="{{ url_for('viewUserAccountPage') }}" class="plain-btn">Back to User Management</a>
     </div>
 

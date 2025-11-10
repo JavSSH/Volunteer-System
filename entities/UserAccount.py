@@ -5,7 +5,7 @@ import re
 
 class UserAccount:
     def __init__(self, user_id=None, role_id=None, email=None, password=None, first_name=None, last_name=None, 
-                 address=None, phone_no=None, is_active=None, created_at=None):
+                 address=None, phone=None, is_active=None, created_at=None):
         self.user_id = user_id
         self.role_id = role_id 
         self.email = email
@@ -13,7 +13,7 @@ class UserAccount:
         self.first_name = first_name
         self.last_name = last_name
         self.address = address
-        self.phone_no = phone_no
+        self.phone = phone
         self.is_active = is_active
         self.created_at = created_at
 
@@ -40,7 +40,7 @@ class UserAccount:
                     first_name = accounts_db["first_name"],
                     last_name = accounts_db["last_name"],
                     address = accounts_db["address"],
-                    phone_no = accounts_db["phone"],
+                    phone = accounts_db["phone"],
                     is_active = accounts_db["is_active"],
                     created_at = accounts_db["created_at"]
                 )
@@ -59,10 +59,10 @@ class UserAccount:
         conn = database_management.dbConnection()
         conn.row_factory = sqlite3.Row
         cursor = conn.cursor()
-        cursor.execute("INSERT INTO user (role_id, email, password, first_name, last_name, address, phone, is_active, created_at) VALUES (?, ?, ?, ?, ?, ?, ?, ?, datetime('now'))",role_id,email,password,first_name,last_name,address,phone,True,created_at )
-        rows = cursor.commit()
+        cursor.execute("INSERT INTO user (role_id, email, password, first_name, last_name, address, phone, is_active, created_at) VALUES (?, ?, ?, ?, ?, ?, ?, ?, datetime('now'))",(role_id,email,password,first_name,last_name,address,phone,True,created_at))
+        conn.commit()
         conn.close()
-        return [dict(row) for row in rows] if rows else []
+        return True
         
 
     def viewUser(self):
@@ -72,7 +72,7 @@ class UserAccount:
         cursor.execute("SELECT * FROM user")
         rows = cursor.fetchall()
         conn.close()
-        return [dict(row) for row in rows] if rows else []
+        return [UserAccount(**dict(row)) for row in rows] if rows else []
     
 
     def updateUser(self, user_id, email, password, role_id, first_name, last_name, address, phone, is_active):
@@ -110,15 +110,15 @@ class UserAccount:
         #        ('%' + search_term + '%', '%' + search_term + '%', '%' + search_term + '%', '%' + search_term + '%'))
         clean_term = re.sub(r'[^a-zA-Z0-9 ]', '', search_term).strip().lower()
         cursor.execute("""
-            SELECT *,
-                LOWER(REPLACE(REPLACE(email, '.', ''), '@', '')) AS email_clean
+            SELECT user_id, role_id, email, password, first_name, last_name, 
+                address, phone, is_active, created_at
             FROM user
             WHERE LOWER(first_name) LIKE ?
-               OR LOWER(last_name) LIKE ?
-               OR LOWER(email) LIKE ?
-               OR LOWER(phone) LIKE ?
-               OR LOWER(first_name || ' ' || last_name) LIKE ?
-               OR email_clean LIKE ?
+            OR LOWER(last_name) LIKE ?
+            OR LOWER(email) LIKE ?
+            OR LOWER(phone) LIKE ?
+            OR LOWER(first_name || ' ' || last_name) LIKE ?
+            OR LOWER(REPLACE(REPLACE(email, '.', ''), '@', '')) LIKE ?
         """, (
             f"%{clean_term}%",
             f"%{clean_term}%",
@@ -129,4 +129,18 @@ class UserAccount:
         ))
         rows = cursor.fetchall()
         conn.close()
-        return [dict(row) for row in rows] if rows else []
+        return [UserAccount(**dict(row)) for row in rows] if rows else []
+    
+    def __str__(self):
+        return (f"UserAccount(\n"
+            f"  user_id={self.user_id},\n"
+            f"  role_id={self.role_id},\n"
+            f"  email={self.email},\n"
+            f"  password={self.password},\n"
+            f"  first_name={self.first_name},\n"
+            f"  last_name={self.last_name},\n"
+            f"  address={self.address},\n"
+            f"  phone={self.phone},\n"
+            f"  is_active={self.is_active},\n"
+            f"  created_at={self.created_at}\n"
+            f")")

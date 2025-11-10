@@ -15,7 +15,7 @@
       {% for profile in profiles %}
       <div class="card mb-4">
         <div class="card-header">
-          <h5 class="m-0">Profile ID: {{ profile.profile_id }}</h5>
+          <h5 class="m-0">Role ID:&nbsp;&nbsp;{{ profile.role_id }}</h5>
         </div>
 
         <div class="card-body">
@@ -26,11 +26,7 @@
               <table class="table table-borderless">
                 <tbody>
                   <tr>
-                    <th scope="row" style="width: 200px;">Role ID:</th>
-                    <td>{{ profile.role_id }}</td>
-                  </tr>
-                  <tr>
-                    <th scope="row">Role Name:</th>
+                    <th scope="row" style="width: 200px;">Role Name:</th>
                     <td>{{ profile.role_name }}</td>
                   </tr>
                   <tr>

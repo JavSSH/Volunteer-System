@@ -1,0 +1,115 @@
+{% extends "layout.html" %}
+{% block title %}Requests Dashboard{% endblock %}
+{% block content %}
+
+<div class="dashboard-wrapper">
+  <div class="dashboard-container">
+
+    <!-- Header -->
+    <div class="d-flex justify-content-between align-items-center mb-3">
+      <h1 class="m-0">Requests</h1>
+      <div class="d-flex align-items-center gap-3" style="margin-bottom: 25px;">
+        <a href="{{ url_for('createRequestPage') }}" class="plain-btn">Create New Request</a>
+        <a href="{{ url_for('viewCompletedRequestsPage', user_id=session.get('user_id')) }}" class="plain-btn">
+          View Completed
+        </a>
+      </div>
+    </div>
+
+    <!-- Requests Table -->
+    {% if not requests %}
+      <h2 style="text-align:center;">No requests found!</h2>
+    {% else %}
+    <div class="card">
+      <div class="card-header d-flex justify-content-between align-items-center">
+        <h5 class="m-0">All Requests ({{ requests|length }})</h5>
+      </div>
+
+      <div class="card-body p-0">
+        <div class="table-responsive">
+          <table class="table table-striped table-hover m-0 align-middle">
+            <thead class="table-light">
+              <tr>
+                <th style="width: 80px;">ID</th>
+                <th>Category</th>
+                <th style="width: 140px;">Status</th>
+                <th style="width: 160px;">Date</th>
+                <th style="width: 120px;">Views</th>
+                <th style="width: 140px;">Shortlists</th>
+                <th style="width: 200px;">Actions</th>
+              </tr>
+            </thead>
+            <tbody>
+              {% for r in requests %}
+              <tr>
+                <td class="text-monospace">{{ r.request_id }}</td>
+                <td>
+                  {% if r.category_name %}
+                    {{ r.category_name }}
+                    {% if r.category_desc %}
+                      <div class="text-muted small">{{ r.category_desc }}</div>
+                    {% endif %}
+                  {% elif category_map %}
+                    {{ category_map.get(r.category_id, 'Category ' ~ r.category_id) }}
+                  {% else %}
+                    Category {{ r.category_id }}
+                  {% endif %}
+                </td>
+                <td>
+                  {% if r.request_status in (1, True, '1', 'true', 'True') %}
+                    <span class="badge bg-completed">Completed</span>
+                  {% else %}
+                    <span class="badge bg-open">Open</span>
+                  {% endif %}
+                </td>
+                <td>{{ r.request_date }}</td>
+                <td>{{ r.request_view_count }}</td>
+                <td>{{ r.request_shortlist_count }}</td>
+                <td>
+                  <div class="btn-toolbar" role="toolbar">
+                    <div class="btn-group me-2">
+                      <a class="btn btn-outline-secondary btn-sm"
+                         href="{{ url_for('others_dashboard', request_id=r.request_id) }}">
+                        <i class="bi bi-eye"></i> View Details
+                      </a>
+                    </div>
+                  </div>
+                </td>
+              </tr>
+              {% endfor %}
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      <!-- Pagination (optional) -->
+      {% if pagination %}
+      <div class="card-footer d-flex justify-content-between align-items-center">
+        <div class="text-muted small">Page {{ pagination.page }} of {{ pagination.pages }}</div>
+        <nav>
+          <ul class="pagination m-0">
+            <li class="page-item {{ 'disabled' if not pagination.prev_num }}">
+              <a class="page-link"
+                 href="{{ url_for('viewRequestsPage', page=pagination.prev_num) }}">Prev</a>
+            </li>
+            <li class="page-item {{ 'disabled' if not pagination.next_num }}">
+              <a class="page-link"
+                 href="{{ url_for('viewRequestsPage', page=pagination.next_num) }}">Next</a>
+            </li>
+          </ul>
+        </nav>
+      </div>
+      {% endif %}
+    </div>
+    {% endif %}
+  </div>
+</div>
+
+<!-- Optional helper styles -->
+<style>
+  .bg-open { background: #2575fc; color: #fff; }
+  .bg-completed { background: #198754; color: #fff; }
+  .text-monospace { font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace; }
+</style>
+
+{% endblock %}

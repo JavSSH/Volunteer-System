@@ -3,15 +3,9 @@ import sqlite3
 import datetime
 
 class Request:
-    def __init__(self, request_id, pin_id, category_id, opportunity_id, request_status, request_date, request_view_count, request_shortlist_count):
-        self.request_id = request_id
-        self.pin_id = pin_id
-        self.category_id = category_id
-        self.opportunity_id = opportunity_id
-        self.request_status = request_status
-        self.request_date = request_date
-        self.request_view_count = request_view_count
-        self.request_shortlist_count = request_shortlist_count
+    def __init__(self):
+        pass
+    
  
     def createRequest(self, user_id, category_id):
         conn = database_management.dbConnection()
@@ -41,11 +35,11 @@ class Request:
         conn.close()
         return [dict(row) for row in rows] if rows else []
     
-    def viewRequests(self, user_id):
+    def viewRequests(self):
         conn = database_management.dbConnection()
         conn.row_factory = sqlite3.Row
         cursor = conn.cursor()
-        cursor.execute("SELECT * FROM request WHERE user_id = ?", (user_id,))
+        cursor.execute("SELECT * FROM request")
         rows = cursor.fetchall()
         conn.close()
         return [dict(row) for row in rows] if rows else []

@@ -13,7 +13,7 @@ from controllers.pm.SearchVolunteerCategoryController import SearchVolunteerCate
 
 # PIN Import Statements
 # from controllers.pin.XXXXX import XXXXXController
-
+from controllers.pin.ViewRequestController import ViewRequestController
 # CSR Rep Import Statements
 # from controllers.csrrep.XXXXX import XXXXController
 
@@ -50,6 +50,8 @@ def login():
                 return redirect(url_for('viewUserAccountPage'))
             if current_user.role_id == 2:
                 return redirect(url_for('viewVolunteerCategoryPage'))
+            if current_user.role_id == 3:
+                return redirect(url_for('viewRequestsPage'))
             return redirect(url_for('other_dashboard'))
         else:
             flash("Incorrect email or password!")
@@ -152,6 +154,20 @@ def viewVolunteerCategoryPage():
     else:
         all_categories = search_controller.searchVolunteerCategory(category_keyword)
     return render_template("pm/ViewVolunteerCategoryPage.html", categories=all_categories, category_keyword=category_keyword)
+
+@app.route("/ViewRequestsPage", methods=["GET"])
+def viewRequestsPage():
+    # --- Access control ---
+    if 'email' not in session:
+        return redirect(url_for('login'))
+    # assuming role_id 3 = Person-In-Need (PIN)
+    if session['role_id'] != 3:
+        return redirect(url_for('login'))
+
+    controller = ViewRequestController()
+    requests = controller.viewRequests()
+    return render_template("pin/ViewRequestPage.html",requests=requests)
+
 
 @app.route("/other_dashboard")
 def other_dashboard():

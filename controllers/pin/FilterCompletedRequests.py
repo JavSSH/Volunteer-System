@@ -1,6 +1,6 @@
 from entities.Request import Request
 
 class FilterCompletedRequests:
-    def filterCompletedRequests(self, pin_id):
+    def filterCompletedRequests(self, user_id,request_date1,request_date2):
         request = Request()
-        return request.filterCompletedRequests(pin_id)
+        return request.filterCompletedRequests(user_id,request_date1,request_date2)

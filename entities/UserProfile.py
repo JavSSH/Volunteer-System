@@ -60,7 +60,7 @@ class UserProfile:
         cursor.execute("SELECT * FROM userprofile WHERE role_name LIKE ? OR description LIKE ?", ('%' + keyword + '%','%' + keyword + '%'))
         rows = cursor.fetchall()
         conn.close()
-        return [dict(row) for row in rows] if rows else []
+        return [UserProfile(**dict(row)) for row in rows] if rows else []
     
     def __str__(self):
         return (f"UserProfile(\n"

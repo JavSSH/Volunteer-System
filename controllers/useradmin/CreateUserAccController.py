@@ -10,7 +10,7 @@ class CreateUserAccController:
             first_name=first_name,
             last_name=last_name,
             address=address,
-            phone_no=phone,
+            phone=phone,
             is_active=1,
             created_at=None
         )

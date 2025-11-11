@@ -53,8 +53,8 @@ class UserAccount:
         self.first_name = first_name
         self.last_name = last_name
         self.address = address
-        self.phone_no = phone
-        created_at = datetime.datetime.now()
+        self.phone = phone
+        created_at = datetime.datetime.now().strftime("%d/%m/%Y")
         conn = database_management.dbConnection()
         conn.row_factory = sqlite3.Row
         cursor = conn.cursor()

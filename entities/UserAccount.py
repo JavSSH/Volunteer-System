@@ -101,13 +101,13 @@ class UserAccount:
         conn.close()
         return True
 
-    def searchUser(self, search_term):
+    def searchUser(self, keyword):
         conn = database_management.dbConnection()
         conn.row_factory = sqlite3.Row
         cursor = conn.cursor()
         # cursor.execute("SELECT * FROM user WHERE first_name LIKE ? OR last_name LIKE ? OR email LIKE ? OR CAST(user_id AS TEXT) LIKE ?", 
         #        ('%' + search_term + '%', '%' + search_term + '%', '%' + search_term + '%', '%' + search_term + '%'))
-        clean_term = re.sub(r'[^a-zA-Z0-9 ]', '', search_term).strip().lower()
+        clean_term = re.sub(r'[^a-zA-Z0-9 ]', '', keyword).strip().lower()
         cursor.execute("""
             SELECT user_id, role_id, email, password, first_name, last_name, 
                 address, phone, is_active, created_at

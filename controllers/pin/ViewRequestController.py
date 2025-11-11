@@ -1,6 +1,6 @@
 from entities.Request import Request
 
 class ViewRequestController:
-    def viewRequests(self, pin_id):
+    def viewRequests(self):
         request = Request()
-        return request.viewRequests(pin_id)
+        return request.viewRequests()

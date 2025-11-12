@@ -93,12 +93,12 @@ class Request:
         conn.close()
         return [dict(row) for row in rows] if rows else []
     
-    def filterCompletedRequests(self, user_id, request_date1, request_date2):
+    def filterCompletedRequests(self, user_id, category_id, request_date1, request_date2):
         conn = database_management.dbConnection()
         conn.row_factory = sqlite3.Row
         cursor = conn.cursor()
-        cursor.execute("""SELECT * FROM request WHERE user_id = 1 AND request_status = 1 AND date(CASE WHEN request_date LIKE '____-__-__' THEN request_date WHEN request_date LIKE '__/__/____' THEN substr(request_date,7,4) || '-' ||substr(request_date,4,2) || '-' ||substr(request_date,1,2) ELSE NULL END)
-        BETWEEN date('?') AND date('?');""", (user_id, request_date1, request_date2))  ## the date params expects in 2025-11-10 format
+        cursor.execute("""SELECT * FROM request WHERE user_id = ? AND category_id = ? AND request_status = 1 AND date(CASE WHEN request_date LIKE '____-__-__' THEN request_date WHEN request_date LIKE '__/__/____' THEN substr(request_date,7,4) || '-' ||substr(request_date,4,2) || '-' ||substr(request_date,1,2) ELSE NULL END)
+        BETWEEN date('?') AND date('?');""", (user_id, category_id, request_date1, request_date2))  ## the date params expects in 2025-11-10 format
         rows = cursor.fetchall()
         conn.close()
         return [dict(row) for row in rows] if rows else []

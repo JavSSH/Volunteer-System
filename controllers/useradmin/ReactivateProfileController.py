@@ -1,18 +1,15 @@
-from entities.UserAccount import UserAccount
+from entities.UserProfile import UserProfile
 
 class ReactivateProfileController:
-    @staticmethod
-    def reactivateUser(user_id, is_active):
-        user_account = UserAccount(
-            user_id=user_id,
+    def __init__(self):
+        pass
+
+    def reactivateProfile(role_id):
+        user_profile = UserProfile(
             role_id=None,
-            email=None,
-            password=None,
-            first_name=None,
-            last_name=None,
-            address=None,
-            phone_no=None,
-            is_active=is_active,
-            created_at=None
+            role_name=None,
+            description=None,
+            status=None
+
         )
-        return user_account.reactivateUser(user_id, is_active)
+        return user_profile.reactivateProfile(role_id)

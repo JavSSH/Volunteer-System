@@ -1,0 +1,126 @@
+{% extends "layout.html" %}
+{% block title %}Update User Account{% endblock %}
+{% block content %}
+
+<div class="dashboard-wrapper">
+  <div class="dashboard-container">
+
+    <!-- Header -->
+    <div class="d-flex justify-content-between align-items-center mb-4">
+      <h1 class="m-0">Update User Account</h1>
+      <div class="d-flex align-items-center gap-3">
+        <a href="{{ url_for('viewUserAccountPage') }}" class="plain-btn">Back to Accounts</a>
+      </div>
+    </div>
+
+    <!-- Flash Messages -->
+    {% with messages = get_flashed_messages() %}
+      {% if messages %}
+        <div class="alert alert-warning" role="alert">
+          {% for msg in messages %}
+            {{ msg }}<br>
+          {% endfor %}
+        </div>
+      {% endif %}
+    {% endwith %}
+
+    <!-- Update Form -->
+    <form class="card" method="post" action="{{ url_for('updateUserAccountPage', user_id=user.user_id) }}">
+      <div class="card-header">
+        <h5 class="m-0">Account Details</h5>
+      </div>
+
+      <div class="card-body">
+        <div class="row g-3">
+
+          <!-- User ID (readonly) -->
+          <div class="col-md-3">
+            <label class="form-label" for="user_id">User ID</label>
+            <input id="user_id" name="user_id" type="text" class="form-control" 
+                   value="{{ user.user_id }}" readonly>
+          </div>
+
+          <!-- Role ID -->
+          <div class="col-md-3">
+            <label class="form-label" for="role_id">Role</label>
+            <select id="role_id" name="role_id" class="form-select" required>
+              <option value="" disabled>Select role</option>
+              <option value="1" {{ 'selected' if user.role_id == 1 }}>User Admin</option>
+              <option value="2" {{ 'selected' if user.role_id == 2 }}>Platform Manager</option>
+              <option value="3" {{ 'selected' if user.role_id == 3 }}>Person In Need</option>
+              <option value="4" {{ 'selected' if user.role_id == 4 }}>CSR Rep</option>
+            </select>
+          </div>
+
+          <!-- Status -->
+          <div class="col-md-3">
+            <label class="form-label" for="is_active">Status</label>
+            <select id="is_active" name="is_active" class="form-select" required>
+              <option value="1" {{ 'selected' if user.is_active in (1, True, '1') }}>Active</option>
+              <option value="0" {{ 'selected' if user.is_active in (0, False, '0') }}>Suspended</option>
+            </select>
+          </div>
+
+          <!-- Created At (readonly) -->
+          <div class="col-md-3">
+            <label class="form-label" for="created_at">Created</label>
+            <input id="created_at" type="text" class="form-control" 
+                   value="{{ user.created_at }}" readonly>
+          </div>
+
+          <!-- Email -->
+          <div class="col-md-6">
+            <label class="form-label" for="email">Email</label>
+            <input id="email" name="email" type="email" class="form-control" 
+                   value="{{ user.email }}" required>
+          </div>
+
+          <!-- Password (optional) -->
+          <div class="col-md-6">
+            <label class="form-label" for="password">Password</label>
+            <input id="password" name="password" type="password" class="form-control"
+                   placeholder="Leave blank to keep existing password">
+            <small class="text-muted">Leave blank to keep current password.</small>
+          </div>
+
+          <!-- First / Last Name -->
+          <div class="col-md-6">
+            <label class="form-label" for="first_name">First Name</label>
+            <input id="first_name" name="first_name" type="text" class="form-control" 
+                   value="{{ user.first_name }}" required>
+          </div>
+
+          <div class="col-md-6">
+            <label class="form-label" for="last_name">Last Name</label>
+            <input id="last_name" name="last_name" type="text" class="form-control" 
+                   value="{{ user.last_name }}" required>
+          </div>
+
+          <!-- Address -->
+          <div class="col-12">
+            <label class="form-label" for="address">Address</label>
+            <input id="address" name="address" type="text" class="form-control" 
+                   value="{{ user.address or '' }}">
+          </div>
+
+          <!-- Phone -->
+          <div class="col-md-6">
+            <label class="form-label" for="phone">Phone</label>
+            <input id="phone" name="phone" type="text" class="form-control" 
+                   value="{{ user.phone or user.phone_no or '' }}">
+          </div>
+
+        </div>
+      </div>
+
+      <!-- Footer Buttons -->
+      <div class="card-footer d-flex justify-content-end gap-2">
+        <a href="{{ url_for('viewUserAccountPage') }}" class="plain-btn">Cancel</a>
+        <button type="submit" class="btn btn-primary">Save Changes</button>
+      </div>
+    </form>
+
+  </div>
+</div>
+
+{% endblock %}

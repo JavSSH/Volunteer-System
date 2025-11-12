@@ -1,9 +1,9 @@
 from entities.Request import Request
 
 class CreateRequestController:
-    def __init__(self,user_id):
-        self.user_id = user_id
+    def __init__(self):
+        pass
     
-    def createRequest(self, user_id, category_id):
+    def createRequest(self, pin_user_id, category_id):
         request = Request()
-        return request.createRequest(user_id, category_id)
+        return request.createRequest(pin_user_id, category_id)

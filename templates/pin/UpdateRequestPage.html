@@ -1,0 +1,85 @@
+{% extends "layout.html" %}
+{% block title %}Update Request{% endblock %}
+{% block content %}
+
+<div class="dashboard-wrapper">
+  <div class="dashboard-container">
+
+    <!-- Header -->
+    <div class="d-flex justify-content-between align-items-center mb-4">
+      <h1 class="m-0">Update Request</h1>
+      <div class="d-flex align-items-center gap-3">
+        <a href="{{ url_for('viewRequestsPage') }}" class="plain-btn">Back to Requests</a>
+      </div>
+    </div>
+
+    <!-- Flash Messages -->
+    {% with messages = get_flashed_messages() %}
+      {% if messages %}
+        <div class="alert alert-warning" role="alert">
+          {% for msg in messages %}
+            {{ msg }}<br>
+          {% endfor %}
+        </div>
+      {% endif %}
+    {% endwith %}
+
+    <!-- Update Request Form -->
+    <form class="card" method="post" action="{{ url_for('updateRequestPage', request_id=request.request_id) }}">
+      <div class="card-header">
+        <h5 class="m-0">Request Details</h5>
+      </div>
+
+      <div class="card-body">
+        <div class="row g-3">
+
+          <!-- Request ID (readonly) -->
+          <div class="col-md-4">
+            <label class="form-label" for="request_id">Request ID</label>
+            <input id="request_id" name="request_id" type="text" class="form-control"
+                   value="{{ request.request_id }}" readonly>
+          </div>
+
+          <!-- Category (Dropdown) -->
+          <div class="col-md-8">
+            <label class="form-label" for="category_id">Category</label>
+            <select id="category_id" name="category_id" class="form-select" required>
+              <option value="" disabled>Select a category</option>
+              {% for c in categories %}
+                <option value="{{ c.category_id }}"
+                        {% if c.category_id == request.category_id %}selected{% endif %}>
+                  {{ c.category_name }}{% if c.category_desc %} — {{ c.category_desc }}{% endif %}
+                </option>
+              {% endfor %}
+            </select>
+          </div>
+
+          <!-- Read-only fields (optional info) -->
+          <div class="col-md-6">
+            <label class="form-label">Date Created</label>
+            <input type="text" class="form-control" value="{{ request.request_date }}" readonly>
+          </div>
+
+          <div class="col-md-6">
+            <label class="form-label">Status</label>
+            {% if request.request_status in (1, True, '1', 'true', 'True') %}
+              <input type="text" class="form-control" value="Completed" readonly>
+            {% else %}
+              <input type="text" class="form-control" value="Open" readonly>
+            {% endif %}
+          </div>
+
+        </div>
+      </div>
+
+      <!-- Footer Buttons -->
+      <div class="card-footer d-flex justify-content-end gap-2">
+        <a href="{{ url_for('viewRequestsPage') }}" class="plain-btn">Cancel</a>
+        <button type="submit" class="btn btn-primary">Save Changes</button>
+      </div>
+    </form>
+
+  </div>
+</div>
+
+{% endblock %}

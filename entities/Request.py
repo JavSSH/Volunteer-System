@@ -1,10 +1,18 @@
 from database import database_management
 import sqlite3
 import datetime
+import re
 
 class Request:
-    def __init__(self):
-        pass
+    def __init__(self,request_id=None,pin_id=None, category_id=None, opportunity_id=None, request_status=None, request_date=None, request_view_count=None, request_shortlist_count=None):
+        self.request_id = request_id
+        self.pin_id = pin_id
+        self.category_id = category_id
+        self.opportunity_id = opportunity_id
+        self.request_status = request_status
+        self.request_date = request_date
+        self.request_view_count = request_view_count
+        self.request_shortlist_count = request_shortlist_count
     
  
     def createRequest(self, user_id, category_id):
@@ -16,16 +24,7 @@ class Request:
         request_id = cursor.lastrowid
         conn.close()
         return request_id
-
-    def requestViews(self, user_id):
-        conn = database_management.dbConnection()
-        conn.row_factory = sqlite3.Row
-        cursor = conn.cursor()
-        cursor.execute("SELECT category_id, request_status, request_date, request_view_count FROM request WHERE user_id = ? AND request_status = false", (user_id,))
-        rows = cursor.fetchall()
-        conn.close()
-        return [dict(row) for row in rows] if rows else []
-
+    
     def requestShortlist(self, user_id):
         conn = database_management.dbConnection()
         conn.row_factory = sqlite3.Row
@@ -97,8 +96,31 @@ class Request:
         conn = database_management.dbConnection()
         conn.row_factory = sqlite3.Row
         cursor = conn.cursor()
-        cursor.execute("""SELECT * FROM request WHERE user_id = ? AND category_id = ? AND request_status = 1 AND date(CASE WHEN request_date LIKE '____-__-__' THEN request_date WHEN request_date LIKE '__/__/____' THEN substr(request_date,7,4) || '-' ||substr(request_date,4,2) || '-' ||substr(request_date,1,2) ELSE NULL END)
+        cursor.execute("""SELECT * FROM request WHERE user_id = ? AND category_id = ? AND request_status = true AND date(CASE WHEN request_date LIKE '____-__-__' THEN request_date WHEN request_date LIKE '__/__/____' THEN substr(request_date,7,4) || '-' ||substr(request_date,4,2) || '-' ||substr(request_date,1,2) ELSE NULL END)
         BETWEEN date('?') AND date('?');""", (user_id, category_id, request_date1, request_date2))  ## the date params expects in 2025-11-10 format
+        rows = cursor.fetchall()
+        conn.close()
+        return [dict(row) for row in rows] if rows else []
+    
+    def searchCompletedRequests(self,user_id,keyword):
+        conn = database_management.dbConnection()
+        conn.row_factory = sqlite3.Row
+        cursor = conn.cursor()
+        clean_keyword = re.sub(r'[^a-zA-Z0-9 ]', '', keyword).strip().lower()
+        cursor.execute("""
+        SELECT *
+        FROM request
+        WHERE user_id = ? AND request_status = true
+        AND LOWER(
+            COALESCE(CAST(request_id AS TEXT), '') || ' ' ||
+            COALESCE(CAST(user_id AS TEXT), '') || ' ' ||
+            COALESCE(CAST(category_id AS TEXT), '') || ' ' ||
+            COALESCE(CAST(request_status AS TEXT), '') || ' ' ||
+            COALESCE(CAST(request_date AS TEXT), '') || ' ' ||
+            COALESCE(CAST(request_view_count AS TEXT), '') || ' ' ||
+            COALESCE(CAST(request_shortlist_count AS TEXT), '')
+        ) LIKE ?
+    """, (user_id,f"%{clean_keyword}%",))
         rows = cursor.fetchall()
         conn.close()
         return [dict(row) for row in rows] if rows else []

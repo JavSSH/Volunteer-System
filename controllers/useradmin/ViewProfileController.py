@@ -1,7 +1,6 @@
 from entities.UserProfile import UserProfile    
 
 class ViewProfileController:
-
     def __init__(self):
         pass
     

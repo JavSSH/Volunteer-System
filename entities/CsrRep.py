@@ -3,6 +3,13 @@ import sqlite3
 import re
 
 class CsrRep:
+    def __init__(self, csr_rep_id=None, user_id=None, name=None, email=None, organization=None):
+        self.csr_rep_id = csr_rep_id
+        self.user_id = user_id
+        self.name = name
+        self.email = email
+        self.organization = organization
+
     def searchOpportunities(self, keyword):
         conn = database_management.dbConnection()
         conn.row_factory = sqlite3.Row
@@ -42,3 +49,40 @@ class CsrRep:
         rows = cursor.fetchall()
         conn.close()
         return [dict(row) for row in rows] if rows else []
+    
+    def addToShortlist(self, opportunity_id):
+        conn = database_management.dbConnection()
+        conn.row_factory = sqlite3.Row
+        cursor = conn.cursor()
+        cursor.execute("INSERT INTO shortlist (opportunity_id) VALUES (?)", (opportunity_id))
+        conn.commit()
+        conn.close()
+        return True
+    
+    def searchShortlist(self, csr_rep_id, keyword):
+        conn = database_management.dbConnection()
+        conn.row_factory = sqlite3.Row
+        cursor = conn.cursor()
+        clean_keyword = re.sub(r'[^a-zA-Z0-9 ]', '', keyword).strip().lower()
+        cursor.execute("""
+        SELECT r.*
+        FROM shortlist AS s
+        JOIN request AS r
+        ON s.opportunity_id = r.request_id
+        WHERE s.csr_rep_id = ?
+        AND LOWER(
+            COALESCE(CAST(r.request_id AS TEXT), '') || ' ' ||
+            COALESCE(CAST(r.user_id AS TEXT), '') || ' ' ||
+            COALESCE(CAST(r.category_id AS TEXT), '') || ' ' ||
+            COALESCE(r.request_status, '') || ' ' ||
+            COALESCE(CAST(r.request_date AS TEXT), '') || ' ' ||
+            COALESCE(CAST(r.request_view_count AS TEXT), '') || ' ' ||
+            COALESCE(CAST(r.request_shortlist_count AS TEXT), '')
+        ) LIKE ?
+        """,
+        (csr_rep_id, f"%{clean_keyword}%"))
+        rows = cursor.fetchall()
+        conn.close()
+        return [dict(row) for row in rows] if rows else []
+    
+    

@@ -10,7 +10,7 @@
         <!-- Create Entities -->
         <div class="d-flex align-items-center gap-3" style="margin-bottom: 25px;">
           <a href="{{ url_for('createUserAccountPage') }}" class="plain-btn">Create New Account</a>
-          <a href="{{ url_for('viewUserProfilePage', user_id=session.get('user_id')) }}" class="plain-btn">
+          <a href="{{ url_for('viewProfilePage', user_id=session.get('user_id')) }}" class="plain-btn">
             View User Profiles
           </a>
         </div>
@@ -29,7 +29,7 @@
       <input id="userKeywordInput" name="user_keyword" value="{{ request.args.get('user_keyword','') }}" type="text" class="form-control" placeholder="Enter a name, email, or ID">
     </div>
     <div class="col-md-2 d-flex align-items-end">
-      <button class="plain-btn" type="submit"><i class="bi bi-search"></i>Search</button>
+      <button class="plain-btn" type="submit"><i class="bi bi-search"></i> Search</button>
     </div>
   </div>
 </form>

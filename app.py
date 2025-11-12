@@ -3,12 +3,14 @@ from flask import Flask, render_template, request, redirect, url_for, flash, ses
 
 # User Admin Import Statements
 from controllers.useradmin.UserLoginController import UserLoginController
-from controllers.useradmin.ViewUserAccController import ViewUserAccController
-from controllers.useradmin.SearchUserAccController import SearchUserAccController
-from controllers.useradmin.ViewProfileController import ViewProfileController
 from controllers.useradmin.CreateUserAccController import CreateUserAccController
+from controllers.useradmin.ViewUserAccController import ViewUserAccController
 from controllers.useradmin.SuspendUserAccController import SuspendUserAccController
 from controllers.useradmin.ReactivateUserAccController import ReactivateUserAccController
+from controllers.useradmin.SearchUserAccController import SearchUserAccController
+from controllers.useradmin.ViewProfileController import ViewProfileController
+from controllers.useradmin.SuspendProfileController import SuspendProfileController
+from controllers.useradmin.ReactivateProfileController import ReactivateProfileController
 
 # Platform Manager Import Statements
 from controllers.pm.ViewVolunteerCategoryController import ViewVolunteerCategoryController
@@ -20,7 +22,7 @@ from controllers.pin.ViewRequestController import ViewRequestController
 from controllers.pin.DeleteRequestController import DeleteRequestController
 
 # CSR Rep Import Statements
-# from controllers.csrrep.XXXXX import XXXXController
+from controllers.csrrep.ViewOpportunitiesDetailsController import ViewOpportunitiesDetailsController
 
 
 
@@ -33,7 +35,7 @@ def index():
     return redirect(url_for("login"))
 
 
-# User Account Routes
+# User Admin Routes
 
 @app.route("/login", methods=['GET', 'POST'], strict_slashes=False)
 def login():
@@ -79,6 +81,52 @@ def logout():
     session.clear()
     return redirect(url_for('login'))
 
+@app.route("/CreateUserAccountPage", methods=["GET", "POST"])
+def createUserAccountPage():
+    if 'email' not in session:
+        return redirect(url_for('login'))
+    if session['role_id'] != 1 and 'email' in session:
+        return redirect(url_for('login'))
+    
+    if request.method == "GET":
+        return render_template("useradmin/CreateUserAccountPage.html")
+    
+    email = request.form.get("email", "").strip()
+    password = request.form.get("password", "").strip()
+    role_id = request.form.get("role_id", type=int)
+    first_name = request.form.get("first_name", "").strip()
+    last_name = request.form.get("last_name", "").strip()
+    address = request.form.get("address", "").strip()
+    phone = request.form.get("phone", "").strip()
+
+    if not (email and password and role_id and first_name and last_name):
+        flash("Please fill in all required fields.", "error")
+        return redirect(url_for("createUserAccountPage"))
+
+    try:
+        create_controller = CreateUserAccController()
+        result = create_controller.createUser(
+            role_id=role_id,
+            email=email,
+            password=password,
+            first_name=first_name,
+            last_name=last_name,
+            address=address,
+            phone=phone
+        )
+
+        if result:
+            flash("User Account Created!", "success")
+            return redirect(url_for("viewUserAccountPage"))
+        else:
+            flash("Email already exists. Please use a different email.", "error")
+            return redirect(url_for("createUserAccountPage"))
+
+    except Exception as e:
+        flash(f"An error occurred: {str(e)}", "error")
+        return redirect(url_for("createUserAccountPage"))
+
+
 @app.route("/ViewUserAccountPage", methods=["GET"])
 def viewUserAccountPage():
     if 'email' not in session:
@@ -119,60 +167,37 @@ def reactivateUserAccountPage():
     reactivate_controller.reactivateUser(user_id)
     return redirect(url_for('viewUserAccountPage'))
     
-@app.route('/ViewUserProfilePage')
-def viewUserProfilePage():
+@app.route('/ViewProfilePage')
+def viewProfilePage():
     if 'email' not in session:
         return redirect(url_for('login'))
     if session['role_id'] != 1 and 'email' in session:
         return redirect(url_for('login'))
     view_controller = ViewProfileController()
-    profiles = view_controller.viewProfile()
-    return render_template('useradmin/ViewUserProfilePage.html', profiles=profiles)
+    profiles = view_controller.ViewProfile()
+    return render_template('useradmin/ViewProfilePage.html', profiles=profiles)
 
-@app.route("/CreateUserAccountPage", methods=["GET", "POST"])
-def createUserAccountPage():
+@app.route("/SuspendProfilePage", methods=["GET", "POST"])
+def suspendProfilePage():
     if 'email' not in session:
         return redirect(url_for('login'))
     if session['role_id'] != 1 and 'email' in session:
         return redirect(url_for('login'))
-    if request.method == "GET":
-        # Render the create dashboard page
-        return render_template("useradmin/CreateUserAccountPage.html")
-    # --- Handle form submission (POST request) ---
-    email = request.form.get("email", "").strip()
-    password = request.form.get("password", "").strip()
-    role_id = request.form.get("role_id", type=int)
-    first_name = request.form.get("first_name", "").strip()
-    last_name = request.form.get("last_name", "").strip()
-    address = request.form.get("address", "").strip()
-    phone = request.form.get("phone", "").strip()
+    role_id = request.args.get('role_id')
+    suspend_controller = SuspendProfileController(role_id)
+    suspend_controller.suspendProfile(role_id)
+    return redirect(url_for('viewProfilePage'))
 
-    # --- Basic Validation ---
-    if not (email and password and role_id and first_name and last_name):
-        flash("Please fill in all required fields.")
-        return redirect(url_for("createUserAccountPage"))
-
-    try:
-        result = CreateUserAccController.createUser(
-            email=email,
-            password=password,
-            role_id=role_id,
-            first_name=first_name,
-            last_name=last_name,
-            address=address,
-            phone=phone
-        )
-
-        if result:
-            flash("User account created successfully.")
-            return redirect(url_for("viewUserAccountPage"))
-        else:
-            flash("Failed to create user account.")
-            return redirect(url_for("createUserAccountPage"))
-
-    except Exception as e:
-        flash(f"An error occurred: {str(e)}")
-        return redirect(url_for("createUserAccountPage"))
+@app.route("/ReactivateUserAccountPage", methods=["GET", "POST"])
+def reactivateProfilePage():
+    if 'email' not in session:
+        return redirect(url_for('login'))
+    if session['role_id'] != 1 and 'email' in session:
+        return redirect(url_for('login'))
+    role_id = request.args.get('role_id')
+    reactivate_controller = ReactivateProfileController(role_id)
+    reactivate_controller.reactivateProfile(role_id)
+    return redirect(url_for('viewProfilePage'))
        
 
 # Platform Manager Routes
@@ -232,6 +257,9 @@ def deleteRequestPage():
     delete_controller.deleteRequest(request_id)
     return redirect(url_for('viewRequestPage'))
 
+
+# CSR Rep Routes
+
 @app.route("/ViewOpportunitiesPage", methods=["GET"])
 def viewOpportunitiesPage():
     if 'email' not in session:
@@ -239,8 +267,8 @@ def viewOpportunitiesPage():
     if session['role_id'] != 4:  # Assuming CSR Rep
         return redirect(url_for('login'))
 
-    controller = ViewVolunteerCategoryController()
-    opportunities = controller.viewVolunteerCategory()
+    view_controller = ViewOpportunitiesDetailsController()
+    opportunities = view_controller.viewOpportunitiesDetails()
 
     return render_template("csr/ViewOpportunitiesPage.html", opportunities=opportunities)
 

@@ -53,8 +53,9 @@ header nav ul li a:hover {
   border-radius: 4px;
 }
 
+
 /* ===== LOGIN / FORM CONTAINER ===== */
-.container:not(.dashboard) {
+.container:not(.dashboard):not(.flash-container) {
   background: #fff;
   padding: 2rem 3rem;
   border-radius: 10px;
@@ -64,14 +65,26 @@ header nav ul li a:hover {
   margin: 0 auto;
 }
 
-main.container:not(.dashboard) {
+main.container:not(.dashboard):not(.flash-container) {
   margin-top: 80px;
   display: block;
 }
 
-/* Login page specific - smaller container */
-body.login-page .container:not(.dashboard) {
-  max-width: 600px;  /* Smaller for login */
+/* Login page container */
+body.login-page .container:not(.dashboard):not(.flash-container) {
+  max-width: 600px;
+}
+
+/* Flash message container */
+.container.flash-container {
+  background: transparent !important;
+  padding: 0 !important;
+  box-shadow: none !important;
+  max-width: 1400px;
+  width: 95%;
+  margin: 0 auto;
+  margin-top: 100px !important;
+  margin-bottom: 20px;
 }
 
 /* ===== DASHBOARD CONTAINER ===== */

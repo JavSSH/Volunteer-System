@@ -1,6 +1,6 @@
 from database import database_management
 import sqlite3
-import datetime
+from datetime import datetime
 import re
 
 class UserAccount:
@@ -46,22 +46,42 @@ class UserAccount:
                 )
         return None
     
-    def createUser(self, email, password, role_id, first_name, last_name, address, phone):
-        self.email = email
-        self.password = password
-        self.role_id = role_id
-        self.first_name = first_name
-        self.last_name = last_name
-        self.address = address
-        self.phone = phone
-        created_at = datetime.datetime.now().strftime("%d/%m/%Y")
+    def createUser(self, role_id, email, password, first_name, last_name, address, phone):
         conn = database_management.dbConnection()
-        conn.row_factory = sqlite3.Row
         cursor = conn.cursor()
-        cursor.execute("INSERT INTO user (role_id, email, password, first_name, last_name, address, phone, is_active, created_at) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)",(role_id,email,password,first_name,last_name,address,phone,True,created_at ))
+        
+        # Check if email already exists
+        cursor.execute("SELECT email FROM user WHERE email = ?", (email,))
+        existing_user = cursor.fetchone()
+        
+        if existing_user:
+            conn.close()
+            return False  # Email already exists
+        
+        # Email doesn't exist already, proceed with creation
+        created_at = datetime.now().strftime('%Y-%m-%d %H:%M:%S')
+        
+        cursor.execute("""
+            INSERT INTO user (
+                role_id, first_name, last_name, email, password, address, phone, is_active, created_at
+            ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)
+        """, (
+            role_id,       # <-- must be first
+            first_name,
+            last_name,
+            email,
+            password,
+            address,
+            phone,
+            True,
+            created_at
+        ))
+
+
         conn.commit()
         conn.close()
-        return True
+        return True  # User created successfully
+
         
 
     def viewUser(self):

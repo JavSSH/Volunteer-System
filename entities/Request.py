@@ -1,5 +1,5 @@
 from database import database_management
-import sqlite3
+import sqlite3, re
 
 
 class Request:

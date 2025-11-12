@@ -4,11 +4,11 @@ import datetime
 import re
 
 class Request:
-    def __init__(self,request_id=None,pin_id=None, category_id=None, opportunity_id=None, request_status=None, request_date=None, request_view_count=None, request_shortlist_count=None):
+    def __init__(self,request_id=None,pin_user_id=None,csrrep_user_id =None, category_id=None, request_status=None, request_date=None, request_view_count=None, request_shortlist_count=None):
         self.request_id = request_id
-        self.pin_id = pin_id
+        self.pin_user__id = pin_user_id
+        self.csrrep_user_id = csrrep_user_id
         self.category_id = category_id
-        self.opportunity_id = opportunity_id
         self.request_status = request_status
         self.request_date = request_date
         self.request_view_count = request_view_count
@@ -19,17 +19,17 @@ class Request:
         conn = database_management.dbConnection()
         conn.row_factory = sqlite3.Row
         cursor = conn.cursor()
-        cursor.execute("INSERT INTO request (user_id, category_id, request_status, request_date, request_view_count, request_shortlist_count) VALUES (?, ?, false, strftime('%d/%m/%Y', 'now'), 0, 0)", (user_id, category_id))
+        cursor.execute("INSERT INTO request (pin_user_id, category_id, request_status, request_date, request_view_count, request_shortlist_count) VALUES (?, ?, false, strftime('%d/%m/%Y', 'now'), 0, 0)", (user_id, category_id))
         conn.commit()
         request_id = cursor.lastrowid
         conn.close()
         return request_id
     
-    def requestShortlist(self, user_id):
+    def requestShortlist(self, pin_user_id):
         conn = database_management.dbConnection()
         conn.row_factory = sqlite3.Row
         cursor = conn.cursor()
-        cursor.execute("SELECT request_id, request_status, request_date, request_shortlist_count FROM request WHERE user_id = ? AND request_status = false", (user_id,))
+        cursor.execute("SELECT request_id, request_status, request_date, request_shortlist_count FROM request WHERE pin_user_id = ? AND request_status = false", (pin_user_id,))
         rows = cursor.fetchall()
         conn.close()
         return [dict(row) for row in rows] if rows else []
@@ -62,47 +62,47 @@ class Request:
         conn.close()
         return True
     
-    def requestViews(self, user_id):
+    def requestViews(self, pin_user_id):
         conn = database_management.dbConnection()
         conn.row_factory = sqlite3.Row
         cursor = conn.cursor()
         cursor.execute("""SELECT r.request_id, r.request_date, r.request_view_count, c.category_name, c.category_desc
         FROM request r
         JOIN category c ON r.category_id = c.category_id
-        WHERE r.user_id = ?""", (user_id,))
+        WHERE r.user_id = ?""", (pin_user_id,))
         conn.commit()
         conn.close()
         return True
     
-    def requestShortlist(self, user_id):
+    def requestShortlist(self, pin_user_id):
         conn = database_management.dbConnection()
         conn.row_factory = sqlite3.Row
         cursor = conn.cursor()
-        cursor.execute("SELECT request_id, request_shortlist_count FROM request WHERE user_id = ?", (user_id,))
+        cursor.execute("SELECT request_id, request_shortlist_count FROM request WHERE user_id = ?", (pin_user_id,))
         conn.commit()
         conn.close()
         return True
     
-    def viewCompletedRequests(self, user_id):
+    def viewCompletedRequests(self, pin_user_id):
         conn = database_management.dbConnection()
         conn.row_factory = sqlite3.Row
         cursor = conn.cursor()
-        cursor.execute("SELECT * FROM request WHERE user_id = ? AND request_status = true", (user_id,))
+        cursor.execute("SELECT * FROM request WHERE pin_user_id = ? AND request_status = true", (pin_user_id,))
         rows = cursor.fetchall()
         conn.close()
         return [dict(row) for row in rows] if rows else []
     
-    def filterCompletedRequests(self, user_id, category_id, request_date1, request_date2):
+    def filterCompletedRequests(self, pin_user_id, category_id, request_date1, request_date2):
         conn = database_management.dbConnection()
         conn.row_factory = sqlite3.Row
         cursor = conn.cursor()
-        cursor.execute("""SELECT * FROM request WHERE user_id = ? AND category_id = ? AND request_status = true AND date(CASE WHEN request_date LIKE '____-__-__' THEN request_date WHEN request_date LIKE '__/__/____' THEN substr(request_date,7,4) || '-' ||substr(request_date,4,2) || '-' ||substr(request_date,1,2) ELSE NULL END)
-        BETWEEN date('?') AND date('?');""", (user_id, category_id, request_date1, request_date2))  ## the date params expects in 2025-11-10 format
+        cursor.execute("""SELECT * FROM request WHERE pin_user_id = ? AND category_id = ? AND request_status = true AND date(CASE WHEN request_date LIKE '____-__-__' THEN request_date WHEN request_date LIKE '__/__/____' THEN substr(request_date,7,4) || '-' ||substr(request_date,4,2) || '-' ||substr(request_date,1,2) ELSE NULL END)
+        BETWEEN date('?') AND date('?');""", (pin_user_id, category_id, request_date1, request_date2))  ## the date params expects in 2025-11-10 format
         rows = cursor.fetchall()
         conn.close()
         return [dict(row) for row in rows] if rows else []
     
-    def searchCompletedRequests(self,user_id,keyword):
+    def searchCompletedRequests(self,pin_user_id,keyword):
         conn = database_management.dbConnection()
         conn.row_factory = sqlite3.Row
         cursor = conn.cursor()
@@ -110,7 +110,7 @@ class Request:
         cursor.execute("""
         SELECT *
         FROM request
-        WHERE user_id = ? AND request_status = true
+        WHERE pin_user_id = ? AND request_status = true
         AND LOWER(
             COALESCE(CAST(request_id AS TEXT), '') || ' ' ||
             COALESCE(CAST(user_id AS TEXT), '') || ' ' ||
@@ -120,7 +120,7 @@ class Request:
             COALESCE(CAST(request_view_count AS TEXT), '') || ' ' ||
             COALESCE(CAST(request_shortlist_count AS TEXT), '')
         ) LIKE ?
-    """, (user_id,f"%{clean_keyword}%",))
+    """, (pin_user_id,f"%{clean_keyword}%",))
         rows = cursor.fetchall()
         conn.close()
         return [dict(row) for row in rows] if rows else []

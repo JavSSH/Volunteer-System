@@ -5,7 +5,7 @@ create table user (
 	role_id INT,
 	first_name VARCHAR(50),
 	last_name VARCHAR(50),
-	email VARCHAR(50),
+	email VARCHAR(50) UNIQUE,
 	password TEXT,
 	address VARCHAR(50),
 	phone INT,

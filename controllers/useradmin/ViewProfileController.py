@@ -4,6 +4,6 @@ class ViewProfileController:
     def __init__(self):
         pass
     
-    def viewProfile(self):
+    def ViewProfile(self):
         user_profile = UserProfile()
-        return user_profile.viewProfile()
+        return user_profile.ViewProfile()

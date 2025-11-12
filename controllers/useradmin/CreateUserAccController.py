@@ -4,9 +4,8 @@ class CreateUserAccController:
     def __init__(self):
         pass
 
-    def createUser(email, password, role_id, first_name, last_name, address, phone):
+    def createUser(self, role_id, email, password, first_name, last_name, address, phone):
         user_account = UserAccount(
-            user_id=None,
             role_id=role_id,
             email=email,
             password=password,
@@ -17,4 +16,5 @@ class CreateUserAccController:
             is_active=1,
             created_at=None
         )
-        return user_account.createUser(email, password, role_id, first_name, last_name, address, phone)
+
+        return user_account.createUser(role_id, email, password, first_name, last_name, address, phone)

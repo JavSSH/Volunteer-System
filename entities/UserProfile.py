@@ -17,7 +17,7 @@ class UserProfile:
         conn.close()
         return True 
     
-    def viewProfile(self):
+    def ViewProfile(self):
         conn = database_management.dbConnection()
         conn.row_factory = sqlite3.Row
         cursor = conn.cursor()

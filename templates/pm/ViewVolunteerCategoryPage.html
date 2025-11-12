@@ -10,10 +10,6 @@
         <!-- Create Entities -->
         <div class="d-flex align-items-center gap-3" style="margin-bottom: 25px;">
           <a href="{{ url_for('other_dashboard') }}" class="plain-btn">Create New Category</a>
-          <!-- <a href="{{ url_for('other_dashboard') }}" class="plain-btn">Create Profile</a>
-          <a href="{{ url_for('ViewProfilePage', user_id=session.get('user_id')) }}" class="plain-btn">
-            View User Profile
-          </a> -->
         </div>
       </div>
     </div>
@@ -22,7 +18,7 @@
     <!-- Search & Filters -->
   <form class="card mb-4" method="get" action="{{ url_for('viewVolunteerCategoryPage') }}">
   <div class="card-header">
-    <h5 class="m-0">Search</h5>
+    <h5 class="m-0"> Search</h5>
   </div>
   <div class="card-body row g-3">
     <div class="col-md-10">

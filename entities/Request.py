@@ -1,33 +1,18 @@
 from database import database_management
 import sqlite3
-<<<<<<< HEAD
 
 
 class Request:
     def __init__(self, request_id=None, user_id=None, category_id=None, request_status=None, request_date=None, request_view_count=None, request_shortlist_count=None, category_name=None, category_desc=None):
         self.request_id = request_id
         self.user_id = user_id
-=======
-import datetime
-import re
-
-class Request:
-    def __init__(self,request_id=None,pin_user_id=None,csrrep_user_id =None, category_id=None, request_status=None, request_date=None, request_view_count=None, request_shortlist_count=None):
-        self.request_id = request_id
-        self.pin_user__id = pin_user_id
-        self.csrrep_user_id = csrrep_user_id
->>>>>>> 02c289dc284db3ef334859a36513fde7d5f22b11
         self.category_id = category_id
         self.request_status = request_status
         self.request_date = request_date
         self.request_view_count = request_view_count
         self.request_shortlist_count = request_shortlist_count
-<<<<<<< HEAD
         self.category_name = category_name
         self.category_desc = category_desc
-=======
-    
->>>>>>> 02c289dc284db3ef334859a36513fde7d5f22b11
  
     def createRequest(self, user_id, category_id):
         conn = database_management.dbConnection()
@@ -37,20 +22,7 @@ class Request:
         conn.commit()
         request_id = cursor.lastrowid
         conn.close()
-<<<<<<< HEAD
         return True
-=======
-        return request_id
-    
-    def requestShortlist(self, pin_user_id):
-        conn = database_management.dbConnection()
-        conn.row_factory = sqlite3.Row
-        cursor = conn.cursor()
-        cursor.execute("SELECT request_id, request_status, request_date, request_shortlist_count FROM request WHERE pin_user_id = ? AND request_status = false", (pin_user_id,))
-        rows = cursor.fetchall()
-        conn.close()
-        return [dict(row) for row in rows] if rows else []
->>>>>>> 02c289dc284db3ef334859a36513fde7d5f22b11
     
     def viewRequests(self, user_id):
         conn = database_management.dbConnection()

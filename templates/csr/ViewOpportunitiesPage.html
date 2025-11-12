@@ -7,7 +7,6 @@
     <div class="d-flex justify-content-between align-items-center mb-3">
       <h1 class="m-0">Volunteer Opportunities Management</h1>
       <div class="d-flex gap-2 align-items-center mb-3">
-        <!-- Create Entities -->
         <div class="d-flex align-items-center gap-3" style="margin-bottom: 25px;">
           <a href="{{ url_for('other_dashboard') }}" class="plain-btn">Create New Opportunity</a>
         </div>
@@ -50,8 +49,7 @@
               <th style="width: 80px;">ID</th>
               <th>Name</th>
               <th style="width: 100%;">Description</th>
-              <th style="width: 120px;">Status</th>
-              <th style="width: 420px;">Actions</th>
+              <th style="width: 250px;">Actions</th>
             </tr>
           </thead>
           <tbody>
@@ -61,35 +59,12 @@
               <td>{{ opportunity.category_name }}</td>
               <td>{{ opportunity.category_desc }}</td>
               <td>
-                {% if opportunity.category_status == 1 %}
-                  <span class="badge bg-active">Active</span>
-                {% else %}
-                  <span class="badge bg-suspended">Suspended</span>
-                {% endif %}
-              </td>
-              <td>
-                <div class="btn-toolbar" role="toolbar">
-                  <div class="btn-group me-2">
-                    <a class="btn btn-primary btn-sm"
-                       href="{{ url_for('other_dashboard', category_id=opportunity.category_id) }}">
-                      <i class="bi bi-pencil"></i> Update
-                    </a>
-                  </div>
-                  <div class="btn-group me-2">
-                    {% if opportunity.category_status == 1 %}
-                      <form method="post" action="{{ url_for('other_dashboard', category_id=opportunity.category_id) }}">
-                        <button class="btn btn-warning btn-sm" type="submit">
-                          <i class="bi bi-pause-circle"></i> Suspend
-                        </button>
-                      </form>
-                    {% else %}
-                      <form method="post" action="{{ url_for('other_dashboard', category_id=opportunity.category_id) }}">
-                        <button class="btn btn-success btn-sm" type="submit">
-                          <i class="bi bi-play-circle"></i> Reactivate
-                        </button>
-                      </form>
-                    {% endif %}
-                  </div>
+                <div class="btn-toolbar" role="toolbar" style="gap: 10px; flex-wrap: wrap;">
+                  <!-- View Details only -->
+                  <a class="btn btn-info btn-sm"
+                     href="{{ url_for('viewOpportunityDetailsPage', category_id=opportunity.category_id) }}">
+                    <i class="bi bi-eye"></i> View Details
+                  </a>
                 </div>
               </td>
             </tr>
@@ -122,14 +97,12 @@
 </div>
 </div>
 
-<!-- Optional helper styles (can be moved to your CSS) -->
+<!-- Optional helper styles -->
 <style>
   .bg-user-admin{background:#4c6ef5}
   .bg-platform-manager{background:#2fb344}
   .bg-pin{background:#f59f00}
   .bg-csr-rep{background:#d6336c}
-  .bg-active{background:#198754}
-  .bg-suspended{background:#6c757d}
   .text-monospace{
     font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
   }

@@ -1,0 +1,83 @@
+{% extends "layout.html" %}
+{% block title %}Completed Requests{% endblock %}
+{% block content %}
+
+<div class="dashboard-wrapper">
+  <div class="dashboard-container">
+
+    <!-- Header -->
+    <div class="d-flex justify-content-between align-items-center mb-4">
+      <h1 class="m-0">Completed Requests</h1>
+      <div class="d-flex align-items-center gap-3">
+        <a href="{{ url_for('viewRequestsPage') }}" class="plain-btn">Back to All Requests</a>
+      </div>
+    </div>
+
+    <!-- Flash Messages -->
+    {% with messages = get_flashed_messages() %}
+      {% if messages %}
+        <div class="alert alert-warning" role="alert">
+          {% for msg in messages %}
+            {{ msg }}<br>
+          {% endfor %}
+        </div>
+      {% endif %}
+    {% endwith %}
+
+    <!-- Completed Requests Table -->
+    {% if not completed_requests %}
+      <div class="card">
+        <div class="card-body">
+          <p class="m-0">You don’t have any completed requests yet.</p>
+        </div>
+      </div>
+    {% else %}
+      <div class="card">
+        <div class="card-header d-flex justify-content-between align-items-center">
+          <h5 class="m-0">Completed Requests ({{ completed_requests|length }})</h5>
+        </div>
+
+        <div class="card-body p-0">
+          <div class="table-responsive">
+            <table class="table table-striped table-hover m-0 align-middle">
+              <thead class="table-light">
+                <tr>
+                  <th style="width: 90px;">ID</th>
+                  <th>Category</th>
+                  <th style="width: 160px;">Date</th>
+                  <th style="width: 120px;">Views</th>
+                  <th style="width: 140px;">Shortlists</th>
+                  <th style="width: 130px;">Status</th>
+                </tr>
+              </thead>
+              <tbody>
+                {% for r in completed_requests %}
+                <tr>
+                  <td class="text-monospace">{{ r.request_id }}</td>
+                  <td>Category {{ r.category_id }}</td>
+                  <td>{{ r.request_date }}</td>
+                  <td>{{ r.request_view_count }}</td>
+                  <td>{{ r.request_shortlist_count }}</td>
+                  <td><span class="badge bg-success">Completed</span></td>
+                </tr>
+                {% endfor %}
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+    {% endif %}
+  </div>
+</div>
+
+<style>
+  .text-monospace {
+    font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
+  }
+  .badge.bg-success {
+    background-color: #28a745;
+    color: white;
+  }
+</style>
+
+{% endblock %}

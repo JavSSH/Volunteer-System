@@ -29,8 +29,8 @@ class Opportunity:
             COALESCE(CAST(r.pin_user_id AS TEXT), '') || ' ' ||
             COALESCE(CAST(r.csrrep_user_id AS TEXT), '') || ' ' ||
             COALESCE(CAST(r.category_id AS TEXT), '') || ' ' ||
-            COALESCE(c.category_name, '') || ' ' ||
-            COALESCE(r.request_status, '') || ' ' ||
+            COALESCE(c.category_name , '') || ' ' ||
+            COALESCE(r.request_status , '') || ' ' ||
             COALESCE(CAST(r.request_date AS TEXT), '') || ' ' ||
             COALESCE(CAST(r.request_view_count AS TEXT), '') || ' ' ||
             COALESCE(CAST(r.request_shortlist_count AS TEXT), '')
@@ -39,16 +39,19 @@ class Opportunity:
         (f"%{clean_keyword}%",))
         rows = cursor.fetchall()
         conn.close()
-        return [Opportunity(**dict(row)) for row in rows] if rows else []
-    
+        print([dict(row) for row in rows] if rows else [])
+        return [dict(row) for row in rows] if rows else []
+        
+
+
     def viewOpportunitiesDetails(self):
         conn = database_management.dbConnection()
         conn.row_factory = sqlite3.Row
         cursor = conn.cursor()
-        cursor.execute("SELECT * FROM request")
+        cursor.execute("SELECT * FROM request JOIN category ON category.category_id = request.category_id")
         rows = cursor.fetchall()
         conn.close()
-        return [Opportunity(**dict(row)) for row in rows] if rows else []
+        return [dict(row) for row in rows] if rows else []
     
     def addToShortlist(self, request_id):
         conn = database_management.dbConnection()

@@ -9,10 +9,10 @@
     <div class="d-flex justify-content-between align-items-center mb-3">
       <h1 class="m-0">Requests</h1>
       <div class="d-flex align-items-center gap-3" style="margin-bottom: 25px;">
-        <a href="{{ url_for('createRequestPage') }}" class="plain-btn">Create New Request</a>
-        <a href="{{ url_for('viewCompletedRequestsPage', user_id=session.get('user_id')) }}" class="plain-btn">
+        {#<a href="{{ url_for('createRequestPage') }}" class="plain-btn">Create New Request</a>
+          <a href="{{ url_for('viewCompletedRequestsPage', user_id=session.get('user_id')) }}" class="plain-btn">
           View Completed
-        </a>
+        </a> #}
       </div>
     </div>
 
@@ -31,12 +31,13 @@
             <thead class="table-light">
               <tr>
                 <th style="width: 80px;">ID</th>
-                <th>Category</th>
+                <th style="width: 200px;">Category Name</th>
+                <th>Category Description</th>
                 <th style="width: 140px;">Status</th>
                 <th style="width: 160px;">Date</th>
-                <th style="width: 120px;">Views</th>
-                <th style="width: 140px;">Shortlists</th>
-                <th style="width: 200px;">Actions</th>
+                <th class="compact-column" style="width: 80px;">Views</th>
+                <th class="compact-column" style="width: 90px;">Shortlists</th>
+                <th style="width: 100px;">Actions</th>
               </tr>
             </thead>
             <tbody>
@@ -46,32 +47,40 @@
                 <td>
                   {% if r.category_name %}
                     {{ r.category_name }}
-                    {% if r.category_desc %}
-                      <div class="text-muted small">{{ r.category_desc }}</div>
-                    {% endif %}
                   {% elif category_map %}
-                    {{ category_map.get(r.category_id, 'Category ' ~ r.category_id) }}
+                    {{ category_map.get(r.category_id, {}).category_name if category_map.get(r.category_id) else 'Category ' ~ r.category_id }}
                   {% else %}
                     Category {{ r.category_id }}
                   {% endif %}
                 </td>
                 <td>
-                  {% if r.request_status in (1, True, '1', 'true', 'True') %}
-                    <span class="badge bg-completed">Completed</span>
+                  {% if r.category_desc %}
+                    <span class="text-muted">{{ r.category_desc }}</span>
+                  {% elif category_map and category_map.get(r.category_id) %}
+                    <span class="text-muted">{{ category_map.get(r.category_id).category_desc }}</span>
                   {% else %}
-                    <span class="badge bg-open">Open</span>
+                    <span class="text-muted">-</span>
                   {% endif %}
                 </td>
+                <td>
+                    <span class="badge bg-open">Open</span>
+                </td>
                 <td>{{ r.request_date }}</td>
-                <td>{{ r.request_view_count }}</td>
-                <td>{{ r.request_shortlist_count }}</td>
+                <td class="compact-column">{{ r.request_view_count }}</td>
+                <td class="compact-column">{{ r.request_shortlist_count }}</td>
                 <td>
                   <div class="btn-toolbar" role="toolbar">
-                    <div class="btn-group me-2">
-                      <a class="btn btn-outline-secondary btn-sm"
-                         href="{{ url_for('others_dashboard', request_id=r.request_id) }}">
-                        <i class="bi bi-eye"></i> View Details
+                    <div style="display: flex !important; flex-direction: row !important; gap: 0.5rem; align-items: center;">
+                      <!-- Update request -->
+                      <a class="btn btn-sm" href="{{ url_for('other_dashboard', request_id=r.request_id) }}" title="Edit request" style="width: 30px; height: 30px; padding: 0; display: flex; align-items: center; justify-content: center; cursor: pointer; background-color: white; border: 1px solid #dee2e6; border-radius: 5px !important;">
+                        <i class="bi bi-pencil-square" style="color: #0d6efd; font-size: 16px;"></i>
                       </a>
+                      <!-- Delete request -->
+                      <form method="post" action="{{ url_for('deleteRequestPage', request_id=r.request_id) }}" style="margin: 0; display: inline-block;">
+                        <button class="btn btn-sm" type="submit" title="Delete request" style="width: 30px; height: 30px; padding: 0; display: flex; align-items: center; justify-content: center; background-color: #dc3545; color: white; border: none; cursor: pointer; border-radius: 5px !important;">
+                          <i class="bi bi-trash3-fill" style="color: white; font-size: 16px;"></i>
+                        </button>
+                      </form>
                     </div>
                   </div>
                 </td>
@@ -79,6 +88,7 @@
               {% endfor %}
             </tbody>
           </table>
+
         </div>
       </div>
 
@@ -90,11 +100,11 @@
           <ul class="pagination m-0">
             <li class="page-item {{ 'disabled' if not pagination.prev_num }}">
               <a class="page-link"
-                 href="{{ url_for('viewRequestsPage', page=pagination.prev_num) }}">Prev</a>
+                 href="{{ url_for('viewRequestPage', page=pagination.prev_num) }}">Prev</a>
             </li>
             <li class="page-item {{ 'disabled' if not pagination.next_num }}">
               <a class="page-link"
-                 href="{{ url_for('viewRequestsPage', page=pagination.next_num) }}">Next</a>
+                 href="{{ url_for('viewRequestPage', page=pagination.next_num) }}">Next</a>
             </li>
           </ul>
         </nav>
@@ -107,8 +117,7 @@
 
 <!-- Optional helper styles -->
 <style>
-  .bg-open { background: #2575fc; color: #fff; }
-  .bg-completed { background: #198754; color: #fff; }
+  .bg-open { background: #198754; color: #fff; }
   .text-monospace { font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace; }
 </style>
 

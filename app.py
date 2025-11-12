@@ -12,11 +12,12 @@ from controllers.useradmin.ReactivateUserAccController import ReactivateUserAccC
 
 # Platform Manager Import Statements
 from controllers.pm.ViewVolunteerCategoryController import ViewVolunteerCategoryController
-# from controllers.pm.DeleteVolunteerCategoryController import DeleteVolunteerCategoryController
+from controllers.pm.DeleteVolunteerCategoryController import DeleteVolunteerCategoryController
 from controllers.pm.SearchVolunteerCategoryController import SearchVolunteerCategoryController
 
 # PIN Import Statements
 from controllers.pin.ViewRequestController import ViewRequestController
+from controllers.pin.DeleteRequestController import DeleteRequestController
 
 # CSR Rep Import Statements
 # from controllers.csrrep.XXXXX import XXXXController
@@ -58,7 +59,7 @@ def login():
             if current_user.role_id == 2:
                 return redirect(url_for('viewVolunteerCategoryPage'))
             if current_user.role_id == 3:
-                return redirect(url_for('viewRequestsPage'))
+                return redirect(url_for('viewRequestPage'))
             return redirect(url_for('other_dashboard'))
         else:
             flash("Incorrect email or password!")
@@ -203,8 +204,8 @@ def deleteVolunteerCategoryPage():
 
 # Person In Need (PIN) Routes
 
-@app.route("/ViewRequestsPage", methods=["GET"])
-def viewRequestsPage():
+@app.route("/ViewRequestPage", methods=["GET"])
+def viewRequestPage():
     # --- Access control ---
     if 'email' not in session:
         return redirect(url_for('login'))
@@ -212,9 +213,20 @@ def viewRequestsPage():
     if session['role_id'] != 3:
         return redirect(url_for('login'))
 
-    controller = ViewRequestController()
-    requests = controller.viewRequests()
-    return render_template("pin/ViewRequestPage.html",requests=requests)
+    view_controller = ViewRequestController(session['user_id'])
+    requests = view_controller.viewRequests(session['user_id'])
+    return render_template("pin/ViewRequestPage.html", requests=requests)
+
+@app.route("/DeleteRequestPage", methods=["GET", "POST"])
+def deleteRequestPage():
+    if 'email' not in session:
+        return redirect(url_for('login'))
+    if session['role_id'] != 3 and 'email' in session:
+        return redirect(url_for('login'))
+    request_id = request.args.get('request_id')
+    delete_controller = DeleteRequestController(request_id)
+    delete_controller.deleteRequest(request_id)
+    return redirect(url_for('viewRequestPage'))
 
 
 @app.route("/other_dashboard")

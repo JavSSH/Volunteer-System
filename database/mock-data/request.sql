@@ -2,7 +2,7 @@ PRAGMA foreign_keys = ON;
 
 create table request (
     request_id INTEGER PRIMARY KEY AUTOINCREMENT,
-    user_id INT,
+    user_id INT DEFAULT NULL, -- PIN that creates request
     category_id INT,
     request_status boolean,
     request_date datetime,
@@ -12,9 +12,9 @@ create table request (
     FOREIGN KEY (category_id) REFERENCES category(category_id)
 );
 
-insert into request (request_id, user_id, category_id, request_status, request_date, request_view_count, request_shortlist_count) values (1, 25, 54, false, '27/07/2025', 89, 66);
-insert into request (request_id, user_id, category_id, request_status, request_date, request_view_count, request_shortlist_count) values (2, 51, 36, false, '22/03/2025', 89, 95);
-insert into request (request_id, user_id, category_id, request_status, request_date, request_view_count, request_shortlist_count) values (3, 91, 1, false, '24/11/2024', 58, 52);
+insert into request (request_id, user_id, category_id, request_status, request_date, request_view_count, request_shortlist_count) values (1, 9, 54, false, '27/07/2025', 89, 66);
+insert into request (request_id, user_id, category_id, request_status, request_date, request_view_count, request_shortlist_count) values (2, 9, 36, false, '22/03/2025', 89, 95);
+insert into request (request_id, user_id, category_id, request_status, request_date, request_view_count, request_shortlist_count) values (3, 10, 1, false, '24/11/2024', 58, 52);
 insert into request (request_id, user_id, category_id, request_status, request_date, request_view_count, request_shortlist_count) values (4, 40, 1, true, '18/11/2024', 62, 83);
 insert into request (request_id, user_id, category_id, request_status, request_date, request_view_count, request_shortlist_count) values (5, 31, 71, false, '24/09/2025', 1, 20);
 insert into request (request_id, user_id, category_id, request_status, request_date, request_view_count, request_shortlist_count) values (6, 52, 95, true, '23/06/2025', 40, 12);
@@ -22,7 +22,7 @@ insert into request (request_id, user_id, category_id, request_status, request_d
 insert into request (request_id, user_id, category_id, request_status, request_date, request_view_count, request_shortlist_count) values (8, 51, 62, true, '11/09/2025', 60, 73);
 insert into request (request_id, user_id, category_id, request_status, request_date, request_view_count, request_shortlist_count) values (9, 37, 67, true, '09/10/2025', 12, 44);
 insert into request (request_id, user_id, category_id, request_status, request_date, request_view_count, request_shortlist_count) values (10, 36, 11, true, '25/12/2024', 95, 26);
-insert into request (request_id, user_id, category_id, request_status, request_date, request_view_count, request_shortlist_count) values (11, 46, 71, false, '28/06/2025', 86, 33);
+insert into request (request_id, user_id, category_id, request_status, request_date, request_view_count, request_shortlist_count) values (11, 9, 71, false, '28/06/2025', 86, 33);
 insert into request (request_id, user_id, category_id, request_status, request_date, request_view_count, request_shortlist_count) values (12, 48, 66, false, '30/11/2024', 31, 4);
 insert into request (request_id, user_id, category_id, request_status, request_date, request_view_count, request_shortlist_count) values (13, 28, 59, true, '19/02/2025', 82, 6);
 insert into request (request_id, user_id, category_id, request_status, request_date, request_view_count, request_shortlist_count) values (14, 93, 21, true, '12/05/2025', 79, 96);

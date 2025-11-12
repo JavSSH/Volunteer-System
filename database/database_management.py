@@ -9,11 +9,11 @@ def userProfileTableSetup():
     conn.row_factory = sqlite3.Row
     cursor = conn.cursor()
     cursor.execute("DROP TABLE IF EXISTS userprofile")
-    user_data = open("database/mock-data/userprofile.sql", "r")
-    user_sql = user_data.read()
-    user_data.close()
-    user_sql_cmds = user_sql.split(";")
-    for sql in user_sql_cmds:
+    profile_data = open("database/mock-data/userprofile.sql", "r")
+    profile_sql = profile_data.read()
+    profile_data.close()
+    profile_sql_cmds = profile_sql.split(";")
+    for sql in profile_sql_cmds:
         try:
             cursor.execute(sql)
         except Exception as err:
@@ -43,11 +43,11 @@ def categoryTableSetup():
     conn.row_factory = sqlite3.Row
     cursor = conn.cursor()
     cursor.execute("DROP TABLE IF EXISTS category")
-    user_data = open("database/mock-data/category.sql", "r")
-    user_sql = user_data.read()
-    user_data.close()
-    user_sql_cmds = user_sql.split(";")
-    for sql in user_sql_cmds:
+    category_data = open("database/mock-data/category.sql", "r")
+    category_sql = category_data.read()
+    category_data.close()
+    category_sql_cmds = category_sql.split(";")
+    for sql in category_sql_cmds:
         try:
             cursor.execute(sql)
         except Exception as err:
@@ -60,11 +60,11 @@ def requestTableSetup():
     conn.row_factory = sqlite3.Row
     cursor = conn.cursor()
     cursor.execute("DROP TABLE IF EXISTS request")
-    user_data = open("database/mock-data/request.sql", "r")
-    user_sql = user_data.read()
-    user_data.close()
-    user_sql_cmds = user_sql.split(";")
-    for sql in user_sql_cmds:
+    request_data = open("database/mock-data/request.sql", "r")
+    request_sql = request_data.read()
+    request_data.close()
+    request_sql_cmds = request_sql.split(";")
+    for sql in request_sql_cmds:
         try:
             cursor.execute(sql)
         except Exception as err:
@@ -72,6 +72,42 @@ def requestTableSetup():
     print("Request table has been created successfully!")
     conn.commit()
 
+def opportunityTableSetup():
+    conn = dbConnection()
+    conn.row_factory = sqlite3.Row
+    cursor = conn.cursor()
+    cursor.execute("DROP TABLE IF EXISTS opportunity")
+    opportunity_data = open("database/mock-data/opportunity.sql", "r")
+    opportunity_sql = opportunity_data.read()
+    opportunity_data.close()
+    opportunity_sql_cmds = opportunity_sql.split(";")
+    for sql in opportunity_sql_cmds:
+        try:
+            cursor.execute(sql)
+        except Exception as err:
+            print("Skipped: ", err)
+    print("Opportunity table has been created successfully!")
+    conn.commit()
+
+def shortlistTableSetup():
+    conn = dbConnection()
+    conn.row_factory = sqlite3.Row
+    cursor = conn.cursor()
+    cursor.execute("DROP TABLE IF EXISTS shortlist")
+    shortlist_data = open("database/mock-data/shortlist.sql", "r")
+    shortlist_sql = shortlist_data.read()
+    shortlist_data.close()
+    shortlist_sql_cmds = shortlist_sql.split(";")
+    for sql in shortlist_sql_cmds:
+        try:
+            cursor.execute(sql)
+        except Exception as err:
+            print("Skipped: ", err)
+    print("Shortlist table has been created successfully!")
+    conn.commit()
+
+
+# For Debugging Purposes
 def getUser(email, password):
     conn = dbConnection()
     conn.row_factory = sqlite3.Row
@@ -91,6 +127,8 @@ if __name__ == "__main__":
     userTableSetup()
     categoryTableSetup()
     requestTableSetup()
+    opportunityTableSetup()
+    shortlistTableSetup()
     print("\n\nAll tables have been created successfully!")
     print("\n")
     # print(getUser("latisha.brandle@volunteer.com", "password123")) # CSR Rep

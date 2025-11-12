@@ -223,7 +223,7 @@ input[type="submit"]:hover {
 
 .table th:first-child,
 .table td:first-child {
-  min-width: 60px;
+  min-width: 30px;
 }
 
 .table th:nth-child(2),
@@ -234,6 +234,11 @@ input[type="submit"]:hover {
 .table th:nth-child(3),
 .table td:nth-child(3) {
   min-width: 250px;
+}
+
+.table th.compact-column, 
+.table td.compact-column {
+    min-width: 50px !important;
 }
 
 /* ===== BADGE STYLES ===== */

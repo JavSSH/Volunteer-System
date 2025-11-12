@@ -53,7 +53,7 @@
                 <th style="width: 160px;">Role</th>
                 <th style="width: 120px;">Status</th>
                 <th style="width: 160px;">Created</th>
-                <th style="width: 420px;">Actions</th>
+                <th style="width: 100px;">Actions</th>
               </tr>
             </thead>
             <tbody>
@@ -83,24 +83,24 @@
                 <td>{{ user.created_at }}</td>
                 <td>
                   <div class="btn-toolbar" role="toolbar">
-                    <div class="btn-group me-2">
+                    <div style="display: flex; gap: 0.5rem; align-items: center;">
                       <!-- Update account -->
-                      <a class="btn btn-primary btn-sm" href="{{ url_for('other_dashboard', user_id=user.user_id) }}">
-                        <i class="bi bi-pencil"></i> Update
+                      <a class="btn btn-sm" href="{{ url_for('other_dashboard', user_id=user.user_id) }}" title="Edit User" style="width: 30px; height: 30px; padding: 0; display: flex; align-items: center; justify-content: center; cursor: pointer; background-color: white; border: 1px solid #dee2e6; border-radius: 5px !important;">
+                        <i class="bi bi-pencil-square" style="color: #0d6efd; font-size: 16px;"></i>
                       </a>
-                    </div>
-                    <div class="btn-group me-2">
-                      <!-- Suspend or Reactivate -->
+                      
                       {% if user.is_active == 1 %}
-                        <form method="post" action="{{ url_for('suspendUserAccountPage', user_id=user.user_id) }}">
-                          <button class="btn btn-warning btn-sm" type="submit">
-                            <i class="bi bi-pause-circle"></i> Suspend
+                        <!-- Suspend -->
+                        <form method="post" action="{{ url_for('suspendUserAccountPage', user_id=user.user_id) }}" style="display: inline-block; margin: 0;">
+                          <button class="btn btn-sm" type="submit" title="Suspend User" style="width: 30px; height: 30px; padding: 0; display: flex; align-items: center; justify-content: center; background-color: #dc3545; color: white; border: none; cursor: pointer; border-radius: 5px;">
+                            <i class="bi bi-x-circle" style="color: white; font-size: 16px;"></i>
                           </button>
                         </form>
                       {% else %}
-                        <form method="post" action="{{ url_for('reactivateUserAccountPage', user_id=user.user_id) }}">
-                          <button class="btn btn-success btn-sm" type="submit">
-                            <i class="bi bi-play-circle"></i> Reactivate
+                        <!-- Reactivate -->
+                        <form method="post" action="{{ url_for('reactivateUserAccountPage', user_id=user.user_id) }}" style="display: inline-block; margin: 0;">
+                          <button class="btn btn-sm" type="submit" title="Reactivate User" style="width: 30px; height: 30px; padding: 0; display: flex; align-items: center; justify-content: center; background-color: #198754; color: white; border: none; cursor: pointer; border-radius: 5px;">
+                            <i class="bi bi-check2-circle" style="color: white; font-size: 16px;"></i>
                           </button>
                         </form>
                       {% endif %}

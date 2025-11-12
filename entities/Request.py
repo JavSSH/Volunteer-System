@@ -1,19 +1,18 @@
 from database import database_management
 import sqlite3
-import datetime
-import re
+
 
 class Request:
-    def __init__(self,request_id=None,pin_user_id=None,csrrep_user_id =None, category_id=None, request_status=None, request_date=None, request_view_count=None, request_shortlist_count=None):
+    def __init__(self, request_id=None, user_id=None, category_id=None, request_status=None, request_date=None, request_view_count=None, request_shortlist_count=None, category_name=None, category_desc=None):
         self.request_id = request_id
-        self.pin_user__id = pin_user_id
-        self.csrrep_user_id = csrrep_user_id
+        self.user_id = user_id
         self.category_id = category_id
         self.request_status = request_status
         self.request_date = request_date
         self.request_view_count = request_view_count
         self.request_shortlist_count = request_shortlist_count
-    
+        self.category_name = category_name
+        self.category_desc = category_desc
  
     def createRequest(self, user_id, category_id):
         conn = database_management.dbConnection()
@@ -23,26 +22,21 @@ class Request:
         conn.commit()
         request_id = cursor.lastrowid
         conn.close()
-        return request_id
+        return True
     
-    def requestShortlist(self, pin_user_id):
+    def viewRequests(self, user_id):
         conn = database_management.dbConnection()
         conn.row_factory = sqlite3.Row
         cursor = conn.cursor()
-        cursor.execute("SELECT request_id, request_status, request_date, request_shortlist_count FROM request WHERE pin_user_id = ? AND request_status = false", (pin_user_id,))
+        cursor.execute("""
+            SELECT r.*, c.category_name, c.category_desc
+            FROM request r
+            LEFT JOIN category c ON r.category_id = c.category_id
+            WHERE r.user_id = ? AND r.request_status = 0
+        """, (user_id,))
         rows = cursor.fetchall()
         conn.close()
-        return [dict(row) for row in rows] if rows else []
-    
-    def viewRequests(self):
-        conn = database_management.dbConnection()
-        conn.row_factory = sqlite3.Row
-        cursor = conn.cursor()
-        cursor.execute("SELECT * FROM request")
-        rows = cursor.fetchall()
-        conn.close()
-        return [dict(row) for row in rows] if rows else []
-    
+        return [Request(**dict(row)) for row in rows] if rows else []
 
     def updateRequest(self, category_id, request_id):
         conn = database_management.dbConnection()
@@ -90,7 +84,7 @@ class Request:
         cursor.execute("SELECT * FROM request WHERE pin_user_id = ? AND request_status = true", (pin_user_id,))
         rows = cursor.fetchall()
         conn.close()
-        return [dict(row) for row in rows] if rows else []
+        return [Request(**dict(row)) for row in rows] if rows else []
     
     def filterCompletedRequests(self, pin_user_id, category_id, request_date1, request_date2):
         conn = database_management.dbConnection()
@@ -124,3 +118,14 @@ class Request:
         rows = cursor.fetchall()
         conn.close()
         return [dict(row) for row in rows] if rows else []
+    
+    def __str__(self):
+        return (f"Request(\n"
+                f"  request_id={self.user_id},\n"
+                f"  user_id={self.user_id},\n"
+                f"  category_id={self.category_id},\n"
+                f"  request_status={self.request_status},\n"
+                f"  request_date={self.request_date},\n"
+                f"  request_view_count={self.request_view_count},\n"
+                f"  request_shortlist_count={self.request_shortlist_count}\n"
+                f")")

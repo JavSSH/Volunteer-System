@@ -80,9 +80,7 @@ class UserAccount:
 
         conn.commit()
         conn.close()
-        return True  # User created successfully
-
-        
+        return True  # User created successfully    
 
     def viewUser(self):
         conn = database_management.dbConnection()
@@ -93,15 +91,33 @@ class UserAccount:
         conn.close()
         return [UserAccount(**dict(row)) for row in rows] if rows else []
     
-
-    def updateUser(self, user_id, email, password, role_id, first_name, last_name, address, phone, is_active):
+    def updateUser(self, user_id, email, password, role_id, first_name, last_name, address, phone):
         conn = database_management.dbConnection()
         conn.row_factory = sqlite3.Row
         cursor = conn.cursor()
-        cursor.execute("UPDATE user SET email = ?, password = ?, role_id = ?, first_name = ?, last_name = ?, address = ?, phone = ?, is_active = ? WHERE user_id = ?", (email, password, role_id, first_name, last_name, address, phone, is_active, user_id))
+
+        # Check if email already exists for a different user
+        cursor.execute("SELECT user_id FROM user WHERE email = ? AND user_id != ?", (email, user_id))
+        existing_user = cursor.fetchone()
+        if existing_user:
+            conn.close()
+            return False  # Email already exists for another user
+
+        # Update password only if provided; otherwise keep existing password
+        if password:
+            cursor.execute("""
+                UPDATE user SET email = ?, password = ?, role_id = ?, first_name = ?, last_name = ?, address = ?, phone = ? WHERE user_id = ?
+            """, (email, password, role_id, first_name, last_name, address, phone, user_id))
+        else:
+            # Exclude password if not changed
+            cursor.execute("""
+                UPDATE user SET email = ?, role_id = ?, first_name = ?, last_name = ?, address = ?, phone = ? WHERE user_id = ?
+            """, (email, role_id, first_name, last_name, address, phone, user_id))
+
         conn.commit()
         conn.close()
-        return True   
+        return True
+
 
     def suspendUser(self, user_id):
         conn = database_management.dbConnection()
@@ -125,8 +141,6 @@ class UserAccount:
         conn = database_management.dbConnection()
         conn.row_factory = sqlite3.Row
         cursor = conn.cursor()
-        # cursor.execute("SELECT * FROM user WHERE first_name LIKE ? OR last_name LIKE ? OR email LIKE ? OR CAST(user_id AS TEXT) LIKE ?", 
-        #        ('%' + search_term + '%', '%' + search_term + '%', '%' + search_term + '%', '%' + search_term + '%'))
         clean_term = re.sub(r'[^a-zA-Z0-9 ]', '', keyword).strip().lower()
         cursor.execute("""
             SELECT user_id, role_id, email, password, first_name, last_name, 
@@ -149,6 +163,17 @@ class UserAccount:
         rows = cursor.fetchall()
         conn.close()
         return [UserAccount(**dict(row)) for row in rows] if rows else []
+    
+    def getUserById(self, user_id):
+        conn = database_management.dbConnection()
+        conn.row_factory = sqlite3.Row
+        cursor = conn.cursor()
+
+        cursor.execute("SELECT * FROM user WHERE user_id = ?", (user_id,))
+        user = cursor.fetchone()
+        conn.close()
+
+        return user  # This returns a Row object or None if not found
     
     def __str__(self):
         return (f"UserAccount(\n"

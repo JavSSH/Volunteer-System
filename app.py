@@ -42,6 +42,8 @@ def login():
             return redirect(url_for('viewUserAccountPage'))
         if session['role_id'] == 2:
             return redirect(url_for('viewVolunteerCategoryPage'))
+        if session['role_id'] == 3:
+            return redirect(url_for('viewRequestsPage'))
         else:
             return redirect(url_for('other_dashboard'))
     # Check if user credentials are valid
@@ -59,6 +61,8 @@ def login():
                 return redirect(url_for('viewVolunteerCategoryPage'))
             if current_user.role_id == 3:
                 return redirect(url_for('viewRequestsPage'))
+            if current_user.role_id == 3:
+                return redirect(url_for('viewOpportunitiesPage'))
             return redirect(url_for('other_dashboard'))
         else:
             flash("Incorrect email or password!")
@@ -214,7 +218,19 @@ def viewRequestsPage():
 
     controller = ViewRequestController()
     requests = controller.viewRequests()
-    return render_template("pin/ViewRequestPage.html",requests=requests)
+    return render_template("pin/ViewRequestsPage.html",requests=requests)
+
+@app.route("/ViewOpportunitiesPage", methods=["GET"])
+def viewOpportunitiesPage():
+    if 'email' not in session:
+        return redirect(url_for('login'))
+    if session['role_id'] != 4:  # Assuming CSR Rep
+        return redirect(url_for('login'))
+
+    controller = ViewVolunteerCategoryController()
+    opportunities = controller.viewVolunteerCategory()
+
+    return render_template("csr/ViewOpportunitiesPage.html", opportunities=opportunities)
 
 
 @app.route("/other_dashboard")

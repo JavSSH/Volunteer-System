@@ -1,4 +1,4 @@
-from entities.UserAccount import UserAccount   
+from entities.UserAccount import UserProfile
 
 class SuspendProfileController:
     def __init__(self):

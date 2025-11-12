@@ -10,18 +10,23 @@ class CsrRep:
         clean_keyword = re.sub(r'[^a-zA-Z0-9 ]', '', keyword).strip().lower()
         # cursor.execute("SELECT * FROM user WHERE first_name LIKE ? OR last_name LIKE ? OR email LIKE ? OR phone LIKE ?", ('%' + keyword + '%', '%' + keyword + '%', '%' + keyword + '%', '%' + keyword + '%'))
         cursor.execute("""
-            SELECT *,
-            FROM category
-            WHERE LOWER(category_name) LIKE ?
-               OR LOWER(category_desc) LIKE ?
-               OR LOWER(category_status) LIKE ?
-               OR LOWER(category_name|| ' ' || category_status) LIKE ?
-        """, (
-            f"%{clean_keyword}%",
-            f"%{clean_keyword}%",
-            f"%{clean_keyword}%",
-            f"%{clean_keyword}%",
-        ))
+        SELECT *
+        FROM request AS r
+        JOIN category AS c
+        ON c.category_id = r.category_id
+        WHERE LOWER(
+            COALESCE(CAST(r.request_id AS TEXT), '') || ' ' ||
+            COALESCE(CAST(r.user_id AS TEXT), '') || ' ' ||
+            COALESCE(CAST(r.category_id AS TEXT), '') || ' ' ||
+            COALESCE(c.category_name, '') || ' ' ||
+            COALESCE(r.request_status, '') || ' ' ||
+            COALESCE(CAST(r.request_date AS TEXT), '') || ' ' ||
+            COALESCE(CAST(r.request_view_count AS TEXT), '') || ' ' ||
+            COALESCE(CAST(r.request_shortlist_count AS TEXT), '')
+        ) LIKE ?
+        """,
+        (f"%{clean_keyword}%",)
+)
         rows = cursor.fetchall()
         conn.close()
         return [dict(row) for row in rows] if rows else []
@@ -30,7 +35,10 @@ class CsrRep:
         conn = database_management.dbConnection()
         conn.row_factory = sqlite3.Row
         cursor = conn.cursor()
-        cursor.execute("SELECT * FROM category" )
+        cursor.execute("""SELECT *
+        FROM request AS r
+        JOIN category AS c
+        ON c.category_id = r.category_id""")
         rows = cursor.fetchall()
         conn.close()
         return [dict(row) for row in rows] if rows else []

@@ -18,7 +18,9 @@ from controllers.useradmin.ReactivateProfileController import ReactivateProfileC
 from controllers.useradmin.SearchProfileController import SearchProfileController
 
 # Platform Manager Import Statements
+from controllers.pm.CreateVolunteerCategoryController import CreateVolunteerCategoryController
 from controllers.pm.ViewVolunteerCategoryController import ViewVolunteerCategoryController
+from controllers.pm.UpdateVolunteerCategoryController import UpdateVolunteerCategoryController
 from controllers.pm.DeleteVolunteerCategoryController import DeleteVolunteerCategoryController
 from controllers.pm.SearchVolunteerCategoryController import SearchVolunteerCategoryController
 
@@ -344,6 +346,40 @@ def reactivateProfilePage():
        
 
 # Platform Manager Routes
+@app.route("/CreateVolunteerCategoryPage", methods=["GET", "POST"])
+def createVolunteerCategoryPage():
+    if 'email' not in session:
+        return redirect(url_for('login'))
+    if session['role_id'] != 2:
+        return redirect(url_for('login'))
+
+    if request.method == "GET":
+        return render_template("pm/CreateVolunteerCategoryPage.html")
+
+    category_name = request.form.get("category_name", "").strip()
+    category_desc = request.form.get("category_desc", "").strip()
+
+    if not (category_name and category_desc):
+        flash("Please fill in all required fields.", "error")
+        return redirect(url_for("createVolunteerCategoryPage"))
+
+    try:
+        create_controller = CreateVolunteerCategoryController()
+        result = create_controller.createVolunteerCategory(
+            category_name=category_name,
+            category_desc=category_desc
+        )
+
+        if result:
+            flash("Volunteer Category Created!", "success")
+            return redirect(url_for("viewVolunteerCategoryPage"))
+        else:
+            flash("Category name already exists. Please use a different name.", "error")
+            return redirect(url_for("createVolunteerCategoryPage"))
+
+    except Exception as e:
+        flash(f"An error occurred: {str(e)}", "error")
+        return redirect(url_for("createVolunteerCategoryPage"))
 
 @app.route("/ViewVolunteerCategoryPage", methods=["GET"])
 def viewVolunteerCategoryPage():
@@ -360,6 +396,48 @@ def viewVolunteerCategoryPage():
     else:
         all_categories = search_controller.searchVolunteerCategory(category_keyword)
     return render_template("pm/ViewVolunteerCategoryPage.html", categories=all_categories, category_keyword=category_keyword)
+
+@app.route("/UpdateVolunteerCategoryPage/<int:category_id>", methods=["GET", "POST"])
+def updateVolunteerCategoryPage(category_id):
+    if 'email' not in session:
+        return redirect(url_for('login'))
+    if session['role_id'] != 2:
+        return redirect(url_for('login'))
+
+    update_controller = UpdateVolunteerCategoryController()
+
+    if request.method == "GET":
+        category = update_controller.getCategoryById(category_id)
+        if not category:
+            flash("Category not found", "error")
+            return redirect(url_for("viewVolunteerCategoryPage"))
+        return render_template("pm/UpdateVolunteerCategoryPage.html", category=category)
+
+    # POST: get form data
+    category_name = request.form.get("category_name", "").strip()
+    category_desc = request.form.get("category_desc", "").strip()
+
+    if not (category_name and category_desc):
+        flash("Please fill in all required fields.", "error")
+        return redirect(url_for("updateVolunteerCategoryPage", category_id=category_id))
+
+    try:
+        result = update_controller.updateVolunteerCategory(
+            category_id=category_id,
+            category_name=category_name,
+            category_desc=category_desc
+        )
+
+        if result:
+            flash("Volunteer Category Updated!", "success")
+            return redirect(url_for("viewVolunteerCategoryPage"))
+        else:
+            flash("Category name already exists. Please use a different name.", "error")
+            return redirect(url_for("updateVolunteerCategoryPage", category_id=category_id))
+
+    except Exception as e:
+        flash(f"An error occurred: {str(e)}", "error")
+        return redirect(url_for("updateVolunteerCategoryPage", category_id=category_id))
 
 @app.route("/DeleteVolunteerCategoryPage", methods=["GET", "POST"])
 def deleteVolunteerCategoryPage():
@@ -430,9 +508,9 @@ if __name__ == '__main__':
 ''' 
 Example Login Credentials
 
-latisha.brandle@volunteer.com  password123)) # CSR Rep
-rhonda.bonnet@volunteer.com    password123)) # PM
+latisha.brandle@volunteer.com  password123)) # CSR Rep (4)
+rhonda.bonnet@volunteer.com    password123)) # PM (2)
 kirsteni.demcik@volunteer.com  password123)) # PIN
-bambi.berkely@volunteer.com  password123)) # PIN (active)
-lawton.korfmann@volunteer.com  password123)) # UserAdmin
+bambi.berkely@volunteer.com  password123)) # PIN (active) (3)
+lawton.korfmann@volunteer.com  password123)) # UserAdmin (1)
 '''

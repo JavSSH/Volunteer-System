@@ -16,6 +16,9 @@ from controllers.useradmin.ReactivateProfileController import ReactivateProfileC
 from controllers.pm.ViewVolunteerCategoryController import ViewVolunteerCategoryController
 from controllers.pm.DeleteVolunteerCategoryController import DeleteVolunteerCategoryController
 from controllers.pm.SearchVolunteerCategoryController import SearchVolunteerCategoryController
+from controllers.pm.GenerateDailyReportController import GenerateDailyReportController
+from controllers.pm.GenerateWeeklyReportController import GenerateWeeklyReportController
+from controllers.pm.GenerateMonthlyReportController import GenerateMonthlyReportController
 
 # PIN Import Statements
 from controllers.pin.ViewRequestController import ViewRequestController
@@ -232,6 +235,60 @@ def deleteVolunteerCategoryPage():
     delete_controller.deleteVolunteerCategory(category_id)
     return redirect(url_for('viewVolunteerCategoryPage'))
     
+@app.route("/ReportManagementPage", methods=["GET"])
+def reportManagementPage():
+    # --- Access control (PM only) ---
+    if 'email' not in session:
+        return redirect(url_for('login'))
+    if session.get('role_id') != 2:   # 2 == Platform Manager
+        return redirect(url_for('login'))
+
+    # read filters from query string
+    period       = (request.args.get("report_period") or "").strip()     # daily | weekly | monthly
+    report_date  = (request.args.get("report_date") or "").strip()       # YYYY-MM-DD (daily / weekly)
+    report_month = (request.args.get("report_month") or "").strip()      # YYYY-MM (monthly)
+    limit        = request.args.get("limit", type=int)
+
+    report_data = []
+    error = None
+
+    try:
+        if period == "daily":
+            if not report_date:
+                error = "Please choose a date for the daily report."
+            else:
+                report_data = GenerateDailyReportController.generateDailyReport(report_date, limit)
+
+        elif period == "weekly":
+            if not report_date:
+                error = "Please choose a start date for the weekly report."
+            else:
+                report_data = GenerateWeeklyReportController.generateWeeklyReport(report_date, limit)
+
+        elif period == "monthly":
+            if not report_month:
+                error = "Please choose a month in YYYY-MM for the monthly report."
+            else:
+                report_data = GenerateMonthlyReportController.generateMonthlyReport(report_month, limit)
+
+        elif period:  # invalid string passed
+            error = "Invalid period. Use daily, weekly, or monthly."
+
+    except Exception as e:
+        error = f"Error generating report: {e}"
+
+    if error:
+        flash(error)
+
+    # Render the management page (shows empty state if no params yet)
+    return render_template(
+        "pm/ReportManagementPage.html",
+        report_data=report_data,
+        report_period=period,
+        report_date=report_date,
+        report_month=report_month,
+        limit=limit
+    )
 
 # Person In Need (PIN) Routes
 

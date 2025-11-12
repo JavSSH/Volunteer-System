@@ -39,7 +39,11 @@ class UserProfile:
         conn = database_management.dbConnection()
         conn.row_factory = sqlite3.Row
         cursor = conn.cursor()
-        cursor.execute("UPDATE userprofile SET status = 'false' WHERE role_id = ?", (role_id,))
+        if role_id == '1' or role_id == '2':
+            print("HELLO EXECUETD")
+            conn.close()
+            return False
+        cursor.execute("UPDATE userprofile SET status = false WHERE role_id = ?", (role_id,))
         conn.commit()
         conn.close()
         return True
@@ -48,7 +52,7 @@ class UserProfile:
         conn = database_management.dbConnection()
         conn.row_factory = sqlite3.Row
         cursor = conn.cursor()
-        cursor.execute("UPDATE user SET status = 'true' WHERE role_id = ?", (role_id,))
+        cursor.execute("UPDATE userprofile SET status = true WHERE role_id = ?", (role_id,))
         conn.commit()
         conn.close()
         return True

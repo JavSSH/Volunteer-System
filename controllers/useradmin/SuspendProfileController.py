@@ -1,4 +1,4 @@
-from entities.UserAccount import UserProfile
+from entities.UserProfile import UserProfile
 
 class SuspendProfileController:
     def __init__(self):
@@ -6,15 +6,9 @@ class SuspendProfileController:
     
     def suspendProfile(self, role_id):
         user_profile = UserProfile(
-            user_id=user_id,
-            role_id=None,
-            email=None,
-            password=None,
-            first_name=None,
-            last_name=None,
-            address=None,
-            phone_no=None,
-            is_active=None,
-            created_at=None
+            role_id=role_id,
+            role_name=None,
+            description=None,
+            status=None
         )
-        return user_account.suspendUser(user_id)
+        return user_profile.suspendProfile(role_id)

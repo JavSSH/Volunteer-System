@@ -58,11 +58,11 @@
             Update Profile
           </a>
           {% if profile.status == 1 %}
-            <form method="post" action="{{ url_for('suspendProfilePage', user_id=profile.user_id) }}">
+            <form method="post" action="{{ url_for('suspendProfilePage', role_id=profile.role_id) }}">
               <button type="submit" class="plain-btn">Suspend</button>
             </form>
           {% else %}
-            <form method="post" action="{{ url_for('reactivateProfilePage', user_id=profile.user_id) }}">
+            <form method="post" action="{{ url_for('reactivateProfilePage', role_id=profile.role_id) }}">
               <button type="submit" class="plain-btn">Reactivate</button>
             </form>
           {% endif %}

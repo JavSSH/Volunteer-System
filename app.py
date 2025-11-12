@@ -184,18 +184,20 @@ def suspendProfilePage():
     if session['role_id'] != 1 and 'email' in session:
         return redirect(url_for('login'))
     role_id = request.args.get('role_id')
-    suspend_controller = SuspendProfileController(role_id)
-    suspend_controller.suspendProfile(role_id)
+    suspend_controller = SuspendProfileController()
+    suspend_result = suspend_controller.suspendProfile(role_id)
+    if not suspend_result:
+        flash("Can't suspend User Admin or Platform Manager!", "error")
     return redirect(url_for('viewProfilePage'))
 
-@app.route("/ReactivateUserAccountPage", methods=["GET", "POST"])
+@app.route("/ReactivateProfilePage", methods=["GET", "POST"])
 def reactivateProfilePage():
     if 'email' not in session:
         return redirect(url_for('login'))
     if session['role_id'] != 1 and 'email' in session:
         return redirect(url_for('login'))
     role_id = request.args.get('role_id')
-    reactivate_controller = ReactivateProfileController(role_id)
+    reactivate_controller = ReactivateProfileController()
     reactivate_controller.reactivateProfile(role_id)
     return redirect(url_for('viewProfilePage'))
        

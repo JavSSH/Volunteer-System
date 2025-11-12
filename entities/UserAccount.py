@@ -59,7 +59,11 @@ class UserAccount:
             return False  # Email already exists
         
         # Email doesn't exist already, proceed with creation
+<<<<<<< HEAD
         created_at = datetime.now().strftime('%d/%m/%Y')
+=======
+        created_at = datetime.now().strftime('%d/%m/%y')
+>>>>>>> 7eb6b1914281182753240c513398ed065715934a
         
         cursor.execute("""
             INSERT INTO user (

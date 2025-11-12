@@ -7,13 +7,15 @@ from controllers.useradmin.ViewUserAccController import ViewUserAccController
 from controllers.useradmin.SearchUserAccController import SearchUserAccController
 from controllers.useradmin.ViewProfileController import ViewProfileController
 from controllers.useradmin.CreateUserAccController import CreateUserAccController
+
 # Platform Manager Import Statements
 from controllers.pm.ViewVolunteerCategoryController import ViewVolunteerCategoryController
+from controllers.pm.DeleteVolunteerCategoryController import DeleteVolunteerCategoryController
 from controllers.pm.SearchVolunteerCategoryController import SearchVolunteerCategoryController
 
 # PIN Import Statements
-# from controllers.pin.XXXXX import XXXXXController
 from controllers.pin.ViewRequestController import ViewRequestController
+
 # CSR Rep Import Statements
 # from controllers.csrrep.XXXXX import XXXXController
 
@@ -26,6 +28,9 @@ app.secret_key = 'abcedefg'  # Needed for flashing messages
 @app.route("/")
 def index():
     return redirect(url_for("login"))
+
+
+# User Account Routes
 
 @app.route("/login", methods=['GET', 'POST'], strict_slashes=False)
 def login():
@@ -138,6 +143,9 @@ def createUserAccountPage():
         flash(f"An error occurred: {str(e)}")
         return redirect(url_for("createUserAccountPage"))
        
+
+# Platform Manager Routes
+
 @app.route("/ViewVolunteerCategoryPage", methods=["GET"])
 def viewVolunteerCategoryPage():
     if 'email' not in session:
@@ -153,6 +161,21 @@ def viewVolunteerCategoryPage():
     else:
         all_categories = search_controller.searchVolunteerCategory(category_keyword)
     return render_template("pm/ViewVolunteerCategoryPage.html", categories=all_categories, category_keyword=category_keyword)
+
+@app.route("/DeleteVolunteerCategoryPage", methods=["GET", "POST"])
+def deleteVolunteerCategoryPage():
+    if 'email' not in session:
+        return redirect(url_for('login'))
+    if session['role_id'] != 2 and 'email' in session:
+        return redirect(url_for('login'))
+    category_id = request.args.get('category_id')
+    delete_controller = DeleteVolunteerCategoryController(category_id)
+    print(category_id)
+    delete_controller.deleteVolunteerCategory(category_id)
+    return redirect(url_for('viewVolunteerCategoryPage'))
+    
+
+# Person In Need (PIN) Routes
 
 @app.route("/ViewRequestsPage", methods=["GET"])
 def viewRequestsPage():

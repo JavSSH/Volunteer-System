@@ -1,10 +1,10 @@
 from entities.UserAccount import UserAccount
 
-class SuspendUserAccController:
+class ReactivateUserAccController:
     def __init__(self,user_id):
         self.user_id = user_id
     
-    def suspendUser(self,user_id):
+    def reactivateUser(self,user_id):
         user_account = UserAccount(
             user_id=user_id,
             role_id=None,
@@ -17,4 +17,4 @@ class SuspendUserAccController:
             is_active=None,
             created_at=None
         )
-        return user_account.suspendUser(user_id)
+        return user_account.reactivateUser(user_id)

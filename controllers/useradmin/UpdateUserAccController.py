@@ -1,6 +1,10 @@
 from entities.UserAccount import UserAccount
 
 class UpdateUserAccController:
+    def __init__(self):
+        pass
+    
+
     def updateUser(user_id, email, password, role_id, first_name, last_name, address, phone, is_active):
         user_account = UserAccount(
             user_id=user_id,

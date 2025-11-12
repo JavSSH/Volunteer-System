@@ -1,6 +1,9 @@
 from entities.UserAccount import UserAccount
 
 class CreateUserAccController:
+    def __init__(self):
+        pass
+
     def createUser(email, password, role_id, first_name, last_name, address, phone):
         user_account = UserAccount(
             user_id=None,

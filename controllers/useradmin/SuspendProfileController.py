@@ -1,7 +1,9 @@
 from entities.UserAccount import UserAccount   
 
 class SuspendProfileController:
-    @staticmethod
+    def __init__(self):
+        pass
+    
     def suspendProfile(user_id, is_active):
         user_account = UserAccount(
             user_id=user_id,

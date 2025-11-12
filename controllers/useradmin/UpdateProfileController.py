@@ -4,11 +4,14 @@ class UpdateProfileController:
     def __init__(self):
         pass
     
-    def updateProfile(user_id, role_id, description, status):
+    def getProfileById(self, user_id):
+        profile = UserProfile()
+        return profile.getProfileById(user_id)
+
+    def updateProfile(self, role_id, role_name, description):
         user_profile = UserProfile(
-            user_id=user_id,
             role_id=role_id,
+            role_name=role_name,
             description=description,
-            status=status,
         )
-        return user_profile.updateProfile(user_id, role_id, description, status)
+        return user_profile.updateProfile(role_id, role_name, description)

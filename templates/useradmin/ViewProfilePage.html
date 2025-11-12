@@ -4,16 +4,33 @@
 
 <div class="dashboard-wrapper">
   <div class="dashboard-container">
-    <div class="d-flex justify-content-between align-items-center mb-4" style="margin-bottom: 25px;">
+    <div class="d-flex justify-content-between align-items-center mb-4">
       <h1 class="m-0">View User Profile</h1>
 
       <div class="d-flex gap-2">
-        <a href="{{ url_for('other_dashboard') }}" class="plain-btn">Create Profile</a>
+        <a href="{{ url_for('createProfilePage') }}" class="plain-btn">Create Profile</a>
         <a href="{{ url_for('viewUserAccountPage') }}" class="plain-btn">Back to User Management</a>
       </div>
     </div>
 
+    <!-- Search & Filters -->
+    <form class="card mb-4" method="get" action="{{ url_for('viewProfilePage') }}">
+      <div class="card-header">
+        <h5 class="m-0">Search</h5>
+      </div>
+      <div class="card-body row g-3">
+        <div class="col-md-10">
+          <label class="form-label">Search profiles</label>
+          <input id="profileKeywordInput" name="profile_keyword" value="{{ request.args.get('profile_keyword','') }}" type="text" class="form-control" placeholder="Enter a role name, role ID, or description">
+        </div>
+        <div class="col-md-2 d-flex align-items-end">
+          <button class="plain-btn" type="submit"><i class="bi bi-search"></i> Search</button>
+        </div>
+      </div>
+    </form>
+
     {% if profiles %}
+      <h5 class="mb-3">All Profiles ({{ profiles|length }})</h5>
       {% for profile in profiles %}
       <div class="card mb-4">
         <div class="card-header">
@@ -54,15 +71,15 @@
 
         <!-- Action buttons -->
         <div class="card-footer d-flex justify-content-end gap-2">
-          <a href="{{ url_for('other_dashboard', user_id=profile.user_id) }}" class="plain-btn">
+          <a href="{{ url_for('updateProfilePage', role_id=profile.role_id) }}" class="plain-btn">
             Update Profile
           </a>
           {% if profile.status == 1 %}
-            <form method="post" action="{{ url_for('suspendProfilePage', role_id=profile.role_id) }}">
+            <form method="post" action="{{ url_for('suspendProfilePage', role_id=profile.role_id) }}" style="display: inline-block; margin: 0;">
               <button type="submit" class="plain-btn">Suspend</button>
             </form>
           {% else %}
-            <form method="post" action="{{ url_for('reactivateProfilePage', role_id=profile.role_id) }}">
+            <form method="post" action="{{ url_for('reactivateProfilePage', role_id=profile.role_id) }}" style="display: inline-block; margin: 0;">
               <button type="submit" class="plain-btn">Reactivate</button>
             </form>
           {% endif %}
@@ -72,11 +89,24 @@
       {% endfor %}
     {% else %}
       <div class="alert alert-warning text-center mt-5">
-        No profile found for this user.
+        No profile found matching your search.
       </div>
     {% endif %}
 
   </div>
 </div>
+
+<script>
+  // Auto-submit when search field is cleared
+  document.getElementById('profileKeywordInput').addEventListener('input', function(e) {
+    const keyword = this.value.trim().toLowerCase();
+    
+    if (keyword === '') {
+      setTimeout(() => {
+        document.querySelector('form').submit();
+      }, 200);
+    }
+  });
+</script>
 
 {% endblock %}

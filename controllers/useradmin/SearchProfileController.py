@@ -2,14 +2,7 @@ from entities.UserProfile import UserProfile
 
 class SearchProfileController:
     def __init__(self):
-        pass
+        self.user_profile = UserProfile()
     
-    def searchProfile(keyword):
-        user_profile = UserProfile(
-            profile_id=None,
-            user_id=None,
-            role_id=None,
-            description=None,
-            status=None,
-        )
-        return user_profile.searchProfile(keyword)
+    def searchProfile(self, keyword):
+        return self.user_profile.searchProfile(keyword)

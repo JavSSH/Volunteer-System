@@ -7,10 +7,12 @@ from controllers.useradmin.ViewUserAccController import ViewUserAccController
 from controllers.useradmin.SearchUserAccController import SearchUserAccController
 from controllers.useradmin.ViewProfileController import ViewProfileController
 from controllers.useradmin.CreateUserAccController import CreateUserAccController
+from controllers.useradmin.SuspendUserAccController import SuspendUserAccController
+from controllers.useradmin.ReactivateUserAccController import ReactivateUserAccController
 
 # Platform Manager Import Statements
 from controllers.pm.ViewVolunteerCategoryController import ViewVolunteerCategoryController
-from controllers.pm.DeleteVolunteerCategoryController import DeleteVolunteerCategoryController
+# from controllers.pm.DeleteVolunteerCategoryController import DeleteVolunteerCategoryController
 from controllers.pm.SearchVolunteerCategoryController import SearchVolunteerCategoryController
 
 # PIN Import Statements
@@ -87,6 +89,30 @@ def viewUserAccountPage():
     else:
         all_users = search_controller.searchUser(user_keyword)
     return render_template("useradmin/ViewUserAccountPage.html", users=all_users, user_keyword=user_keyword)
+
+@app.route("/SuspendUserAccountPage", methods=["GET", "POST"])
+def suspendUserAccountPage():
+    if 'email' not in session:
+        return redirect(url_for('login'))
+    if session['role_id'] != 1 and 'email' in session:
+        return redirect(url_for('login'))
+    user_id = request.args.get('user_id')
+    suspend_controller = SuspendUserAccController(user_id)
+    print(user_id)
+    suspend_controller.suspendUser(user_id)
+    return redirect(url_for('viewUserAccountPage'))
+
+@app.route("/ReactivateUserAccountPage", methods=["GET", "POST"])
+def reactivateUserAccountPage():
+    if 'email' not in session:
+        return redirect(url_for('login'))
+    if session['role_id'] != 1 and 'email' in session:
+        return redirect(url_for('login'))
+    user_id = request.args.get('user_id')
+    reactivate_controller = ReactivateUserAccController(user_id)
+    print(user_id)
+    reactivate_controller.reactivateUser(user_id)
+    return redirect(url_for('viewUserAccountPage'))
     
 @app.route('/ViewUserProfilePage')
 def viewUserProfilePage():

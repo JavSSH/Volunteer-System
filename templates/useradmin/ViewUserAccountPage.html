@@ -91,14 +91,14 @@
                     </div>
                     <div class="btn-group me-2">
                       <!-- Suspend or Reactivate -->
-                      {% if user.is_active == "1" %}
-                        <form method="post" action="{{ url_for('other_dashboard', user_id=user.user_id) }}">
+                      {% if user.is_active == 1 %}
+                        <form method="post" action="{{ url_for('suspendUserAccountPage', user_id=user.user_id) }}">
                           <button class="btn btn-warning btn-sm" type="submit">
                             <i class="bi bi-pause-circle"></i> Suspend
                           </button>
                         </form>
                       {% else %}
-                        <form method="post" action="{{ url_for('other_dashboard', user_id=user.user_id) }}">
+                        <form method="post" action="{{ url_for('reactivateUserAccountPage', user_id=user.user_id) }}">
                           <button class="btn btn-success btn-sm" type="submit">
                             <i class="bi bi-play-circle"></i> Reactivate
                           </button>

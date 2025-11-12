@@ -1,7 +1,9 @@
 from entities.UserProfile import UserProfile    
 
 class UpdateProfileController:
-    @staticmethod
+    def __init__(self):
+        pass
+    
     def updateProfile(user_id, role_id, description, status):
         user_profile = UserProfile(
             user_id=user_id,

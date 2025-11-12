@@ -1,7 +1,9 @@
 from entities.UserProfile import UserProfile
 
 class SearchProfileController:
-    @staticmethod
+    def __init__(self):
+        pass
+    
     def searchProfile(keyword):
         user_profile = UserProfile(
             profile_id=None,

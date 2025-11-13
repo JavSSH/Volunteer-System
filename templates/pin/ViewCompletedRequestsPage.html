@@ -9,7 +9,7 @@
     <div class="d-flex justify-content-between align-items-center mb-4">
       <h1 class="m-0">Completed Requests</h1>
       <div class="d-flex align-items-center gap-3">
-        <a href="{{ url_for('viewRequestsPage') }}" class="plain-btn">Back to All Requests</a>
+        <a href="{{ url_for('viewRequestPage') }}" class="plain-btn">Back to All Requests</a>
       </div>
     </div>
 
@@ -23,6 +23,79 @@
         </div>
       {% endif %}
     {% endwith %}
+
+    <!-- ============================= -->
+    <!-- SEARCH + FILTER SECTION HERE -->
+    <!-- ============================= -->
+    <form method="POST" class="mb-4">
+      <div class="card p-3">
+
+        <!-- SEARCH BAR -->
+        <div class="d-flex gap-3 mb-3" style="max-width: 500px;">
+          <input 
+            type="text" 
+            name="keyword" 
+            class="form-control"
+            placeholder="Search completed requests..."
+            value="{{ search_term or '' }}"
+          >
+          <button type="submit" name="action" value="search" class="btn btn-primary">
+            Search
+          </button>
+        </div>
+
+        <!-- FILTER BAR -->
+        <div class="d-flex flex-wrap gap-3 align-items-end">
+
+          <!-- Category Filter -->
+          <div>
+            <label class="form-label m-0 fw-semibold">Category</label>
+            <select name="category_id" class="form-select" style="width: 180px;">
+              <option value="">All</option>
+              <option value="1" {% if selected_category == '1' %}selected{% endif %}>Category 1</option>
+              <option value="2" {% if selected_category == '2' %}selected{% endif %}>Category 2</option>
+              <option value="3" {% if selected_category == '3' %}selected{% endif %}>Category 3</option>
+            </select>
+          </div>
+
+          <!-- Date From -->
+          <div>
+            <label class="form-label m-0 fw-semibold">From</label>
+            <input 
+              type="date" 
+              name="start_date" 
+              class="form-control"
+              value="{{ start_date or '' }}"
+            >
+          </div>
+
+          <!-- Date To -->
+          <div>
+            <label class="form-label m-0 fw-semibold">To</label>
+            <input 
+              type="date" 
+              name="end_date" 
+              class="form-control"
+              value="{{ end_date or '' }}"
+            >
+          </div>
+
+          <!-- Filter Button -->
+          <button 
+            type="submit" 
+            name="action" 
+            value="filter" 
+            class="btn btn-secondary"
+          >
+            Filter
+          </button>
+
+        </div>
+      </div>
+    </form>
+    <!-- ============================= -->
+    <!-- END SEARCH + FILTER SECTION -->
+    <!-- ============================= -->
 
     <!-- Completed Requests Table -->
     {% if not completed_requests %}
@@ -67,6 +140,7 @@
         </div>
       </div>
     {% endif %}
+
   </div>
 </div>
 

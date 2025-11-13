@@ -3,7 +3,7 @@ import sqlite3, re
 
 
 class Request:
-    def __init__(self, request_id=None, pin_user_id=None, csrrep_user_id=None, category_id=None, request_status=None, request_date=None, request_view_count=None, request_shortlist_count=None):
+    def __init__(self, request_id=None, pin_user_id=None, csrrep_user_id=None, category_id=None, request_status=None, request_date=None, request_view_count=None, request_shortlist_count=None, category_name=None, category_desc=None):
         self.request_id = request_id
         self.pin_user_id = pin_user_id
         self.csrrep_user_id = csrrep_user_id
@@ -12,6 +12,8 @@ class Request:
         self.request_date = request_date
         self.request_view_count = request_view_count
         self.request_shortlist_count = request_shortlist_count
+        self.category_name = category_name
+        self.category_desc = category_desc
         
  
     def createRequest(self, pin_user_id, category_id):
@@ -118,6 +120,24 @@ class Request:
         rows = cursor.fetchall()
         conn.close()
         return [dict(row) for row in rows] if rows else []
+    
+    def getRequestById(self, request_id):
+        conn = database_management.dbConnection()
+        conn.row_factory = sqlite3.Row
+        cur = conn.cursor()
+        cur.execute("""
+            SELECT r.*, 
+                c.category_name, 
+                c.category_desc
+            FROM request r
+            LEFT JOIN category c ON r.category_id = c.category_id
+            WHERE r.request_id = ?
+            LIMIT 1
+        """, (request_id,))
+        row = cur.fetchone()
+        conn.close()
+        return Request(**dict(row)) if row else None
+
     
     def __str__(self):
         return (f"Request(\n"

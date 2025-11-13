@@ -9,7 +9,7 @@
     <div class="d-flex justify-content-between align-items-center mb-4">
       <h1 class="m-0">Create Request</h1>
       <div class="d-flex align-items-center gap-3">
-        <a href="{{ url_for('viewRequestsPage') }}" class="plain-btn">Back to Requests</a>
+        <a href="{{ url_for('viewRequestPage') }}" class="plain-btn">Back to Requests</a>
       </div>
     </div>
 
@@ -55,14 +55,14 @@
           <div class="col-12">
             <label class="form-label" for="notes">Notes (optional)</label>
             <textarea id="notes" name="notes" class="form-control" rows="3"
-                      placeholder="Add any extra context for reviewers (not saved in DB unless your route handles it)"></textarea>
+                      placeholder="Add any extra context for reviewers"></textarea>
           </div>
 
         </div>
       </div>
 
       <div class="card-footer d-flex justify-content-end gap-2">
-        <a href="{{ url_for('viewRequestsPage') }}" class="plain-btn">Cancel</a>
+        <a href="{{ url_for('viewRequestPage') }}" class="plain-btn">Cancel</a>
         <button type="submit" class="btn btn-primary">Create Request</button>
       </div>
     </form>

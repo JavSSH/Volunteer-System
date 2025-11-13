@@ -27,6 +27,12 @@ from controllers.pm.SearchVolunteerCategoryController import SearchVolunteerCate
 # PIN Import Statements
 from controllers.pin.ViewRequestController import ViewRequestController
 from controllers.pin.DeleteRequestController import DeleteRequestController
+from controllers.pin.CreateRequestController import CreateRequestController
+from controllers.pin.FilterCompletedRequests import FilterCompletedRequests
+from controllers.pin.RequestShortlistController import RequestShortlistController
+from controllers.pin.SearchCompletedRequestsController import SearchCompletedRequestsController
+from controllers.pin.UpdateRequestController import UpdateRequestController
+from controllers.pin.ViewCompletedRequestsController import ViewCompletedRequestsController
 
 # CSR Rep Import Statements
 from controllers.csrrep.ViewOpportunitiesDetailsController import ViewOpportunitiesDetailsController
@@ -53,7 +59,7 @@ def login():
         if session['role_id'] == 2:
             return redirect(url_for('viewVolunteerCategoryPage'))
         if session['role_id'] == 3:
-            return redirect(url_for('viewRequestsPage'))
+            return redirect(url_for('viewRequestPage'))
         else:
             return redirect(url_for('other_dashboard'))
     # Check if user credentials are valid
@@ -150,57 +156,6 @@ def viewUserAccountPage():
         all_users = search_controller.searchUser(user_keyword)
     return render_template("useradmin/ViewUserAccountPage.html", users=all_users, user_keyword=user_keyword)
 
-@app.route("/UpdateUserAccountPage/<int:user_id>", methods=["GET", "POST"])
-def updateUserAccountPage(user_id):
-    if 'email' not in session:
-        return redirect(url_for('login'))
-    if session['role_id'] != 1 and 'email' in session:
-        return redirect(url_for('login'))
-
-    update_controller = UpdateUserAccController()
-    
-    if request.method == "GET":
-        user = update_controller.getUserById(user_id)
-        if not user:
-            flash("User not found", "error")
-            return redirect(url_for("viewUserAccountPage"))
-        return render_template("useradmin/UpdateUserAccountPage.html", user=user)
-
-    email = request.form.get("email", "").strip()
-    password = request.form.get("password", "").strip()
-    role_id = request.form.get("role_id", type=int)
-    first_name = request.form.get("first_name", "").strip()
-    last_name = request.form.get("last_name", "").strip()
-    address = request.form.get("address", "").strip()
-    phone = request.form.get("phone", "").strip()
-
-    if not (email and role_id and first_name and last_name):
-        flash("Please fill in all required fields.", "error")
-        return redirect(url_for("updateUserAccountPage", user_id=user_id))
-
-    try:
-        result = update_controller.updateUser(
-            user_id=user_id,
-            role_id=role_id,
-            email=email,
-            password=password if password else None,
-            first_name=first_name,
-            last_name=last_name,
-            address=address,
-            phone=phone,
-        )
-
-        if result:
-            flash("User Account Updated!", "success")
-            return redirect(url_for("viewUserAccountPage"))
-        else:
-            flash("Email already exists. Please use a different email.", "error")
-            return redirect(url_for("updateUserAccountPage", user_id=user_id))
-
-    except Exception as e:
-        flash(f"An error occurred: {str(e)}", "error")
-        return redirect(url_for("updateUserAccountPage", user_id=user_id))
-
 @app.route("/SuspendUserAccountPage", methods=["GET", "POST"])
 def suspendUserAccountPage():
     if 'email' not in session:
@@ -278,47 +233,6 @@ def viewProfilePage():
         profiles = search_controller.searchProfile(profile_keyword)
 
     return render_template("useradmin/ViewProfilePage.html", profiles=profiles, profile_keyword=profile_keyword)
-
-@app.route("/UpdateProfilePage/<int:role_id>", methods=["GET", "POST"])
-def updateProfilePage(role_id):
-    if 'email' not in session:
-        return redirect(url_for('login'))
-    if session['role_id'] != 1 and 'email' in session:
-        return redirect(url_for('login'))
-
-    update_controller = UpdateProfileController()
-    
-    if request.method == "GET":
-        profile = update_controller.getProfileById(role_id)
-        if not profile:
-            flash("Profile not found", "error")
-            return redirect(url_for("viewProfilePage"))
-        return render_template("useradmin/UpdateProfilePage.html", profile=profile)
-
-    role_name = request.form.get("role_name", "").strip()
-    description = request.form.get("description", "").strip()
-
-    if not (role_name and description):
-        flash("Please fill in all required fields.", "error")
-        return redirect(url_for("updateProfilePage", role_id=role_id))
-
-    try:
-        result = update_controller.updateProfile(
-            role_id=role_id,
-            role_name=role_name,
-            description=description
-        )
-
-        if result:
-            flash("User Profile Updated!", "success")
-            return redirect(url_for("viewProfilePage"))
-        else:
-            flash("Role name already exists. Please use a different role name.", "error")
-            return redirect(url_for("updateProfilePage", role_id=role_id))
-
-    except Exception as e:
-        flash(f"An error occurred: {str(e)}", "error")
-        return redirect(url_for("updateProfilePage", role_id=role_id))
 
 @app.route("/SuspendProfilePage", methods=["GET", "POST"])
 def suspendProfilePage():
@@ -467,6 +381,92 @@ def viewRequestPage():
     requests = view_controller.viewRequests(session['user_id'])
     return render_template("pin/ViewRequestsPage.html", requests=requests)
 
+@app.route("/CreateRequestPage", methods=["GET", "POST"])
+def createRequestPage():
+    if 'email' not in session:
+        return redirect(url_for('login'))
+    if session['role_id'] != 3:
+        return redirect(url_for('login'))
+
+    if request.method == "GET":
+        view_category_controller = ViewVolunteerCategoryController()
+        all_categories = view_category_controller.viewVolunteerCategory()
+        return render_template("pin/CreateRequestPage.html", categories=all_categories)
+
+    # POST
+    category_id = request.form.get("category_id", type=int)
+    if not category_id:
+        flash("Please select a category.", "error")
+        return redirect(url_for("createRequestPage"))
+
+    try:
+        create_controller = CreateRequestController(session['user_id'])
+        result = create_controller.createRequest(category_id)
+
+        if result:
+            flash("Request created successfully!", "success")
+            return redirect(url_for("viewRequestPage"))
+        else:
+            flash("Failed to create request.", "error")
+            return redirect(url_for("createRequestPage"))
+
+    except Exception as e:
+        flash(f"An error occurred while creating the request: {str(e)}", "error")
+        return redirect(url_for("createRequestPage"))
+
+@app.route("/UpdateRequestPage/<int:request_id>", methods=["GET", "POST"])
+def updateRequestPage(request_id):
+    if 'email' not in session:
+        return redirect(url_for('login'))
+    if session.get('role_id') != 3:
+        return redirect(url_for('login'))
+
+    update_controller = UpdateRequestController()
+
+    if request.method == "GET":
+        req_obj = update_controller.getRequestById(request_id)
+        if not req_obj:
+            flash("Request not found", "error")
+            return redirect(url_for("viewRequestPage"))
+
+        categories = ViewVolunteerCategoryController().viewVolunteerCategory()
+        return render_template(
+            "pin/UpdateRequestPage.html",
+            request=req_obj,
+            categories=categories
+        )
+
+    # POST
+    category_id = request.form.get("category_id", type=int)
+    if not category_id:
+        flash("Please select a category.", "error")
+        return redirect(url_for("updateRequestPage", request_id=request_id))
+
+    ok = update_controller.updateRequest(category_id, request_id)
+
+    if ok:
+        flash("Request updated!", "success")
+    else:
+        flash("Update failed or no changes made.", "error")
+
+    return redirect(url_for("viewRequestPage"))
+
+@app.route("/ViewCompletedRequestsPage", methods=["GET", "POST"])
+def viewCompletedRequestsPage():
+    # For now, skip login and hardcode a test user id
+    pin_user_id = 1
+
+    view_completed_requests_controller = ViewCompletedRequestsController()
+    completed_requests = view_completed_requests_controller.viewCompletedRequests(pin_user_id)
+
+    # If you *just* want to display completed requests for now:
+    return render_template(
+        "pin/ViewCompletedRequestsPage.html",
+        completed_requests=completed_requests
+    )
+
+
+ 
 @app.route("/DeleteRequestPage", methods=["GET", "POST"])
 def deleteRequestPage():
     if 'email' not in session:

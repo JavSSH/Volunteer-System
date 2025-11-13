@@ -8,19 +8,26 @@
     <!-- Header -->
     <div class="d-flex justify-content-between align-items-center mb-3">
       <h1 class="m-0">Requests</h1>
+
+      <!-- Action buttons -->
       <div class="d-flex align-items-center gap-3" style="margin-bottom: 25px;">
-        {#<a href="{{ url_for('createRequestPage') }}" class="plain-btn">Create New Request</a>
-          <a href="{{ url_for('viewCompletedRequestsPage', user_id=session.get('user_id')) }}" class="plain-btn">
-          View Completed
-        </a> #}
+        <!-- Create new request -->
+        <a href="{{ url_for('createRequestPage') }}" 
+          class="btn btn-primary d-flex align-items-center gap-2">
+          <i class="bi bi-plus-circle"></i> Create Request
+        </a>
+
+        <!-- View completed requests -->
+        <a href="{{ url_for('viewCompletedRequestsPage', user_id=session.get('user_id')) }}" 
+          class="btn btn-success d-flex align-items-center gap-2">
+          <i class="bi bi-check2-circle"></i> View Completed
+        </a>
       </div>
     </div>
 
     <!-- Requests Table -->
     {% if not requests %}
-      <div class="alert alert-warning text-center mt-5" role="alert">
-        No requests found matching your search.
-      </div>
+      <h2 style="text-align:center;">No requests found!</h2>
     {% else %}
     <div class="card">
       <div class="card-header d-flex justify-content-between align-items-center">
@@ -74,7 +81,7 @@
                   <div class="btn-toolbar" role="toolbar">
                     <div style="display: flex !important; flex-direction: row !important; gap: 0.5rem; align-items: center;">
                       <!-- Update request -->
-                      <a class="btn btn-sm" href="{{ url_for('other_dashboard', request_id=r.request_id) }}" title="Edit request" style="width: 30px; height: 30px; padding: 0; display: flex; align-items: center; justify-content: center; cursor: pointer; background-color: white; border: 1px solid #dee2e6; border-radius: 5px !important;">
+                      <a class="btn btn-sm" href="{{ url_for('updateRequestPage', request_id=r.request_id) }}" title="Edit request" style="width: 30px; height: 30px; padding: 0; display: flex; align-items: center; justify-content: center; cursor: pointer; background-color: white; border: 1px solid #dee2e6; border-radius: 5px !important;">
                         <i class="bi bi-pencil-square" style="color: #0d6efd; font-size: 16px;"></i>
                       </a>
                       <!-- Delete request -->

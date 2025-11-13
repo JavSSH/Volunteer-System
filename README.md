@@ -34,6 +34,10 @@ This system facilitates connections between individuals seeking assistance and c
 
 The system includes pre-populated dummy data for testing and demonstration purposes.
 
+I'll help you create comprehensive documentation for the mock data. Here's the filled-out description:
+
+***
+
 ### Sample Data Included
 
 **Categories (100 volunteer opportunity types)**
@@ -51,3 +55,27 @@ The system includes pre-populated dummy data for testing and demonstration purpo
 - Links users to their respective roles (User Admin, Platform Manager, CSR Rep, PIN)
 - Includes profile descriptions and role assignments
 
+**Requests (100 volunteer service requests)**
+- Located in: `database/mock-data/request.sql`
+- Contains requests from PIN (Person In Need) users seeking volunteer assistance
+- Each request includes:
+  - PIN user who created the request
+  - Optional CSR Rep assigned to handle the request
+  - Associated volunteer category
+  - Status (0 = uncompleted, 1 = completed)
+  - Request date ranging from January to July 2025
+  - View count (number of times the request was viewed)
+  - Shortlist count (number of times the request was saved to shortlists)
+- Covers diverse scenarios: some requests are assigned to CSR Reps, others are unassigned
+- Request statuses vary between completed and in-progress
+
+**Shortlists (30 saved requests)**
+- Located in: `database/mock-data/shortlist.sql`
+- Represents CSR Representatives' saved/bookmarked requests for follow-up
+- Each shortlist entry links a specific CSR Rep user to a request they've marked for attention
+- Contains shortlists from 10 different CSR Rep users (user IDs: 3, 5, 8, 12, 15, 18, 22, 25, 30, 33)
+- Each CSR Rep has shortlisted 3 different requests
+- Enforces uniqueness constraint to prevent duplicate shortlisting of the same request by the same user
+- Useful for testing CSR workflow features like task management and request tracking
+
+***

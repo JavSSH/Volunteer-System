@@ -52,8 +52,7 @@ class UserProfile:
         conn = database_management.dbConnection()
         conn.row_factory = sqlite3.Row
         cursor = conn.cursor()
-        if role_id == '1' or role_id == '2':
-            print("HELLO EXECUETD")
+        if role_id == '1':
             conn.close()
             return False
         cursor.execute("UPDATE userprofile SET status = false WHERE role_id = ?", (role_id,))

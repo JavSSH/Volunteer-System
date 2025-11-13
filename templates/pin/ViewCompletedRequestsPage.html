@@ -51,12 +51,19 @@
           <!-- Category Filter -->
           <div>
             <label class="form-label m-0 fw-semibold">Category</label>
-            <select name="category_id" class="form-select" style="width: 180px;">
-              <option value="">All</option>
-              <option value="1" {% if selected_category == '1' %}selected{% endif %}>Category 1</option>
-              <option value="2" {% if selected_category == '2' %}selected{% endif %}>Category 2</option>
-              <option value="3" {% if selected_category == '3' %}selected{% endif %}>Category 3</option>
-            </select>
+           <select name="category_id" class="form-select" style="width: 180px;">
+            <option value="">All</option>
+            {% if categories %}
+              {% for cat_id, cat_name in categories.items() %}
+                <option 
+                  value="{{ cat_id }}" 
+                  {% if selected_category == cat_id|string %}selected{% endif %}
+                >
+                  {{ cat_name }}
+                </option>
+              {% endfor %}
+            {% endif %}
+          </select>
           </div>
 
           <!-- Date From -->

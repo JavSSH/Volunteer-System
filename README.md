@@ -69,7 +69,7 @@ I'll help you create comprehensive documentation for the mock data. Here's the f
 - Covers diverse scenarios: some requests are assigned to CSR Reps, others are unassigned
 - Request statuses vary between completed and in-progress
 
-**Shortlists (30 saved requests)**
+**Shortlists (100 saved requests)**
 - Located in: `database/mock-data/shortlist.sql`
 - Represents CSR Representatives' saved/bookmarked requests for follow-up
 - Each shortlist entry links a specific CSR Rep user to a request they've marked for attention

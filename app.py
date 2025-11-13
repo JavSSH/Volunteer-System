@@ -169,6 +169,58 @@ def viewUserAccountPage():
         all_users = search_controller.searchUser(user_keyword)
     return render_template("useradmin/ViewUserAccountPage.html", users=all_users, user_keyword=user_keyword)
 
+@app.route("/UpdateUserAccountPage/<int:user_id>", methods=["GET", "POST"])
+def updateUserAccountPage(user_id):
+    if 'email' not in session:
+        return redirect(url_for('login'))
+    if session['role_id'] != 1:
+        return redirect(url_for('login'))
+    
+    update_controller = UpdateUserAccController()
+    
+    if request.method == "GET":
+        user = update_controller.getUserById(user_id)
+        if not user:
+            flash("User not found", "error")
+            return redirect(url_for('viewUserAccountPage'))
+        return render_template("useradmin/UpdateUserAccountPage.html", user=user)
+    
+    # POST method - update the user
+    email = request.form.get("email", "").strip()
+    password = request.form.get("password", "").strip()
+    role_id = request.form.get("role_id", type=int)
+    first_name = request.form.get("first_name", "").strip()
+    last_name = request.form.get("last_name", "").strip()
+    address = request.form.get("address", "").strip()
+    phone = request.form.get("phone", "").strip()
+
+    if not (email and role_id and first_name and last_name):
+        flash("Please fill in all required fields.", "error")
+        return redirect(url_for("updateUserAccountPage", user_id=user_id))
+
+    try:
+        result = update_controller.updateUser(
+            user_id=user_id,
+            role_id=role_id,
+            email=email,
+            password=password if password else None,
+            first_name=first_name,
+            last_name=last_name,
+            address=address,
+            phone=phone,
+        )
+
+        if result:
+            flash("User Account Updated!", "success")
+            return redirect(url_for("viewUserAccountPage"))
+        else:
+            flash("Email already exists. Please use a different email.", "error")
+            return redirect(url_for("updateUserAccountPage", user_id=user_id))
+
+    except Exception as e:
+        flash(f"An error occurred: {str(e)}", "error")
+        return redirect(url_for("updateUserAccountPage", user_id=user_id))
+
 @app.route("/SuspendUserAccountPage", methods=["GET", "POST"])
 def suspendUserAccountPage():
     if 'email' not in session:
@@ -247,6 +299,48 @@ def viewProfilePage():
 
     return render_template("useradmin/ViewProfilePage.html", profiles=profiles, profile_keyword=profile_keyword)
 
+@app.route("/UpdateProfilePage/<int:role_id>", methods=["GET", "POST"])
+def updateProfilePage(role_id):
+    if 'email' not in session:
+        return redirect(url_for('login'))
+    if session['role_id'] != 1:
+        return redirect(url_for('login'))
+
+    update_controller = UpdateProfileController()
+    
+    if request.method == "GET":
+        profile = update_controller.getProfileById(role_id)
+        if not profile:
+            flash("Profile not found", "error")
+            return redirect(url_for("viewProfilePage"))
+        return render_template("useradmin/UpdateProfilePage.html", profile=profile)
+
+    # POST
+    role_name = request.form.get("role_name", "").strip()
+    description = request.form.get("description", "").strip()
+
+    if not (role_name and description):
+        flash("Please fill in all required fields.", "error")
+        return redirect(url_for("updateProfilePage", role_id=role_id))
+
+    try:
+        result = update_controller.updateProfile(
+            role_id=role_id,
+            role_name=role_name,
+            description=description
+        )
+
+        if result:
+            flash("User Account Updated!", "success")
+            return redirect(url_for("viewProfilePage"))
+        else:
+            flash("Role ID already exists. Please use a different one.", "error")
+            return redirect(url_for("updateProfilePage", role_id=role_id))
+
+    except Exception as e:
+        flash(f"An error occurred: {str(e)}", "error")
+        return redirect(url_for("updateProfilePage", role_id=role_id))
+
 @app.route("/SuspendProfilePage", methods=["GET", "POST"])
 def suspendProfilePage():
     if 'email' not in session:
@@ -273,6 +367,7 @@ def reactivateProfilePage():
        
 
 # Platform Manager Routes
+
 @app.route("/CreateVolunteerCategoryPage", methods=["GET", "POST"])
 def createVolunteerCategoryPage():
     if 'email' not in session:
@@ -433,6 +528,7 @@ def reportManagementPage():
         limit=limit
     )
 
+
 # Person In Need (PIN) Routes
 
 @app.route("/ViewRequestPage", methods=["GET"])
@@ -531,8 +627,6 @@ def viewCompletedRequestsPage():
         "pin/ViewCompletedRequestsPage.html",
         completed_requests=completed_requests
     )
-
-
  
 @app.route("/DeleteRequestPage", methods=["GET", "POST"])
 def deleteRequestPage():

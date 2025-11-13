@@ -78,15 +78,6 @@ class Request:
         conn.close()
         return True
     
-    def requestShortlist(self, pin_user_id):
-        conn = database_management.dbConnection()
-        conn.row_factory = sqlite3.Row
-        cursor = conn.cursor()
-        cursor.execute("SELECT request_id, request_shortlist_count FROM request WHERE pin_user_id = ?", (pin_user_id,))
-        conn.commit()
-        conn.close()
-        return True
-    
     def viewCompletedRequests(self, pin_user_id):
         conn = database_management.dbConnection()
         conn.row_factory = sqlite3.Row

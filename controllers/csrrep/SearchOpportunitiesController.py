@@ -1,10 +1,10 @@
-from entities.CsrRep import CsrRep
+from entities.Opportunity import Opportunity
 
 class SearchOpportunitiesController:
     
     def __init__(self):
         pass
 
-    def searchOpportunities(keyword):
-        csr_rep = CsrRep()
-        return csr_rep.searchOpportunities(keyword)
+    def searchOpportunities(self, keyword):
+        opportunity = Opportunity()
+        return opportunity.searchOpportunities(keyword)

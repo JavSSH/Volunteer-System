@@ -10,14 +10,14 @@ This system facilitates connections between individuals seeking assistance and c
 
 ### User Roles
 - **User Admin:** Manage user accounts and profiles
-- **Platform Manager:** Oversee categories, generate reports, and manage system operations
+- **Platform Manager:** Oversee categories and generate reports
 - **CSR Representative:** Browse opportunities, create shortlists, and track volunteer history
-- **Person-in-Need (PIN):** Create assistance requests and track matches
+- **Person-in-Need (PIN):** Create assistance requests and track past requests
 
 ### Core Functionality
 - User account management with role-based access control
 - Category-based volunteer opportunity organization (100+ categories)
-- Request creation and tracking system
+- Request creation and history
 - Shortlist management for CSR representatives
 - Volunteer service history tracking
 - Daily, weekly, and monthly reporting

@@ -19,9 +19,14 @@ from controllers.useradmin.ReactivateProfileController import ReactivateProfileC
 from controllers.useradmin.SearchProfileController import SearchProfileController
 
 # Platform Manager Import Statements
+from controllers.pm.CreateVolunteerCategoryController import CreateVolunteerCategoryController
 from controllers.pm.ViewVolunteerCategoryController import ViewVolunteerCategoryController
+from controllers.pm.UpdateVolunteerCategoryController import UpdateVolunteerCategoryController
 from controllers.pm.DeleteVolunteerCategoryController import DeleteVolunteerCategoryController
 from controllers.pm.SearchVolunteerCategoryController import SearchVolunteerCategoryController
+from controllers.pm.GenerateDailyReportController import GenerateDailyReportController
+from controllers.pm.GenerateWeeklyReportController import GenerateWeeklyReportController
+from controllers.pm.GenerateMonthlyReportController import GenerateMonthlyReportController
 
 # PIN Import Statements
 from controllers.pin.ViewRequestController import ViewRequestController
@@ -354,6 +359,40 @@ def reactivateProfilePage():
        
 
 # Platform Manager Routes
+@app.route("/CreateVolunteerCategoryPage", methods=["GET", "POST"])
+def createVolunteerCategoryPage():
+    if 'email' not in session:
+        return redirect(url_for('login'))
+    if session['role_id'] != 2:
+        return redirect(url_for('login'))
+
+    if request.method == "GET":
+        return render_template("pm/CreateVolunteerCategoryPage.html")
+
+    category_name = request.form.get("category_name", "").strip()
+    category_desc = request.form.get("category_desc", "").strip()
+
+    if not (category_name and category_desc):
+        flash("Please fill in all required fields.", "error")
+        return redirect(url_for("createVolunteerCategoryPage"))
+
+    try:
+        create_controller = CreateVolunteerCategoryController()
+        result = create_controller.createVolunteerCategory(
+            category_name=category_name,
+            category_desc=category_desc
+        )
+
+        if result:
+            flash("Volunteer Category Created!", "success")
+            return redirect(url_for("viewVolunteerCategoryPage"))
+        else:
+            flash("Category name already exists. Please use a different name.", "error")
+            return redirect(url_for("createVolunteerCategoryPage"))
+
+    except Exception as e:
+        flash(f"An error occurred: {str(e)}", "error")
+        return redirect(url_for("createVolunteerCategoryPage"))
 
 @app.route("/ViewVolunteerCategoryPage", methods=["GET"])
 def viewVolunteerCategoryPage():
@@ -371,6 +410,48 @@ def viewVolunteerCategoryPage():
         all_categories = search_controller.searchVolunteerCategory(category_keyword)
     return render_template("pm/ViewVolunteerCategoryPage.html", categories=all_categories, category_keyword=category_keyword)
 
+@app.route("/UpdateVolunteerCategoryPage/<int:category_id>", methods=["GET", "POST"])
+def updateVolunteerCategoryPage(category_id):
+    if 'email' not in session:
+        return redirect(url_for('login'))
+    if session['role_id'] != 2:
+        return redirect(url_for('login'))
+
+    update_controller = UpdateVolunteerCategoryController()
+
+    if request.method == "GET":
+        category = update_controller.getCategoryById(category_id)
+        if not category:
+            flash("Category not found", "error")
+            return redirect(url_for("viewVolunteerCategoryPage"))
+        return render_template("pm/UpdateVolunteerCategoryPage.html", category=category)
+
+    # POST: get form data
+    category_name = request.form.get("category_name", "").strip()
+    category_desc = request.form.get("category_desc", "").strip()
+
+    if not (category_name and category_desc):
+        flash("Please fill in all required fields.", "error")
+        return redirect(url_for("updateVolunteerCategoryPage", category_id=category_id))
+
+    try:
+        result = update_controller.updateVolunteerCategory(
+            category_id=category_id,
+            category_name=category_name,
+            category_desc=category_desc
+        )
+
+        if result:
+            flash("Volunteer Category Updated!", "success")
+            return redirect(url_for("viewVolunteerCategoryPage"))
+        else:
+            flash("Category name already exists. Please use a different name.", "error")
+            return redirect(url_for("updateVolunteerCategoryPage", category_id=category_id))
+
+    except Exception as e:
+        flash(f"An error occurred: {str(e)}", "error")
+        return redirect(url_for("updateVolunteerCategoryPage", category_id=category_id))
+
 @app.route("/DeleteVolunteerCategoryPage", methods=["GET", "POST"])
 def deleteVolunteerCategoryPage():
     if 'email' not in session:
@@ -383,6 +464,60 @@ def deleteVolunteerCategoryPage():
     delete_controller.deleteVolunteerCategory(category_id)
     return redirect(url_for('viewVolunteerCategoryPage'))
     
+@app.route("/ReportManagementPage", methods=["GET"])
+def reportManagementPage():
+    # --- Access control (PM only) ---
+    if 'email' not in session:
+        return redirect(url_for('login'))
+    if session.get('role_id') != 2:   # 2 == Platform Manager
+        return redirect(url_for('login'))
+
+    # read filters from query string
+    period       = (request.args.get("report_period") or "").strip()     # daily | weekly | monthly
+    report_date  = (request.args.get("report_date") or "").strip()       # YYYY-MM-DD (daily / weekly)
+    report_month = (request.args.get("report_month") or "").strip()      # YYYY-MM (monthly)
+    limit        = request.args.get("limit", type=int)
+
+    report_data = []
+    error = None
+
+    try:
+        if period == "daily":
+            if not report_date:
+                error = "Please choose a date for the daily report."
+            else:
+                report_data = GenerateDailyReportController.generateDailyReport(report_date, limit)
+
+        elif period == "weekly":
+            if not report_date:
+                error = "Please choose a start date for the weekly report."
+            else:
+                report_data = GenerateWeeklyReportController.generateWeeklyReport(report_date, limit)
+
+        elif period == "monthly":
+            if not report_month:
+                error = "Please choose a month in YYYY-MM for the monthly report."
+            else:
+                report_data = GenerateMonthlyReportController.generateMonthlyReport(report_month, limit)
+
+        elif period:  # invalid string passed
+            error = "Invalid period. Use daily, weekly, or monthly."
+
+    except Exception as e:
+        error = f"Error generating report: {e}"
+
+    if error:
+        flash(error)
+
+    # Render the management page (shows empty state if no params yet)
+    return render_template(
+        "pm/ReportManagementPage.html",
+        report_data=report_data,
+        report_period=period,
+        report_date=report_date,
+        report_month=report_month,
+        limit=limit
+    )
 
 # Person In Need (PIN) Routes
 
@@ -465,9 +600,9 @@ if __name__ == '__main__':
 ''' 
 Example Login Credentials
 
-latisha.brandle@volunteer.com  password123)) # CSR Rep
-rhonda.bonnet@volunteer.com    password123)) # PM
+latisha.brandle@volunteer.com  password123)) # CSR Rep (4)
+rhonda.bonnet@volunteer.com    password123)) # PM (2)
 kirsteni.demcik@volunteer.com  password123)) # PIN
-bambi.berkely@volunteer.com  password123)) # PIN (active)
-lawton.korfmann@volunteer.com  password123)) # UserAdmin
+bambi.berkely@volunteer.com  password123)) # PIN (active) (3)
+lawton.korfmann@volunteer.com  password123)) # UserAdmin (1)
 '''

@@ -47,7 +47,13 @@
       </nav>
     </header>
 
-    {% if request.endpoint != 'createUserAccountPage' and request.endpoint != 'updateUserAccountPage' and request.endpoint != 'createProfilePage' and request.endpoint != 'updateProfilePage'%}
+      {% if request.endpoint not in [
+      'createUserAccountPage',
+      'updateUserAccountPage',
+      'createProfilePage',
+      'updateProfilePage',
+      'createVolunteerCategoryPage',
+      'updateVolunteerCategoryPage'] %}
       <!-- Flash Messages: show on all pages except createUserAccountPage -->
       {% with messages = get_flashed_messages(with_categories=true) %}
         {% if messages %}

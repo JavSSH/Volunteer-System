@@ -16,7 +16,7 @@
     <!-- Flash Messages -->
     {% with messages = get_flashed_messages() %}
       {% if messages %}
-        <div class="alert alert-warning" role="alert">
+        <div class="alert alert-danger" role="alert">
           {% for msg in messages %}
             {{ msg }}<br>
           {% endfor %}
@@ -37,7 +37,7 @@
           <div class="col-md-4">
             <label class="form-label" for="category_id">Category ID</label>
             <input id="category_id" name="category_id" type="text" class="form-control"
-                   value="{{ category.category_id }}" readonly>
+                   value="{{ category.category_id }}" disabled>
           </div>
 
           <!-- Category Name -->

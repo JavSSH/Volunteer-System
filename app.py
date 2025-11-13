@@ -543,6 +543,7 @@ def viewRequestPage():
     view_controller = ViewRequestController(session['user_id'],session['role_id'])
     requests = view_controller.viewRequests(session['user_id'], session['role_id'])
 
+
     return render_template("pin/ViewRequestsPage.html", requests=requests)
 
 @app.route("/CreateRequestPage", methods=["GET", "POST"])
@@ -617,17 +618,27 @@ def updateRequestPage(request_id):
 
 @app.route("/ViewCompletedRequestsPage", methods=["GET", "POST"])
 def viewCompletedRequestsPage():
-    # For now, skip login and hardcode a test user id
-    pin_user_id = 1
+    if 'email' not in session:
+        return redirect(url_for('login'))
+    if session['role_id'] != 3:
+        return redirect(url_for('login'))
+   
+    pin_user_id = session['user_id']
+    
 
     view_completed_requests_controller = ViewCompletedRequestsController()
     completed_requests = view_completed_requests_controller.viewCompletedRequests(pin_user_id)
 
+    search_controller = SearchCompletedRequestsController(pin_user_id)
+    keyword = (request.args.get('request_keyword') or "").strip()
+    if keyword:
+        completed_requests = search_controller.searchCompletedRequests(pin_user_id,keyword) 
+
     # If you *just* want to display completed requests for now:
     return render_template(
         "pin/ViewCompletedRequestsPage.html",
-        completed_requests=completed_requests
-    )
+        completed_requests=completed_requests , request_keyword=keyword)
+    
  
 @app.route("/DeleteRequestPage", methods=["GET", "POST"])
 def deleteRequestPage():
@@ -662,7 +673,7 @@ def viewOpportunitiesPage():
 
 
 @app.route("/addToShortlist", methods=["POST"])
-def addToShortlist():
+def addToShortlistPage():
     if 'email' not in session:
         return redirect(url_for('login'))
     if session['role_id'] != 4:  # Assuming CSR Rep
@@ -685,7 +696,7 @@ def addToShortlist():
     return redirect(request.referrer or url_for('viewOpportunitiesPage'))
 
 @app.route("/ViewOpportunitiesDetailsPage", methods=["GET"])
-def viewOpportunitiesDetails():
+def viewOpportunitiesDetailsPage():
     if 'email' not in session:
         return redirect(url_for('login'))
     if session['role_id'] != 4:  # Assuming CSR Rep
@@ -695,10 +706,11 @@ def viewOpportunitiesDetails():
     view_controller = ViewOpportunitiesDetailsController()
     opportunity= view_controller.viewOpportunitiesDetails(request_id)
 
+
     return render_template("csr/ViewOpportunitiesDetailsPage.html", opportunity=opportunity)
 
 @app.route("/ViewShortlistOpportunitiesPage", methods=["GET", "POST"])
-def viewShortlistOpportunities():
+def viewShortlistOpportunitiesPage():
     if 'email' not in session:
         return redirect(url_for('login'))
     if session['role_id'] != 4:  # Assuming CSR Rep
@@ -717,6 +729,26 @@ def viewShortlistOpportunities():
     
 
     return render_template("csr/ViewShortlistOpportunitiesPage.html", shortlist=shortlist , shortlist_keyword=shortlist_keyword)
+
+@app.route("/ViewCompletedServicesPage", methods=["GET", "POST"])
+def viewCompletedServicesPage():
+    if 'email' not in session:
+        return redirect(url_for('login'))
+    if session['role_id'] != 4:  # Assuming CSR Rep
+        return redirect(url_for('login'))
+
+    view_controller = ViewCompletedServicesController()
+    services = view_controller.viewCompletedServices(session['user_id'])
+
+    search_controller = SearchCompletedServicesController()
+    completed_keyword = (request.args.get('completed_keyword') or "").strip()
+    if completed_keyword:
+        services = search_controller.searchCompletedServices(session['user_id'], completed_keyword) 
+
+
+    
+
+    return render_template("csr/ViewCompletedServicesPage.html", services=services ,completed_keyword=completed_keyword)
 
 
 

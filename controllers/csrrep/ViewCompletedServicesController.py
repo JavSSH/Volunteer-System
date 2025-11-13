@@ -1,9 +1,9 @@
-from entities.Opportunity import Opportunity
+from entities.Request import Request
 
 class ViewCompletedServicesController:
     def __init__(self):
         pass
    
-    def viewCompletedServices(self, csrrep_user_id):
-        opportunity = Opportunity()
-        return opportunity.viewCompletedServices(csrrep_user_id)
+    def viewCompletedServices(self, user_id):
+        request = Request()
+        return request.viewCompletedServices(user_id)

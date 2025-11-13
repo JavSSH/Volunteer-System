@@ -5,7 +5,7 @@ CREATE TABLE request (
     pin_user_id INT,
     csrrep_user_id INT DEFAULT NULL,
     category_id INT,
-    request_status BOOLEAN,
+    request_status BOOLEAN, --0 means uncompleted, 1 means completed
     request_date DATETIME,
     request_view_count INT,
     request_shortlist_count INT,
@@ -16,8 +16,8 @@ CREATE TABLE request (
 
 INSERT INTO request (pin_user_id, csrrep_user_id, category_id, request_status, request_date, request_view_count, request_shortlist_count)
 VALUES
-(45, NULL, 45, 1, '13/01/2025', 74, 18),
-(3, 14, 3, 0, '02/02/2025', 29, 2),
+(9, NULL, 45, 0, '13/01/2025', 74, 18),
+(9, 14, 3, 1, '02/02/2025', 29, 2),
 (78, NULL, 78, 1, '23/02/2025', 97, 86),
 (12, 9, 12, 1, '11/03/2025', 53, 34),
 (33, 70, 33, 0, '15/03/2025', 3, 0),

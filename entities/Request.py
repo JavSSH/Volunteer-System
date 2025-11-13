@@ -83,7 +83,7 @@ class Request:
         conn = database_management.dbConnection()
         conn.row_factory = sqlite3.Row
         cursor = conn.cursor()
-        cursor.execute("SELECT * FROM request WHERE pin_user_id = ? AND request_status = true", (pin_user_id,))
+        cursor.execute("SELECT * FROM request WHERE pin_user_id = ? AND request_status = 1", (pin_user_id,))
         rows = cursor.fetchall()
         conn.close()
         return [Request(**dict(row)) for row in rows] if rows else []

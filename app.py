@@ -70,7 +70,7 @@ def login():
         if session['role_id'] == 2:
             return redirect(url_for('viewVolunteerCategoryPage'))
         if session['role_id'] == 3:
-            return redirect(url_for('viewRequestsPage'))
+            return redirect(url_for('viewRequestPage'))
         if session['role_id'] == 4:
             return redirect(url_for('viewOpportunitiesPage'))
         else:

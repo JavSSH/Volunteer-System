@@ -4,6 +4,6 @@ class ViewCompletedRequestsController:
     def __init__(self):
         pass
     
-    def viewCompletedRequests(self, user_id):
+    def viewCompletedRequests(self, pin_user_id):
         request = Request()
-        return request.viewCompletedRequests(user_id)
+        return request.viewCompletedRequests(pin_user_id)

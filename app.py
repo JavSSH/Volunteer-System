@@ -5,15 +5,22 @@ from flask import Flask, render_template, request, redirect, url_for, flash, ses
 from controllers.useradmin.UserLoginController import UserLoginController
 from controllers.useradmin.CreateUserAccController import CreateUserAccController
 from controllers.useradmin.ViewUserAccController import ViewUserAccController
+from controllers.useradmin.UpdateUserAccController import UpdateUserAccController
 from controllers.useradmin.SuspendUserAccController import SuspendUserAccController
 from controllers.useradmin.ReactivateUserAccController import ReactivateUserAccController
 from controllers.useradmin.SearchUserAccController import SearchUserAccController
+
+from controllers.useradmin.CreateProfileController import CreateProfileController
 from controllers.useradmin.ViewProfileController import ViewProfileController
+from controllers.useradmin.UpdateProfileController import UpdateProfileController
 from controllers.useradmin.SuspendProfileController import SuspendProfileController
 from controllers.useradmin.ReactivateProfileController import ReactivateProfileController
+from controllers.useradmin.SearchProfileController import SearchProfileController
 
 # Platform Manager Import Statements
+from controllers.pm.CreateVolunteerCategoryController import CreateVolunteerCategoryController
 from controllers.pm.ViewVolunteerCategoryController import ViewVolunteerCategoryController
+from controllers.pm.UpdateVolunteerCategoryController import UpdateVolunteerCategoryController
 from controllers.pm.DeleteVolunteerCategoryController import DeleteVolunteerCategoryController
 from controllers.pm.SearchVolunteerCategoryController import SearchVolunteerCategoryController
 from controllers.pm.GenerateDailyReportController import GenerateDailyReportController
@@ -146,6 +153,57 @@ def viewUserAccountPage():
         all_users = search_controller.searchUser(user_keyword)
     return render_template("useradmin/ViewUserAccountPage.html", users=all_users, user_keyword=user_keyword)
 
+@app.route("/UpdateUserAccountPage/<int:user_id>", methods=["GET", "POST"])
+def updateUserAccountPage(user_id):
+    if 'email' not in session:
+        return redirect(url_for('login'))
+    if session['role_id'] != 1 and 'email' in session:
+        return redirect(url_for('login'))
+
+    update_controller = UpdateUserAccController()
+    
+    if request.method == "GET":
+        user = update_controller.getUserById(user_id)
+        if not user:
+            flash("User not found", "error")
+            return redirect(url_for("viewUserAccountPage"))
+        return render_template("useradmin/UpdateUserAccountPage.html", user=user)
+
+    email = request.form.get("email", "").strip()
+    password = request.form.get("password", "").strip()
+    role_id = request.form.get("role_id", type=int)
+    first_name = request.form.get("first_name", "").strip()
+    last_name = request.form.get("last_name", "").strip()
+    address = request.form.get("address", "").strip()
+    phone = request.form.get("phone", "").strip()
+
+    if not (email and role_id and first_name and last_name):
+        flash("Please fill in all required fields.", "error")
+        return redirect(url_for("updateUserAccountPage", user_id=user_id))
+
+    try:
+        result = update_controller.updateUser(
+            user_id=user_id,
+            role_id=role_id,
+            email=email,
+            password=password if password else None,
+            first_name=first_name,
+            last_name=last_name,
+            address=address,
+            phone=phone,
+        )
+
+        if result:
+            flash("User Account Updated!", "success")
+            return redirect(url_for("viewUserAccountPage"))
+        else:
+            flash("Email already exists. Please use a different email.", "error")
+            return redirect(url_for("updateUserAccountPage", user_id=user_id))
+
+    except Exception as e:
+        flash(f"An error occurred: {str(e)}", "error")
+        return redirect(url_for("updateUserAccountPage", user_id=user_id))
+
 @app.route("/SuspendUserAccountPage", methods=["GET", "POST"])
 def suspendUserAccountPage():
     if 'email' not in session:
@@ -170,15 +228,100 @@ def reactivateUserAccountPage():
     reactivate_controller.reactivateUser(user_id)
     return redirect(url_for('viewUserAccountPage'))
     
-@app.route('/ViewProfilePage')
+@app.route("/CreateProfilePage", methods=["GET", "POST"])
+def createProfilePage():
+    if 'email' not in session:
+        return redirect(url_for('login'))
+    if session['role_id'] != 1:
+        return redirect(url_for('login'))
+
+    if request.method == "GET":
+        return render_template("useradmin/CreateProfilePage.html")
+
+    role_name = request.form.get("role_name", "").strip()
+    description = request.form.get("description", "").strip()
+
+    if not (role_name and description):
+        flash("Please fill in all required fields.", "error")
+        return redirect(url_for("createProfilePage"))
+
+    try:
+        create_profile_controller = CreateProfileController()
+        result = create_profile_controller.createProfile(
+            role_name=role_name,
+            description=description
+        )
+
+        if result:
+            flash("Profile Created!", "success")
+            return redirect(url_for("viewProfilePage"))
+        else:
+            flash("Role name already exists. Please use a different role name.", "error")
+            return redirect(url_for("createProfilePage"))
+
+    except Exception as e:
+        flash(f"An error occurred: {str(e)}", "error")
+        return redirect(url_for("createProfilePage"))
+
+@app.route("/ViewProfilePage", methods=["GET"])
 def viewProfilePage():
+    if 'email' not in session:
+        return redirect(url_for('login'))
+    if session['role_id'] != 1:
+        return redirect(url_for('login'))
+
+    profile_keyword = (request.args.get('profile_keyword') or "").strip()  # read search input
+
+    view_controller = ViewProfileController()
+    search_controller = SearchProfileController()
+
+    if not profile_keyword:
+        profiles = view_controller.ViewProfile()
+    else:
+        profiles = search_controller.searchProfile(profile_keyword)
+
+    return render_template("useradmin/ViewProfilePage.html", profiles=profiles, profile_keyword=profile_keyword)
+
+@app.route("/UpdateProfilePage/<int:role_id>", methods=["GET", "POST"])
+def updateProfilePage(role_id):
     if 'email' not in session:
         return redirect(url_for('login'))
     if session['role_id'] != 1 and 'email' in session:
         return redirect(url_for('login'))
-    view_controller = ViewProfileController()
-    profiles = view_controller.ViewProfile()
-    return render_template('useradmin/ViewProfilePage.html', profiles=profiles)
+
+    update_controller = UpdateProfileController()
+    
+    if request.method == "GET":
+        profile = update_controller.getProfileById(role_id)
+        if not profile:
+            flash("Profile not found", "error")
+            return redirect(url_for("viewProfilePage"))
+        return render_template("useradmin/UpdateProfilePage.html", profile=profile)
+
+    role_name = request.form.get("role_name", "").strip()
+    description = request.form.get("description", "").strip()
+
+    if not (role_name and description):
+        flash("Please fill in all required fields.", "error")
+        return redirect(url_for("updateProfilePage", role_id=role_id))
+
+    try:
+        result = update_controller.updateProfile(
+            role_id=role_id,
+            role_name=role_name,
+            description=description
+        )
+
+        if result:
+            flash("User Profile Updated!", "success")
+            return redirect(url_for("viewProfilePage"))
+        else:
+            flash("Role name already exists. Please use a different role name.", "error")
+            return redirect(url_for("updateProfilePage", role_id=role_id))
+
+    except Exception as e:
+        flash(f"An error occurred: {str(e)}", "error")
+        return redirect(url_for("updateProfilePage", role_id=role_id))
 
 @app.route("/SuspendProfilePage", methods=["GET", "POST"])
 def suspendProfilePage():
@@ -206,6 +349,40 @@ def reactivateProfilePage():
        
 
 # Platform Manager Routes
+@app.route("/CreateVolunteerCategoryPage", methods=["GET", "POST"])
+def createVolunteerCategoryPage():
+    if 'email' not in session:
+        return redirect(url_for('login'))
+    if session['role_id'] != 2:
+        return redirect(url_for('login'))
+
+    if request.method == "GET":
+        return render_template("pm/CreateVolunteerCategoryPage.html")
+
+    category_name = request.form.get("category_name", "").strip()
+    category_desc = request.form.get("category_desc", "").strip()
+
+    if not (category_name and category_desc):
+        flash("Please fill in all required fields.", "error")
+        return redirect(url_for("createVolunteerCategoryPage"))
+
+    try:
+        create_controller = CreateVolunteerCategoryController()
+        result = create_controller.createVolunteerCategory(
+            category_name=category_name,
+            category_desc=category_desc
+        )
+
+        if result:
+            flash("Volunteer Category Created!", "success")
+            return redirect(url_for("viewVolunteerCategoryPage"))
+        else:
+            flash("Category name already exists. Please use a different name.", "error")
+            return redirect(url_for("createVolunteerCategoryPage"))
+
+    except Exception as e:
+        flash(f"An error occurred: {str(e)}", "error")
+        return redirect(url_for("createVolunteerCategoryPage"))
 
 @app.route("/ViewVolunteerCategoryPage", methods=["GET"])
 def viewVolunteerCategoryPage():
@@ -222,6 +399,48 @@ def viewVolunteerCategoryPage():
     else:
         all_categories = search_controller.searchVolunteerCategory(category_keyword)
     return render_template("pm/ViewVolunteerCategoryPage.html", categories=all_categories, category_keyword=category_keyword)
+
+@app.route("/UpdateVolunteerCategoryPage/<int:category_id>", methods=["GET", "POST"])
+def updateVolunteerCategoryPage(category_id):
+    if 'email' not in session:
+        return redirect(url_for('login'))
+    if session['role_id'] != 2:
+        return redirect(url_for('login'))
+
+    update_controller = UpdateVolunteerCategoryController()
+
+    if request.method == "GET":
+        category = update_controller.getCategoryById(category_id)
+        if not category:
+            flash("Category not found", "error")
+            return redirect(url_for("viewVolunteerCategoryPage"))
+        return render_template("pm/UpdateVolunteerCategoryPage.html", category=category)
+
+    # POST: get form data
+    category_name = request.form.get("category_name", "").strip()
+    category_desc = request.form.get("category_desc", "").strip()
+
+    if not (category_name and category_desc):
+        flash("Please fill in all required fields.", "error")
+        return redirect(url_for("updateVolunteerCategoryPage", category_id=category_id))
+
+    try:
+        result = update_controller.updateVolunteerCategory(
+            category_id=category_id,
+            category_name=category_name,
+            category_desc=category_desc
+        )
+
+        if result:
+            flash("Volunteer Category Updated!", "success")
+            return redirect(url_for("viewVolunteerCategoryPage"))
+        else:
+            flash("Category name already exists. Please use a different name.", "error")
+            return redirect(url_for("updateVolunteerCategoryPage", category_id=category_id))
+
+    except Exception as e:
+        flash(f"An error occurred: {str(e)}", "error")
+        return redirect(url_for("updateVolunteerCategoryPage", category_id=category_id))
 
 @app.route("/DeleteVolunteerCategoryPage", methods=["GET", "POST"])
 def deleteVolunteerCategoryPage():
@@ -346,9 +565,9 @@ if __name__ == '__main__':
 ''' 
 Example Login Credentials
 
-latisha.brandle@volunteer.com  password123)) # CSR Rep
-rhonda.bonnet@volunteer.com    password123)) # PM
+latisha.brandle@volunteer.com  password123)) # CSR Rep (4)
+rhonda.bonnet@volunteer.com    password123)) # PM (2)
 kirsteni.demcik@volunteer.com  password123)) # PIN
-bambi.berkely@volunteer.com  password123)) # PIN (active)
-lawton.korfmann@volunteer.com  password123)) # UserAdmin
+bambi.berkely@volunteer.com  password123)) # PIN (active) (3)
+lawton.korfmann@volunteer.com  password123)) # UserAdmin (1)
 '''

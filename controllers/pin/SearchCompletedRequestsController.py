@@ -1,9 +1,9 @@
 from entities.Request import Request
 
 class SearchCompletedRequestsController:
-    def __init__(self,user_id):
-        self.user_id = user_id
+    def __init__(self,pin_user_id):
+        self.pin_user_id = pin_user_id
     
-    def searchCompletedRequests(self,user_id, keyword):
+    def searchCompletedRequests(self,pin_user_id, keyword):
         request = Request()
-        return request.searchCompletedRequests(user_id, keyword)
+        return request.searchCompletedRequests(pin_user_id, keyword)

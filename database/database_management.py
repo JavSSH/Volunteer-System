@@ -72,23 +72,6 @@ def requestTableSetup():
     print("Request table has been created successfully!")
     conn.commit()
 
-def opportunityTableSetup():
-    conn = dbConnection()
-    conn.row_factory = sqlite3.Row
-    cursor = conn.cursor()
-    cursor.execute("DROP TABLE IF EXISTS opportunity")
-    opportunity_data = open("database/mock-data/opportunity.sql", "r")
-    opportunity_sql = opportunity_data.read()
-    opportunity_data.close()
-    opportunity_sql_cmds = opportunity_sql.split(";")
-    for sql in opportunity_sql_cmds:
-        try:
-            cursor.execute(sql)
-        except Exception as err:
-            print("Skipped: ", err)
-    print("Opportunity table has been created successfully!")
-    conn.commit()
-
 def shortlistTableSetup():
     conn = dbConnection()
     conn.row_factory = sqlite3.Row
@@ -127,7 +110,6 @@ if __name__ == "__main__":
     userTableSetup()
     categoryTableSetup()
     requestTableSetup()
-    opportunityTableSetup()
     shortlistTableSetup()
     print("\n\nAll tables have been created successfully!")
     print("\n")

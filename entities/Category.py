@@ -11,8 +11,16 @@ class Category:
         conn = database_management.dbConnection()
         conn.row_factory = sqlite3.Row
         cursor = conn.cursor()
+        # Check if category name already exists
+        cursor.execute("SELECT category_name FROM category WHERE category_name = ?", (category_name,))
+        existing_category = cursor.fetchone()
+        
+        if existing_category:
+            conn.close()
+            return False  # Category name already exists
+        
         cursor.execute("INSERT INTO category (category_name, category_desc) VALUES (?, ?)", 
-                       category_name, category_desc)
+                       (category_name, category_desc))
         conn.commit()
         conn.close()
         return True
@@ -30,6 +38,14 @@ class Category:
         conn = database_management.dbConnection()
         conn.row_factory = sqlite3.Row
         cursor = conn.cursor()
+        # Check if category name already exists
+        cursor.execute("SELECT category_name FROM category WHERE category_name = ?", (category_name,))
+        existing_category = cursor.fetchone()
+        
+        if existing_category:
+            conn.close()
+            return False  # Category name already exists
+        
         cursor.execute("UPDATE category SET category_name = ?, category_desc = ? WHERE category_id = ?", 
                        (category_name, category_desc, category_id,))
         conn.commit()
@@ -54,6 +70,17 @@ class Category:
         rows = cursor.fetchall()
         conn.close()
         return [Category(**dict(row)) for row in rows] if rows else []
+    
+    def getCategoryById(self, category_id):
+        conn = database_management.dbConnection()
+        conn.row_factory = sqlite3.Row
+        cursor = conn.cursor()
+
+        cursor.execute("SELECT * FROM category WHERE category_id = ?", (category_id,))
+        category = cursor.fetchone()
+        conn.close()
+
+        return category  # This returns a Row object or None if not found
     
     def __str__(self):
         return (f"Category(\n"

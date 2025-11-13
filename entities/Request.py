@@ -3,28 +3,27 @@ import sqlite3, re
 
 
 class Request:
-    def __init__(self, request_id=None, user_id=None, category_id=None, request_status=None, request_date=None, request_view_count=None, request_shortlist_count=None, category_name=None, category_desc=None):
+    def __init__(self, request_id=None, pin_user_id=None, csrrep_user_id=None, category_id=None, request_status=None, request_date=None, request_view_count=None, request_shortlist_count=None):
         self.request_id = request_id
-        self.user_id = user_id
+        self.pin_user_id = pin_user_id
+        self.csrrep_user_id = csrrep_user_id
         self.category_id = category_id
         self.request_status = request_status
         self.request_date = request_date
         self.request_view_count = request_view_count
         self.request_shortlist_count = request_shortlist_count
-        self.category_name = category_name
-        self.category_desc = category_desc
+        
  
-    def createRequest(self, user_id, category_id):
+    def createRequest(self, pin_user_id, category_id):
         conn = database_management.dbConnection()
         conn.row_factory = sqlite3.Row
         cursor = conn.cursor()
-        cursor.execute("INSERT INTO request (pin_user_id, category_id, request_status, request_date, request_view_count, request_shortlist_count) VALUES (?, ?, false, strftime('%d/%m/%Y', 'now'), 0, 0)", (user_id, category_id))
+        cursor.execute("INSERT INTO request (pin_user_id, category_id, request_status, request_date, request_view_count, request_shortlist_count) VALUES (?, ?, false, strftime('%d/%m/%Y', 'now'), 0, 0)", (pin_user_id, category_id))
         conn.commit()
-        request_id = cursor.lastrowid
         conn.close()
         return True
     
-    def viewRequests(self, user_id):
+    def viewRequests(self, pin_user_id):
         conn = database_management.dbConnection()
         conn.row_factory = sqlite3.Row
         cursor = conn.cursor()
@@ -32,11 +31,12 @@ class Request:
             SELECT r.*, c.category_name, c.category_desc
             FROM request r
             LEFT JOIN category c ON r.category_id = c.category_id
-            WHERE r.user_id = ? AND r.request_status = 0
-        """, (user_id,))
+            WHERE pin_user_id = ? AND r.request_status = 0
+        """, (pin_user_id,))
         rows = cursor.fetchall()
         conn.close()
         return [Request(**dict(row)) for row in rows] if rows else []
+        
 
     def updateRequest(self, category_id, request_id):
         conn = database_management.dbConnection()
@@ -63,7 +63,7 @@ class Request:
         cursor.execute("""SELECT r.request_id, r.request_date, r.request_view_count, c.category_name, c.category_desc
         FROM request r
         JOIN category c ON r.category_id = c.category_id
-        WHERE r.user_id = ?""", (pin_user_id,))
+        WHERE r.pin_user_id = ?""", (pin_user_id,))
         conn.commit()
         conn.close()
         return True
@@ -72,7 +72,7 @@ class Request:
         conn = database_management.dbConnection()
         conn.row_factory = sqlite3.Row
         cursor = conn.cursor()
-        cursor.execute("SELECT request_id, request_shortlist_count FROM request WHERE user_id = ?", (pin_user_id,))
+        cursor.execute("SELECT request_id, request_shortlist_count FROM request WHERE pin_user_id = ?", (pin_user_id,))
         conn.commit()
         conn.close()
         return True
@@ -121,8 +121,9 @@ class Request:
     
     def __str__(self):
         return (f"Request(\n"
-                f"  request_id={self.user_id},\n"
-                f"  user_id={self.user_id},\n"
+                f"  request_id={self.request_id},\n"
+                f"  pin_user_id={self.pin_user_id},\n"
+                f"  csrrep_user_id={self.csrrep_user_id},\n"
                 f"  category_id={self.category_id},\n"
                 f"  request_status={self.request_status},\n"
                 f"  request_date={self.request_date},\n"

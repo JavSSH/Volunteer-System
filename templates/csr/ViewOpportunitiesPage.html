@@ -6,6 +6,7 @@
   <div class="dashboard-container">
     <div class="d-flex justify-content-between align-items-center mb-3">
       <h1 class="m-0">Volunteer Opportunities Management</h1>
+        <a href="{{ url_for('viewShortlistOpportunities') }}" class="plain-btn">My Shortlist</a>
       
     </div>
   </div>
@@ -30,53 +31,77 @@
   </form>
 
   <!-- Opportunities table -->
-  {% if not opportunities %}
-    <h2 style="text-align:center;">No such opportunity found!</h2>
-  {% else %}
-  <div class="card">
-    <div class="card-header d-flex justify-content-between align-items-center">
-      <h5 class="m-0">All Opportunities ({{ opportunities|length }})</h5>
-    </div>
-    <div class="card-body p-0">
-      <div class="table-responsive">
-        <table class="table table-striped table-hover m-0 align-middle">
-          <thead class="table-light">
-            <tr>
-              <th style="width: 80px;">ID</th>
-              <th>Name</th>
-              <th style="width: 100%;">Description</th>
-              <th style="width: 250px;">Actions</th>
-            </tr>
-          </thead>
-          <tbody>
-            {% for opportunity in rows %}
-            <tr>
-              <td class="text-monospace">{{ opportunity.category_id }}</td>
-              <td>{{ opportunity.category_name }}</td>
-              <td>{{ opportunity.category_desc }}</td>
-              <td>
-                <div class="btn-toolbar" role="toolbar" style="gap: 10px; flex-wrap: wrap;">
-                  <!-- View Details only -->
-                  <a class="btn btn-info btn-sm"
-                     href="{{ url_for('other_dashboard', category_id=opportunity.category_id) }}">
-                    <i class="bi bi-eye"></i> View Details
-                  </a>
-                      <form class="d-inline"
-                          method="post"
-                          action="{{ url_for('addToShortlist', request_id=opportunity.request_id) }}">
-                      {# CSRF if using Flask-WTF: {{ csrf_token() }} #}
-                      <button type="submit" class="btn btn-outline-primary btn-sm">
-                        <i class="bi bi-bookmark-plus"></i> Add to shortlist
-                      </button>
-                    </form>
-                </div>
-              </td>
-            </tr>
-            {% endfor %}
-          </tbody>
-        </table>
+    <!-- Requests Table -->
+    {% if not requests %}
+      <h2 style="text-align:center;">No requests found!</h2>
+    {% else %}
+    <div class="card">
+      <div class="card-header d-flex justify-content-between align-items-center">
+        <h5 class="m-0">All Requests ({{ requests|length }})</h5>
       </div>
-    </div>
+
+      <div class="card-body p-0">
+        <div class="table-responsive">
+          <table class="table table-striped table-hover m-0 align-middle">
+  <thead class="table-light">
+    <tr>
+      <th style="width: 80px;">ID</th>
+      <th style="width: 200px;">Category Name</th>
+      <th>Category Description</th>
+      <th style="width: 160px;">Date</th>
+      <th class="compact-column" style="width: 80px;">Views</th>
+      <th class="compact-column" style="width: 90px;">Shortlists</th>
+      <th style="width: 140px;">Actions</th>
+    </tr>
+  </thead>
+
+  <tbody>
+  {% for r in requests %}
+  <tr>
+    <td class="text-monospace">{{ r.request_id }}</td>
+
+    <td>
+      {% if r.category_name %}
+        {{ r.category_name }}
+      {% elif category_map %}
+        {{ category_map.get(r.category_id, {}).category_name if category_map.get(r.category_id) else 'Category ' ~ r.category_id }}
+      {% else %}
+        Category {{ r.category_id }}
+      {% endif %}
+    </td>
+
+    <td>
+      {% if r.category_desc %}
+        <span class="text-muted">{{ r.category_desc }}</span>
+      {% elif category_map and category_map.get(r.category_id) %}
+        <span class="text-muted">{{ category_map.get(r.category_id).category_desc }}</span>
+      {% else %}
+        <span class="text-muted">-</span>
+      {% endif %}
+    </td>
+
+    <td>{{ r.request_date }}</td>
+
+    <td class="compact-column">{{ r.request_view_count }}</td>
+
+    <td class="compact-column">{{ r.request_shortlist_count }}</td>
+
+    <td class="compact-column">
+      <!-- View details button -->
+      <a href="{{ url_for('viewOpportunitiesDetails', request_id=r.request_id) }}"
+         class="btn btn-sm btn-outline-primary">
+        View details
+      </a>
+
+    
+    </td>
+  </tr>
+  {% endfor %}
+</tbody>
+</table>
+
+        </div>
+      </div>
 
 
     <!-- Pagination (optional) -->

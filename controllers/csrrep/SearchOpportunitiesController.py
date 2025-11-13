@@ -1,4 +1,5 @@
-from entities.Opportunity import Opportunity
+from entities.Request import Request
+
 
 class SearchOpportunitiesController:
     
@@ -6,5 +7,5 @@ class SearchOpportunitiesController:
         pass
 
     def searchOpportunities(self, keyword):
-        opportunity = Opportunity()
-        return opportunity.searchOpportunities(keyword)
+        request = Request()
+        return request.searchOpportunities(keyword)

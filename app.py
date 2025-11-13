@@ -540,8 +540,9 @@ def viewRequestPage():
     if session['role_id'] != 3:
         return redirect(url_for('login'))
 
-    view_controller = ViewRequestController(session['user_id'])
-    requests = view_controller.viewRequests(session['user_id'])
+    view_controller = ViewRequestController(session['user_id'],session['role_id'])
+    requests = view_controller.viewRequests(session['user_id'], session['role_id'])
+
     return render_template("pin/ViewRequestsPage.html", requests=requests)
 
 @app.route("/CreateRequestPage", methods=["GET", "POST"])
@@ -642,42 +643,81 @@ def deleteRequestPage():
 
 # CSR Rep Routes
 
-@app.route("/ViewOpportunitiesPage", methods=["GET"])
+@app.route("/ViewOpportunitiesPage", methods=["GET" , "POST"])
 def viewOpportunitiesPage():
     if 'email' not in session:
         return redirect(url_for('login'))
     if session['role_id'] != 4:  # Assuming CSR Rep
         return redirect(url_for('login'))
 
-    view_controller = ViewOpportunitiesDetailsController()
-    opportunities = view_controller.viewOpportunitiesDetails()
+    view_controller = ViewRequestController(session['user_id'],session['role_id'])
+    requests = view_controller.viewRequests(session['user_id'],session['role_id'])
 
     search_controller = SearchOpportunitiesController()
     keyword = (request.args.get('opportunity_keyword') or "").strip()
-    search = search_controller.searchOpportunities(keyword)
-    rows = search if keyword else opportunities
+    if keyword:
+        requests = search_controller.searchOpportunities(keyword) 
 
-    # request_id = (request.args.get('request_id') or "").strip()
-    # shortlist_controller = AddToShortlistController()
-    # shortlist = shortlist_controller.addToShortlist(request_id)
+    return render_template("csr/ViewOpportunitiesPage.html",keyword=keyword, requests=requests)
 
-    return render_template("csr/ViewOpportunitiesPage.html", opportunities=opportunities , rows=rows, keyword=keyword )
 
-@app.route("/ViewOpportunitiesPage", methods=["GET", "POST"])
+@app.route("/addToShortlist", methods=["POST"])
 def addToShortlist():
     if 'email' not in session:
         return redirect(url_for('login'))
     if session['role_id'] != 4:  # Assuming CSR Rep
         return redirect(url_for('login'))
     
-    request_id = (request.args.get('request_id') or "").strip()
-    shortlist_controller = AddToShortlistController()
-    shortlist = shortlist_controller.addToShortlist(request_id)
-    print(request_id)
-    print(shortlist)
-    flash("Added to shortlist!", "success")
+    request_id = (request.form.get('request_id') or "").strip()
+    csrrep_user_id = session['user_id']
+    if not csrrep_user_id:
+        flash("No CSR user ID in session.", "warning")
+        return redirect(request.referrer or url_for('viewOpportunitiesPage'))
 
-    return render_template("csr/ViewOpportunitiesPage.html", opportunity_keyword=shortlist)
+    shortlist_controller = AddToShortlistController()
+    shortlist = shortlist_controller.addToShortlist(request_id, csrrep_user_id)
+    if shortlist is None:
+        flash("Request not found, cannot add to shortlist.", "warning")
+    else:
+        flash("Added to shortlist!", "success")
+    
+
+    return redirect(request.referrer or url_for('viewOpportunitiesPage'))
+
+@app.route("/ViewOpportunitiesDetailsPage", methods=["GET"])
+def viewOpportunitiesDetails():
+    if 'email' not in session:
+        return redirect(url_for('login'))
+    if session['role_id'] != 4:  # Assuming CSR Rep
+        return redirect(url_for('login'))
+
+    request_id = request.args.get('request_id')
+    view_controller = ViewOpportunitiesDetailsController()
+    opportunity= view_controller.viewOpportunitiesDetails(request_id)
+
+    return render_template("csr/ViewOpportunitiesDetailsPage.html", opportunity=opportunity)
+
+@app.route("/ViewShortlistOpportunitiesPage", methods=["GET", "POST"])
+def viewShortlistOpportunities():
+    if 'email' not in session:
+        return redirect(url_for('login'))
+    if session['role_id'] != 4:  # Assuming CSR Rep
+        return redirect(url_for('login'))
+    
+    print(session['user_id'])
+
+    view_controller = ViewShortlistController()
+    shortlist = view_controller.viewShortlist(session['user_id'])
+
+    search_controller = SearchShortlistController()
+    shortlist_keyword = (request.args.get('shortlist_keyword') or "").strip()
+    if shortlist_keyword:
+        shortlist = search_controller.searchShortlist(session['user_id'] ,shortlist_keyword) 
+
+    
+
+    return render_template("csr/ViewShortlistOpportunitiesPage.html", shortlist=shortlist , shortlist_keyword=shortlist_keyword)
+
 
 
 @app.route("/other_dashboard")

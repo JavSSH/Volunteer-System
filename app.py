@@ -1,5 +1,6 @@
 # Main Import Statements
 from flask import Flask, render_template, request, redirect, url_for, flash, session, make_response
+import sqlite3
 
 # User Admin Import Statements
 from controllers.useradmin.UserLoginController import UserLoginController
@@ -33,6 +34,13 @@ from controllers.pin.DeleteRequestController import DeleteRequestController
 
 # CSR Rep Import Statements
 from controllers.csrrep.ViewOpportunitiesDetailsController import ViewOpportunitiesDetailsController
+from controllers.csrrep.SearchOpportunitiesController import SearchOpportunitiesController
+from controllers.csrrep.ViewShortlistController import ViewShortlistController
+from controllers.csrrep.ViewCompletedServicesController import ViewCompletedServicesController
+from controllers.csrrep.SearchCompletedServicesController import SearchCompletedServicesController
+from controllers.csrrep.SearchShortlistController import SearchShortlistController
+from controllers.csrrep.AddToShortlistController import AddToShortlistController
+
 
 
 
@@ -57,6 +65,8 @@ def login():
             return redirect(url_for('viewVolunteerCategoryPage'))
         if session['role_id'] == 3:
             return redirect(url_for('viewRequestsPage'))
+        if session['role_id'] == 4:
+            return redirect(url_for('viewOpportunitiesPage'))
         else:
             return redirect(url_for('other_dashboard'))
     # Check if user credentials are valid
@@ -74,7 +84,7 @@ def login():
                 return redirect(url_for('viewVolunteerCategoryPage'))
             if current_user.role_id == 3:
                 return redirect(url_for('viewRequestPage'))
-            if current_user.role_id == 3:
+            if current_user.role_id == 4:
                 return redirect(url_for('viewOpportunitiesPage'))
             return redirect(url_for('other_dashboard'))
         else:
@@ -548,7 +558,32 @@ def viewOpportunitiesPage():
     view_controller = ViewOpportunitiesDetailsController()
     opportunities = view_controller.viewOpportunitiesDetails()
 
-    return render_template("csr/ViewOpportunitiesPage.html", opportunities=opportunities)
+    search_controller = SearchOpportunitiesController()
+    keyword = (request.args.get('opportunity_keyword') or "").strip()
+    search = search_controller.searchOpportunities(keyword)
+    rows = search if keyword else opportunities
+
+    # request_id = (request.args.get('request_id') or "").strip()
+    # shortlist_controller = AddToShortlistController()
+    # shortlist = shortlist_controller.addToShortlist(request_id)
+
+    return render_template("csr/ViewOpportunitiesPage.html", opportunities=opportunities , rows=rows, keyword=keyword )
+
+@app.route("/ViewOpportunitiesPage", methods=["GET", "POST"])
+def addToShortlist():
+    if 'email' not in session:
+        return redirect(url_for('login'))
+    if session['role_id'] != 4:  # Assuming CSR Rep
+        return redirect(url_for('login'))
+    
+    request_id = (request.args.get('request_id') or "").strip()
+    shortlist_controller = AddToShortlistController()
+    shortlist = shortlist_controller.addToShortlist(request_id)
+    print(request_id)
+    print(shortlist)
+    flash("Added to shortlist!", "success")
+
+    return render_template("csr/ViewOpportunitiesPage.html", opportunity_keyword=shortlist)
 
 
 @app.route("/other_dashboard")

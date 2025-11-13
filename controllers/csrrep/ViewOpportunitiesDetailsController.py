@@ -1,9 +1,9 @@
-from entities.CsrRep import CsrRep  
+from entities.Opportunity import Opportunity 
 
 class ViewOpportunitiesDetailsController:
     def __init__(self):
         pass
    
     def viewOpportunitiesDetails(self):
-        csr_rep = CsrRep()
-        return csr_rep.viewOpportunitiesDetails(self)
+        opportunity = Opportunity()
+        return opportunity.viewOpportunitiesDetails()

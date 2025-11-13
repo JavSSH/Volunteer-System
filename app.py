@@ -543,6 +543,7 @@ def viewRequestPage():
     view_controller = ViewRequestController(session['user_id'],session['role_id'])
     requests = view_controller.viewRequests(session['user_id'], session['role_id'])
 
+
     return render_template("pin/ViewRequestsPage.html", requests=requests)
 
 @app.route("/CreateRequestPage", methods=["GET", "POST"])
@@ -617,17 +618,27 @@ def updateRequestPage(request_id):
 
 @app.route("/ViewCompletedRequestsPage", methods=["GET", "POST"])
 def viewCompletedRequestsPage():
-    # For now, skip login and hardcode a test user id
-    pin_user_id = 1
+    if 'email' not in session:
+        return redirect(url_for('login'))
+    if session['role_id'] != 3:
+        return redirect(url_for('login'))
+   
+    pin_user_id = session['user_id']
+    
 
     view_completed_requests_controller = ViewCompletedRequestsController()
     completed_requests = view_completed_requests_controller.viewCompletedRequests(pin_user_id)
 
+    search_controller = SearchCompletedRequestsController(pin_user_id)
+    keyword = (request.args.get('request_keyword') or "").strip()
+    if keyword:
+        completed_requests = search_controller.searchCompletedRequests(pin_user_id,keyword) 
+
     # If you *just* want to display completed requests for now:
     return render_template(
         "pin/ViewCompletedRequestsPage.html",
-        completed_requests=completed_requests
-    )
+        completed_requests=completed_requests , request_keyword=keyword)
+    
  
 @app.route("/DeleteRequestPage", methods=["GET", "POST"])
 def deleteRequestPage():

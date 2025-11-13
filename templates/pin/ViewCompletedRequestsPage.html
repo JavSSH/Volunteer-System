@@ -27,14 +27,14 @@
     <!-- ============================= -->
     <!-- SEARCH + FILTER SECTION HERE -->
     <!-- ============================= -->
-    <form method="POST" class="mb-4">
+    <form method="GET" class="mb-4">
       <div class="card p-3">
 
         <!-- SEARCH BAR -->
         <div class="d-flex gap-3 mb-3" style="max-width: 500px;">
           <input 
             type="text" 
-            name="keyword" 
+            name="request_keyword" 
             class="form-control"
             placeholder="Search completed requests..."
             value="{{ search_term or '' }}"
@@ -127,7 +127,7 @@
                 {% for r in completed_requests %}
                 <tr>
                   <td class="text-monospace">{{ r.request_id }}</td>
-                  <td>Category {{ r.category_id }}</td>
+                  <td>{{ r.category_name }}</td>
                   <td>{{ r.request_date }}</td>
                   <td>{{ r.request_view_count }}</td>
                   <td>{{ r.request_shortlist_count }}</td>

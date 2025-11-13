@@ -1,9 +1,9 @@
-from entities.Opportunity import Opportunity
+from entities.Request import Request
 
 class SearchShortlistController:
     def __init__(self):
         pass
    
-    def searchShortlist(self, csrrep_user_id, keyword):
-        opportunity = Opportunity()
-        return opportunity.SearchCompletedServices(csrrep_user_id, keyword)
+    def searchShortlist(self, user_id, keyword):
+        request = Request()
+        return request.searchShortlist(user_id, keyword)

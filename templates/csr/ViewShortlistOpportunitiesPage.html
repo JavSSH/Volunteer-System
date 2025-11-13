@@ -10,7 +10,7 @@
       <h1 class="m-0">My Shortlist</h1>
       <div class="d-flex gap-2 align-items-center">
         <a href="{{ url_for('viewOpportunitiesPage') }}" class="plain-btn">Back to Opportunities</a>
-        <a href="{{ url_for('viewCompletedServicesPage') }}" class="plain-btn">Completed Services</a>
+        <a href="{{ url_for('other_dashboard') }}" class="plain-btn">Completed Services</a>
       </div>
     </div>
 
@@ -22,6 +22,29 @@
         </div>
       {% endif %}
     {% endwith %}
+
+     <!-- Search box for shortlist -->
+    <form class="card mb-4" method="get" action="{{ url_for('viewShortlistOpportunities') }}">
+      <div class="card-header">
+        <h5 class="m-0">Search shortlist</h5>
+      </div>
+      <div class="card-body row g-3">
+        <div class="col-md-10">
+          <label class="form-label">Search</label>
+          <input name="shortlist_keyword"
+                  id="shortlistKeywordInput"  
+                 type="text"
+                 class="form-control"
+                 value="{{ request.args.get('shortlist_keyword', '') }}"
+                 placeholder="Search by category name, description, or request ID">
+        </div>
+        <div class="col-md-2 d-flex align-items-end">
+          <button class="plain-btn" type="submit">
+            <i class="bi bi-search"></i> Search
+          </button>
+        </div>
+      </div>
+    </form>
 
     {% if not shortlist %}
       <div class="card">
@@ -74,9 +97,9 @@
                   </td>
                   <td>
                     <div class="btn-toolbar" role="toolbar" style="gap:8px; flex-wrap:wrap;">
-                      <a class="plain-btn" href="{{ url_for('viewOpportunityDetailsPage', request_id=r.request_id) }}">View Details</a>
+                      <a class="plain-btn" href="{{ url_for('other_dashboard', request_id=r.request_id) }}">View Details</a>
                       <!-- Remove from shortlist (define this route in Flask) -->
-                      <form method="post" action="{{ url_for('removeFromShortlist', opportunity_id=r.request_id) }}" style="display:inline;">
+                      <form method="post" action="{{ url_for('other_dashboard', opportunity_id=r.request_id) }}" style="display:inline;">
                         <button class="plain-btn" type="submit">Remove</button>
                       </form>
                     </div>
@@ -97,5 +120,18 @@
   .badge.bg-success{background:#28a745;color:#fff}
   .badge.bg-platform-manager{background:#2575fc;color:#fff}
 </style>
+<script>
+  document.getElementById('shortlistKeywordInput').addEventListener('input', function(e) {
+    const keyword = this.value.trim().toLowerCase();
+    
+    // Auto-submit the form when field is completely empty
+    if (keyword === '') {
+      // Submit the form after a short delay to ensure visual feedback
+      setTimeout(() => {
+        document.querySelector('form').submit();
+      }, 200);
+    }
+  });
+</script>
 
 {% endblock %}

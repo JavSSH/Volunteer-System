@@ -74,7 +74,7 @@ def login():
         if session['role_id'] == 4:
             return redirect(url_for('viewOpportunitiesPage'))
         else:
-            return redirect(url_for('other_dashboard'))
+            return redirect(url_for('login'))
     # Check if user credentials are valid
     if request.method == 'POST':
         email = request.form.get('email')
@@ -92,7 +92,7 @@ def login():
                 return redirect(url_for('viewRequestPage'))
             if current_user.role_id == 4:
                 return redirect(url_for('viewOpportunitiesPage'))
-            return redirect(url_for('other_dashboard'))
+            return redirect(url_for('login'))
         else:
             flash("Incorrect email or password!")
             return redirect(url_for('login'))
@@ -634,10 +634,9 @@ def viewCompletedRequestsPage():
     if keyword:
         completed_requests = search_controller.searchCompletedRequests(pin_user_id,keyword) 
 
-    # If you *just* want to display completed requests for now:
     return render_template(
         "pin/ViewCompletedRequestsPage.html",
-        completed_requests=completed_requests , request_keyword=keyword)
+        completed_requests=completed_requests , search_term=keyword)
     
  
 @app.route("/DeleteRequestPage", methods=["GET", "POST"])
@@ -749,14 +748,6 @@ def viewCompletedServicesPage():
     
 
     return render_template("csr/ViewCompletedServicesPage.html", services=services ,completed_keyword=completed_keyword)
-
-
-
-@app.route("/other_dashboard")
-def other_dashboard():
-    if 'email' not in session:
-        return redirect(url_for('login'))
-    return render_template("index.html")
 
 
 if __name__ == '__main__':

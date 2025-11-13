@@ -33,6 +33,7 @@
         <!-- SEARCH BAR -->
         <div class="d-flex gap-3 mb-3" style="max-width: 500px;">
           <input 
+            id="requestKeywordInput"
             type="text" 
             name="request_keyword" 
             class="form-control"
@@ -143,6 +144,28 @@
 
   </div>
 </div>
+
+<style>
+  .text-monospace {
+    font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
+  }
+  .badge.bg-success {
+    background-color: #28a745;
+    color: white;
+  }
+</style>
+
+<script>
+  // Auto-submit when search field is cleared
+  document.getElementById('requestKeywordInput').addEventListener('input', function() {
+    const keyword = this.value.trim();
+    if (keyword === '') {
+      setTimeout(() => { 
+        document.querySelector('form').submit(); 
+      }, 200);
+    }
+  });
+</script>
 
 <style>
   .text-monospace {

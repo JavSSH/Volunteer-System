@@ -24,20 +24,6 @@ class Request:
         conn.commit()
         conn.close()
         return True
-    
-    # def viewRequests(self, pin_user_id):
-    #     conn = database_management.dbConnection()
-    #     conn.row_factory = sqlite3.Row
-    #     cursor = conn.cursor()
-    #     cursor.execute("""
-    #         SELECT r.*, c.category_name, c.category_desc
-    #         FROM request r
-    #         LEFT JOIN category c ON r.category_id = c.category_id
-    #         WHERE pin_user_id = ? AND r.request_status = 0
-    #     """, (pin_user_id,))
-    #     rows = cursor.fetchall()
-    #     conn.close()
-    #     return [Request(**dict(row)) for row in rows] if rows else []
 
     def viewRequests(self, user_id, role_id):
         conn = database_management.dbConnection()
@@ -140,10 +126,9 @@ class Request:
                 r.category_id,
                 c.category_name,
                 c.category_desc
-            FROM shortlist s
-            JOIN request r ON r.request_id = s.request_id
-            JOIN category c ON c.category_id = r.category_id
-            WHERE s.user_id = ?
+            FROM request r
+            LEFT JOIN category c ON c.category_id = r.category_id
+            WHERE r.pin_user_id = ?
             AND r.request_status = 1
             AND LOWER(
                 COALESCE(CAST(r.request_id AS TEXT), '') || ' ' ||
@@ -162,7 +147,6 @@ class Request:
         rows = cursor.fetchall()
         conn.close()
         return [Request(**dict(row)) for row in rows] if rows else []
-
     
     def getRequestById(self, request_id):
         conn = database_management.dbConnection()

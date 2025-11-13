@@ -98,10 +98,6 @@
                   <td>
                     <div class="btn-toolbar" role="toolbar" style="gap:8px; flex-wrap:wrap;">
                       <a class="plain-btn" href="{{ url_for('viewOpportunitiesDetailsPage', request_id=r.request_id) }}">View Details</a>
-                      <!-- Remove from shortlist (define this route in Flask) -->
-                      <form method="post" action="{{ url_for('other_dashboard', opportunity_id=r.request_id) }}" style="display:inline;">
-                        <button class="plain-btn" type="submit">Remove</button>
-                      </form>
                     </div>
                   </td>
                 </tr>

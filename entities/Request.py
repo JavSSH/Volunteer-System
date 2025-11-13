@@ -271,10 +271,9 @@ class Request:
             r.category_id,
             c.category_name,
             c.category_desc
-        FROM shortlist s
-        JOIN request r ON r.request_id = s.request_id
+        FROM request r 
         JOIN category c ON c.category_id = r.category_id
-        WHERE s.user_id = ? AND r.request_status = 1
+        WHERE r.csrrep_user_id = ? AND r.request_status = 1
         AND LOWER(
             COALESCE(CAST(r.request_id AS TEXT), '') || ' ' ||
             COALESCE(CAST(r.csrrep_user_id AS TEXT), '') || ' ' ||

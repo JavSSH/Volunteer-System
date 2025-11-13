@@ -616,27 +616,85 @@ def updateRequestPage(request_id):
 
     return redirect(url_for("viewRequestPage"))
 
-@app.route("/ViewCompletedRequestsPage", methods=["GET", "POST"])
-def viewCompletedRequestsPage():
-    if 'email' not in session:
-        return redirect(url_for('login'))
-    if session['role_id'] != 3:
-        return redirect(url_for('login'))
+# @app.route("/ViewCompletedRequestsPage", methods=["GET", "POST"])
+# def viewCompletedRequestsPage():
+#     if 'email' not in session:
+#         return redirect(url_for('login'))
+#     if session['role_id'] != 3:
+#         return redirect(url_for('login'))
    
-    pin_user_id = session['user_id']
+#     pin_user_id = session['user_id']
     
 
+#     view_completed_requests_controller = ViewCompletedRequestsController()
+#     completed_requests = view_completed_requests_controller.viewCompletedRequests(pin_user_id)
+
+#     search_controller = SearchCompletedRequestsController(pin_user_id)
+#     keyword = (request.args.get('request_keyword') or "").strip()
+#     if keyword:
+#         completed_requests = search_controller.searchCompletedRequests(pin_user_id,keyword) 
+
+#     return render_template(
+#         "pin/ViewCompletedRequestsPage.html",
+#         completed_requests=completed_requests , search_term=keyword)
+
+@app.route("/ViewCompletedRequestsPage", methods=["GET", "POST"])
+def viewCompletedRequestsPage():
+    if 'email' not in session or session.get('role_id') != 3:
+        return redirect(url_for('login'))
+
+    pin_user_id = session['user_id']
+
     view_completed_requests_controller = ViewCompletedRequestsController()
+    search_controller = SearchCompletedRequestsController(pin_user_id)
+    filter_controller = FilterCompletedRequests()
+
+    
+    keyword = (request.args.get('request_keyword') or "").strip()
+    action = request.args.get('action')
+
+    selected_category = (request.args.get('category_id') or "").strip()
+    start_date = (request.args.get('start_date') or "").strip()
+    end_date = (request.args.get('end_date') or "").strip()
+
+   
     completed_requests = view_completed_requests_controller.viewCompletedRequests(pin_user_id)
 
-    search_controller = SearchCompletedRequestsController(pin_user_id)
-    keyword = (request.args.get('request_keyword') or "").strip()
-    if keyword:
-        completed_requests = search_controller.searchCompletedRequests(pin_user_id,keyword) 
+    
+    if action == "search" and keyword:
+        completed_requests = search_controller.searchCompletedRequests(pin_user_id, keyword)
+
+    elif action == "filter":
+        # Only call filter if something is actually selected
+        cat_id_for_filter = int(selected_category) if selected_category else None
+        date1_for_filter = start_date if start_date else None
+        date2_for_filter = end_date if end_date else None
+
+        completed_requests = filter_controller.filterCompletedRequests(
+            pin_user_id,
+            cat_id_for_filter,
+            date1_for_filter,
+            date2_for_filter
+        )
+
+    # Build categories dynamically from ALL completed requests (not just filtered)
+    base_completed_requests = completed_requests
+    categories = {}
+    for r in base_completed_requests:
+        # assumes Request has category_id and category_name
+        if getattr(r, "category_id", None) is not None:
+            categories[r.category_id] = r.category_name
 
     return render_template(
         "pin/ViewCompletedRequestsPage.html",
-        completed_requests=completed_requests , search_term=keyword)
+        completed_requests=completed_requests,
+        search_term=keyword,
+        categories=categories,
+        selected_category=selected_category,
+        start_date=start_date,
+        end_date=end_date
+    )
+
     
  
 @app.route("/DeleteRequestPage", methods=["GET", "POST"])
@@ -740,13 +798,12 @@ def viewCompletedServicesPage():
     services = view_controller.viewCompletedServices(session['user_id'])
 
     search_controller = SearchCompletedServicesController()
-    shortlist_keyword = (request.args.get('shortlist_keyword') or "").strip()
+    shortlist_keyword = (request.args.get('completed_keyword') or "").strip()
     if shortlist_keyword:
         services = search_controller.searchCompletedServices(session['user_id'], shortlist_keyword) 
 
-    return render_template("csr/ViewCompletedServicesPage.html", 
-                         services=services, 
-                         shortlist_keyword=shortlist_keyword)
+
+    return render_template("csr/ViewCompletedServicesPage.html", services=services , shortlist_keyword=shortlist_keyword)
 
 
 if __name__ == '__main__':

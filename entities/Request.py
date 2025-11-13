@@ -98,12 +98,49 @@ class Request:
         conn.close()
         return [Request(**dict(row)) for row in rows] if rows else []
     
-    def filterCompletedRequests(self, pin_user_id, category_id, request_date1, request_date2):
+    # def filterCompletedRequests(self, pin_user_id, category_id, request_date1, request_date2):
+    #     conn = database_management.dbConnection()
+    #     conn.row_factory = sqlite3.Row
+    #     cursor = conn.cursor()
+    #     cursor.execute("""SELECT * FROM request WHERE pin_user_id = ? AND category_id = ? AND request_status = true AND date(CASE WHEN request_date LIKE '____-__-__' THEN request_date WHEN request_date LIKE '__/__/____' THEN substr(request_date,7,4) || '-' ||substr(request_date,4,2) || '-' ||substr(request_date,1,2) ELSE NULL END)
+    #     BETWEEN date('?') AND date('?');""", (pin_user_id, category_id, request_date1, request_date2))  ## the date params expects in 2025-11-10 format
+    #     rows = cursor.fetchall()
+    #     conn.close()
+    #     return [Request(**dict(row)) for row in rows] if rows else []
+
+    def filterCompletedRequests(self, pin_user_id, category_id=None, request_date1=None, request_date2=None):
         conn = database_management.dbConnection()
         conn.row_factory = sqlite3.Row
         cursor = conn.cursor()
-        cursor.execute("""SELECT * FROM request WHERE pin_user_id = ? AND category_id = ? AND request_status = true AND date(CASE WHEN request_date LIKE '____-__-__' THEN request_date WHEN request_date LIKE '__/__/____' THEN substr(request_date,7,4) || '-' ||substr(request_date,4,2) || '-' ||substr(request_date,1,2) ELSE NULL END)
-        BETWEEN date('?') AND date('?');""", (pin_user_id, category_id, request_date1, request_date2))  ## the date params expects in 2025-11-10 format
+
+        sql = """
+        SELECT r.*, c.category_name
+        FROM request r
+        LEFT JOIN category c ON r.category_id = c.category_id
+        WHERE r.pin_user_id = ?
+        AND r.request_status = 1
+        """
+        params = [pin_user_id]
+
+        # Filter by category if selected
+        if category_id:
+            sql += " AND r.category_id = ?"
+            params.append(category_id)
+
+        # Filter by date range if both given
+        if request_date1 and request_date2:
+            sql += """
+            AND date(
+                CASE 
+                    WHEN r.request_date LIKE '____-__-__' THEN r.request_date
+                    WHEN r.request_date LIKE '__/__/____' THEN substr(r.request_date,7,4) || '-' || substr(r.request_date,4,2) || '-' || substr(r.request_date,1,2)
+                    ELSE NULL
+                END
+            ) BETWEEN date(?) AND date(?)
+            """
+            params.extend([request_date1, request_date2])
+
+        cursor.execute(sql, params)
         rows = cursor.fetchall()
         conn.close()
         return [Request(**dict(row)) for row in rows] if rows else []
@@ -361,7 +398,7 @@ class Request:
         FROM shortlist s
         JOIN request r ON r.request_id = s.request_id
         JOIN category c ON c.category_id = r.category_id
-        WHERE s.user_id = ?
+        WHERE s.user_id = ? AND r.request_status = 1
         AND LOWER(
             COALESCE(CAST(r.request_id AS TEXT), '') || ' ' ||
             COALESCE(CAST(r.csrrep_user_id AS TEXT), '') || ' ' ||

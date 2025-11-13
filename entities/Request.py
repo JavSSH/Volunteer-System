@@ -78,11 +78,6 @@ class Request:
         conn.close()
         return True
     
-<<<<<<< HEAD
-=======
-    
-    
->>>>>>> 110b46a6afd2a0d00c77384395f6409098846b92
     def viewCompletedRequests(self, pin_user_id):
         conn = database_management.dbConnection()
         conn.row_factory = sqlite3.Row

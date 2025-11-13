@@ -4,6 +4,6 @@ class SearchCompletedServicesController:
     def __init__(self):
         pass
    
-    def searchCompletedServices(self, csrrep_user_id, category_id, request_date):
+    def searchCompletedServices(self, user_id, keyword):
         opportunity = Request()
-        return opportunity.SearchCompletedServices(csrrep_user_id, category_id, request_date)
+        return opportunity.SearchCompletedServices(user_id, keyword)

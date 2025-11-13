@@ -740,14 +740,13 @@ def viewCompletedServicesPage():
     services = view_controller.viewCompletedServices(session['user_id'])
 
     search_controller = SearchCompletedServicesController()
-    completed_keyword = (request.args.get('completed_keyword') or "").strip()
-    if completed_keyword:
-        services = search_controller.searchCompletedServices(session['user_id'], completed_keyword) 
+    shortlist_keyword = (request.args.get('shortlist_keyword') or "").strip()
+    if shortlist_keyword:
+        services = search_controller.searchCompletedServices(session['user_id'], shortlist_keyword) 
 
-
-    
-
-    return render_template("csr/ViewCompletedServicesPage.html", services=services ,completed_keyword=completed_keyword)
+    return render_template("csr/ViewCompletedServicesPage.html", 
+                         services=services, 
+                         shortlist_keyword=shortlist_keyword)
 
 
 if __name__ == '__main__':

@@ -14,7 +14,7 @@
     </div>
 
      <!-- Search box for shortlist -->
-    <form class="card mb-4" method="get" action="{{ url_for('viewShortlistOpportunitiesPage') }}">
+    <form class="card mb-4" method="get" action="{{ url_for('viewCompletedServicesPage') }}">
       <div class="card-header">
         <h5 class="m-0">Search shortlist</h5>
       </div>
@@ -99,8 +99,6 @@
                          href="{{ url_for('viewOpportunitiesDetailsPage', request_id=r.request_id) }}">
                         View Details
                       </a>
-                      <!-- If you support printing/exporting a completion slip, add a button here -->
-                      {# <a class="plain-btn" href="{{ url_for('downloadCompletion', request_id=r.request_id) }}">Download Slip</a> #}
                     </div>
                   </td>
                 </tr>
@@ -114,6 +112,25 @@
     {% endif %}
   </div>
 </div>
+
+<style>
+  .text-monospace{
+    font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono","Courier New", monospace;
+  }
+  .badge.bg-success{background:#28a745;color:#fff}
+</style>
+
+<script>
+  // Auto-submit when search field is cleared
+  document.getElementById('shortlistKeywordInput').addEventListener('input', function() {
+    const keyword = this.value.trim();
+    if (keyword === '') {
+      setTimeout(() => { 
+        document.querySelector('form').submit(); 
+      }, 200);
+    }
+  });
+</script>
 
 <style>
   .text-monospace{

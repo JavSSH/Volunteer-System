@@ -164,12 +164,6 @@ class Request:
         row = cur.fetchone()
         conn.close()
         return Request(**dict(row)) if row else None
-    
-
-
-
-
-    ## seperator
 
     def searchOpportunities(self, keyword):
         conn = database_management.dbConnection()

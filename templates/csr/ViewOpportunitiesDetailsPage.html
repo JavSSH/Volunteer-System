@@ -82,7 +82,7 @@
 
         <div class="card-footer d-flex justify-content-end gap-2">
           <!-- Add to shortlist -->
-          <form method="post" action="{{ url_for('addToShortlist') }}" style="display:inline;">
+          <form method="post" action="{{ url_for('addToShortlistPage') }}" style="display:inline;">
             <input type="hidden" name="request_id" value="{{ opportunity.request_id }}">
             <button class="plain-btn" type="submit">Add to Shortlist</button>
           </form>

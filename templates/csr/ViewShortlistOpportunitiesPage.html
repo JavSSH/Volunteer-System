@@ -10,7 +10,7 @@
       <h1 class="m-0">My Shortlist</h1>
       <div class="d-flex gap-2 align-items-center">
         <a href="{{ url_for('viewOpportunitiesPage') }}" class="plain-btn">Back to Opportunities</a>
-        <a href="{{ url_for('other_dashboard') }}" class="plain-btn">Completed Services</a>
+      
       </div>
     </div>
 
@@ -24,7 +24,7 @@
     {% endwith %}
 
      <!-- Search box for shortlist -->
-    <form class="card mb-4" method="get" action="{{ url_for('viewShortlistOpportunities') }}">
+    <form class="card mb-4" method="get" action="{{ url_for('viewShortlistOpportunitiesPage') }}">
       <div class="card-header">
         <h5 class="m-0">Search shortlist</h5>
       </div>
@@ -97,7 +97,7 @@
                   </td>
                   <td>
                     <div class="btn-toolbar" role="toolbar" style="gap:8px; flex-wrap:wrap;">
-                      <a class="plain-btn" href="{{ url_for('other_dashboard', request_id=r.request_id) }}">View Details</a>
+                      <a class="plain-btn" href="{{ url_for('viewOpportunitiesDetailsPage', request_id=r.request_id) }}">View Details</a>
                       <!-- Remove from shortlist (define this route in Flask) -->
                       <form method="post" action="{{ url_for('other_dashboard', opportunity_id=r.request_id) }}" style="display:inline;">
                         <button class="plain-btn" type="submit">Remove</button>

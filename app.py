@@ -662,7 +662,7 @@ def viewOpportunitiesPage():
 
 
 @app.route("/addToShortlist", methods=["POST"])
-def addToShortlist():
+def addToShortlistPage():
     if 'email' not in session:
         return redirect(url_for('login'))
     if session['role_id'] != 4:  # Assuming CSR Rep
@@ -685,7 +685,7 @@ def addToShortlist():
     return redirect(request.referrer or url_for('viewOpportunitiesPage'))
 
 @app.route("/ViewOpportunitiesDetailsPage", methods=["GET"])
-def viewOpportunitiesDetails():
+def viewOpportunitiesDetailsPage():
     if 'email' not in session:
         return redirect(url_for('login'))
     if session['role_id'] != 4:  # Assuming CSR Rep
@@ -695,10 +695,11 @@ def viewOpportunitiesDetails():
     view_controller = ViewOpportunitiesDetailsController()
     opportunity= view_controller.viewOpportunitiesDetails(request_id)
 
+
     return render_template("csr/ViewOpportunitiesDetailsPage.html", opportunity=opportunity)
 
 @app.route("/ViewShortlistOpportunitiesPage", methods=["GET", "POST"])
-def viewShortlistOpportunities():
+def viewShortlistOpportunitiesPage():
     if 'email' not in session:
         return redirect(url_for('login'))
     if session['role_id'] != 4:  # Assuming CSR Rep
@@ -717,6 +718,26 @@ def viewShortlistOpportunities():
     
 
     return render_template("csr/ViewShortlistOpportunitiesPage.html", shortlist=shortlist , shortlist_keyword=shortlist_keyword)
+
+@app.route("/ViewCompletedServicesPage", methods=["GET", "POST"])
+def viewCompletedServicesPage():
+    if 'email' not in session:
+        return redirect(url_for('login'))
+    if session['role_id'] != 4:  # Assuming CSR Rep
+        return redirect(url_for('login'))
+
+    view_controller = ViewCompletedServicesController()
+    services = view_controller.viewCompletedServices(session['user_id'])
+
+    search_controller = SearchCompletedServicesController()
+    completed_keyword = (request.args.get('completed_keyword') or "").strip()
+    if completed_keyword:
+        services = search_controller.searchCompletedServices(session['user_id'], completed_keyword) 
+
+
+    
+
+    return render_template("csr/ViewCompletedServicesPage.html", services=services ,completed_keyword=completed_keyword)
 
 
 

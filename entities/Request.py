@@ -317,49 +317,48 @@ class Request:
         conn = database_management.dbConnection()
         conn.row_factory = sqlite3.Row
         cursor = conn.cursor()
+        print(csrrep_user_id)
         cursor.execute("""
-        SELECT * FROM request WHERE csrrep_user_id = ? request_status = true
+        SELECT * FROM request r LEFT JOIN category c ON r.category_id = c.category_id WHERE r.csrrep_user_id = ? AND r.request_status = 1
         """, (csrrep_user_id,))
         rows = cursor.fetchall()
+        print([dict(row) for row in rows] if rows else [])
         conn.close()
         return [dict(row) for row in rows] if rows else []
     
-    def SearchCompletedServices(self,csrrep_user_id,category_id,request_date):
+    def SearchCompletedServices(self,user_id,keyword):
         conn = database_management.dbConnection()
         conn.row_factory = sqlite3.Row
         cursor = conn.cursor()
-        sql = """
-        SELECT
-        s.request_id,
-        s.pin_user_id,
-        s.csrrep_user_id,
-        s.category_id,
-        s.request_status,
-        s.request_date,
-        s.request_view_count,
-        s.request_shortlist_count,
-        c.category_name,
-        c.category_desc
-        FROM request AS s
-        JOIN category AS c
-        ON c.category_id = s.category_id
-        WHERE 1=1
-        """
-        params = []
-        if csrrep_user_id is not None:
-            sql += " AND s.csrrep_user_id = ?"
-        params.append(csrrep_user_id)
-
-        if category_id is not None:
-            sql += " AND s.category_id = ?"
-        params.append(category_id)
-
-        if request_date is not None:
-            sql += " AND s.request_date = ?"
-        params.append(request_date)
-
-        sql += " ORDER BY s.request_date DESC"
-        cursor.execute(sql, params)
+        clean_keyword = re.sub(r'[^a-zA-Z0-9 ]', '', keyword).strip().lower()
+        cursor.execute("""
+        SELECT 
+            r.request_id,
+            r.request_date,
+            r.request_view_count,
+            r.request_shortlist_count,
+            r.request_status,
+            r.category_id,
+            c.category_name,
+            c.category_desc
+        FROM shortlist s
+        JOIN request r ON r.request_id = s.request_id
+        JOIN category c ON c.category_id = r.category_id
+        WHERE s.user_id = ?
+        AND LOWER(
+            COALESCE(CAST(r.request_id AS TEXT), '') || ' ' ||
+            COALESCE(CAST(r.csrrep_user_id AS TEXT), '') || ' ' ||
+            COALESCE(CAST(r.pin_user_id AS TEXT), '') || ' ' ||
+            COALESCE(CAST(r.category_id AS TEXT), '') || ' ' ||
+            COALESCE(r.request_status, '') || ' ' ||
+            COALESCE(CAST(r.request_date AS TEXT), '') || ' ' ||
+            COALESCE(CAST(r.request_view_count AS TEXT), '') || ' ' ||
+            COALESCE(CAST(r.request_shortlist_count AS TEXT), '') || ' ' ||
+            COALESCE(c.category_name, '') || ' ' ||
+            COALESCE(c.category_desc, '')
+        ) LIKE ?
+        """,
+        (user_id, f"%{clean_keyword}%"))
         rows = cursor.fetchall()
         conn.close()
         return [dict(row) for row in rows] if rows else []
